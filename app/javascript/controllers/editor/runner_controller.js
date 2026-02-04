@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { DefaultRubyVM } from "@ruby/wasm-wasi"
+
+const WASM_API_URL = "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser.umd.js"
+const RUBY_WASM_URL = "https://cdn.jsdelivr.net/npm/@ruby/3.3-wasm-wasi@2.8.1/dist/ruby+stdlib.wasm"
 
 export default class extends Controller {
   static targets = ["output"]
@@ -7,7 +9,6 @@ export default class extends Controller {
   async connect() {
     this.editor = null
     this.vm = null
-    this.outputLines = []
     
     // Listen for editor initialization
     document.addEventListener("editor--main:initialized", (e) => {
@@ -22,18 +23,39 @@ export default class extends Controller {
     try {
       this.updateOutput("// Ruby WASM initializing...")
       
-      const response = await fetch(
-        "https://cdn.jsdelivr.net/npm/@ruby/3.3-wasm-wasi@2.6.0/dist/ruby+stdlib.wasm"
-      )
-      const module = await WebAssembly.compileStreaming(response)
-      const { vm } = await DefaultRubyVM(module)
+      // Load Ruby WASM API script (UMD version)
+      await this.loadScript(WASM_API_URL)
       
+      // Get DefaultRubyVM from the global object
+      const { DefaultRubyVM } = window["ruby-wasm-wasi"]
+      
+      // Fetch and compile WASM module
+      const response = await fetch(RUBY_WASM_URL)
+      const module = await WebAssembly.compileStreaming(response)
+      
+      // Initialize VM
+      const { vm } = await DefaultRubyVM(module)
       this.vm = vm
+      
       this.updateOutput("// Ruby WASM ready! Click Run to execute code.")
     } catch (error) {
       console.error("Failed to initialize Ruby VM:", error)
-      this.updateOutput(`// Error: Failed to initialize Ruby VM: ${error.message}`)
+      this.updateOutput(`// Error: ${error.message}`)
     }
+  }
+
+  loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve()
+        return
+      }
+      const script = document.createElement("script")
+      script.src = src
+      script.onload = resolve
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
   }
 
   async run() {
@@ -48,20 +70,19 @@ export default class extends Controller {
     }
 
     const code = this.editor.getValue()
-    this.outputLines = []
     
     try {
-      // Capture stdout by wrapping in a StringIO
+      // Capture stdout using StringIO
       const wrappedCode = `
-        require 'stringio'
-        $stdout = StringIO.new
-        begin
-          ${code}
-        rescue => e
-          puts "Error: \#{e.class}: \#{e.message}"
-        end
-        $stdout.string
-      `
+require 'stringio'
+$stdout = StringIO.new
+begin
+${code}
+rescue => e
+  puts "Error: \#{e.class}: \#{e.message}"
+end
+$stdout.string
+`
       
       const result = this.vm.eval(wrappedCode)
       const output = result.toString()
