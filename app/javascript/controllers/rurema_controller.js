@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // るりまリファレンスのベースURL
 const RUREMA_BASE_URL = "https://docs.ruby-lang.org/ja/latest/method"
-const RUREMA_SEARCH_URL = "https://rurema.clear-code.com/3.3.0/search/query:"
+const RUREMA_SEARCH_URL = "https://rurema.clear-code.com/query:"
 
 // メソッド呼び出しを検出する正規表現
 // .method_name や .method_name! や .method_name? にマッチ
