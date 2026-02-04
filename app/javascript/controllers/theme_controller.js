@@ -3,6 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // ダークモード切り替えコントローラー
 export default class extends Controller {
   connect() {
+    console.log("Theme controller connected")
     this.updateIcon()
   }
 
