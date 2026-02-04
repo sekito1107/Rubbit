@@ -56,16 +56,16 @@ export default class extends Controller {
     
     try {
       // Capture stdout using StringIO
-      const wrappedCode = `
-require 'stringio'
-$stdout = StringIO.new
-begin
-${code}
-rescue => e
-  puts "Error: \#{e.class}: \#{e.message}"
-end
-$stdout.string
-`
+      const wrappedCode = [
+        "require 'stringio'",
+        "$stdout = StringIO.new",
+        "begin",
+        code,
+        "rescue => e",
+        '  puts "Error: #{e.class}: #{e.message}"',
+        "end",
+        "$stdout.string"
+      ].join("\n")
       
       const result = this.vm.eval(wrappedCode)
       const output = result.toString()
