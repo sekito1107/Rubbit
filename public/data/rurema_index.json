@@ -1,0 +1,4250 @@
+{
+  "!": [
+    "BasicObject#!"
+  ],
+  "equal?": [
+    "BasicObject#equal?"
+  ],
+  "__send__": [
+    "BasicObject#__send__"
+  ],
+  "==": [
+    "BasicObject#==",
+    "Module#==",
+    "String#==",
+    "Integer#==",
+    "Float#==",
+    "Symbol#==",
+    "Array#==",
+    "Hash#==",
+    "Regexp#==",
+    "Range#=="
+  ],
+  "!=": [
+    "BasicObject#!="
+  ],
+  "__id__": [
+    "BasicObject#__id__"
+  ],
+  "instance_exec": [
+    "BasicObject#instance_exec"
+  ],
+  "instance_eval": [
+    "BasicObject#instance_eval"
+  ],
+  "with_options": [
+    "Object#with_options"
+  ],
+  "presence": [
+    "Object#presence"
+  ],
+  "in?": [
+    "Object#in?"
+  ],
+  "presence_in": [
+    "Object#presence_in"
+  ],
+  "to_yaml": [
+    "Object#to_yaml"
+  ],
+  "acts_like?": [
+    "Object#acts_like?"
+  ],
+  "as_json": [
+    "Object#as_json",
+    "Module#as_json",
+    "String#as_json",
+    "Float#as_json",
+    "Numeric#as_json",
+    "Symbol#as_json",
+    "Array#as_json",
+    "Hash#as_json",
+    "Enumerable#as_json",
+    "Time#as_json",
+    "Date#as_json",
+    "DateTime#as_json",
+    "Regexp#as_json",
+    "Range#as_json",
+    "IO#as_json"
+  ],
+  "html_safe?": [
+    "Object#html_safe?",
+    "Numeric#html_safe?"
+  ],
+  "deep_dup": [
+    "Object#deep_dup",
+    "Module#deep_dup",
+    "Array#deep_dup",
+    "Hash#deep_dup"
+  ],
+  "with": [
+    "Object#with"
+  ],
+  "duplicable?": [
+    "Object#duplicable?"
+  ],
+  "to_param": [
+    "Object#to_param",
+    "Array#to_param",
+    "Hash#to_param"
+  ],
+  "to_query": [
+    "Object#to_query",
+    "Array#to_query",
+    "Hash#to_query"
+  ],
+  "instance_values": [
+    "Object#instance_values"
+  ],
+  "blank?": [
+    "Object#blank?",
+    "String#blank?",
+    "Numeric#blank?",
+    "Symbol#blank?",
+    "Array#blank?",
+    "Hash#blank?",
+    "Time#blank?",
+    "Date#blank?",
+    "DateTime#blank?"
+  ],
+  "present?": [
+    "Object#present?",
+    "String#present?",
+    "Numeric#present?",
+    "Symbol#present?",
+    "Array#present?",
+    "Hash#present?",
+    "Time#present?",
+    "Date#present?",
+    "DateTime#present?"
+  ],
+  "instance_variable_names": [
+    "Object#instance_variable_names"
+  ],
+  "yaml_tag": [
+    "Object.yaml_tag"
+  ],
+  "to_enum": [
+    "Kernel#to_enum"
+  ],
+  "enum_for": [
+    "Kernel#enum_for"
+  ],
+  "singleton_class": [
+    "Kernel#singleton_class"
+  ],
+  "dup": [
+    "Kernel#dup",
+    "String#dup",
+    "Numeric#dup"
+  ],
+  "itself": [
+    "Kernel#itself"
+  ],
+  "methods": [
+    "Kernel#methods"
+  ],
+  "singleton_methods": [
+    "Kernel#singleton_methods"
+  ],
+  "protected_methods": [
+    "Kernel#protected_methods"
+  ],
+  "private_methods": [
+    "Kernel#private_methods"
+  ],
+  "public_methods": [
+    "Kernel#public_methods"
+  ],
+  "instance_variables": [
+    "Kernel#instance_variables"
+  ],
+  "instance_variable_get": [
+    "Kernel#instance_variable_get"
+  ],
+  "instance_variable_set": [
+    "Kernel#instance_variable_set"
+  ],
+  "instance_variable_defined?": [
+    "Kernel#instance_variable_defined?"
+  ],
+  "remove_instance_variable": [
+    "Kernel#remove_instance_variable"
+  ],
+  "instance_of?": [
+    "Kernel#instance_of?"
+  ],
+  "kind_of?": [
+    "Kernel#kind_of?"
+  ],
+  "is_a?": [
+    "Kernel#is_a?"
+  ],
+  "display": [
+    "Kernel#display"
+  ],
+  "public_send": [
+    "Kernel#public_send"
+  ],
+  "class_eval": [
+    "Kernel#class_eval",
+    "Module#class_eval"
+  ],
+  "class": [
+    "Kernel#class"
+  ],
+  "frozen?": [
+    "Kernel#frozen?"
+  ],
+  "tap": [
+    "Kernel#tap"
+  ],
+  "then": [
+    "Kernel#then"
+  ],
+  "yield_self": [
+    "Kernel#yield_self"
+  ],
+  "extend": [
+    "Kernel#extend"
+  ],
+  "clone": [
+    "Kernel#clone",
+    "Numeric#clone"
+  ],
+  "debugger": [
+    "Kernel#debugger"
+  ],
+  "<=>": [
+    "Kernel#<=>",
+    "Module#<=>",
+    "String#<=>",
+    "Integer#<=>",
+    "Float#<=>",
+    "Numeric#<=>",
+    "Symbol#<=>",
+    "Array#<=>",
+    "Time#<=>",
+    "Date#<=>",
+    "DateTime#<=>"
+  ],
+  "===": [
+    "Kernel#===",
+    "Module#===",
+    "String#===",
+    "Integer#===",
+    "Float#===",
+    "Symbol#===",
+    "Time.===",
+    "Date#===",
+    "Regexp#===",
+    "Range#==="
+  ],
+  "!~": [
+    "Kernel#!~"
+  ],
+  "nil?": [
+    "Kernel#nil?"
+  ],
+  "eql?": [
+    "Kernel#eql?",
+    "String#eql?",
+    "Float#eql?",
+    "Numeric#eql?",
+    "Array#eql?",
+    "Hash#eql?",
+    "Time#eql?",
+    "Date#eql?",
+    "Regexp#eql?",
+    "Range#eql?"
+  ],
+  "respond_to?": [
+    "Kernel#respond_to?"
+  ],
+  "hash": [
+    "Kernel#hash",
+    "String#hash",
+    "Float#hash",
+    "Array#hash",
+    "Hash#hash",
+    "Time#hash",
+    "Date#hash",
+    "Regexp#hash",
+    "Range#hash"
+  ],
+  "freeze": [
+    "Kernel#freeze",
+    "Module#freeze",
+    "String#freeze",
+    "Array#freeze",
+    "Hash#freeze"
+  ],
+  "inspect": [
+    "Kernel#inspect",
+    "Module#inspect",
+    "String#inspect",
+    "Integer#inspect",
+    "Float#inspect",
+    "Symbol#inspect",
+    "Array#inspect",
+    "Hash#inspect",
+    "Time#inspect",
+    "Date#inspect",
+    "DateTime#inspect",
+    "Regexp#inspect",
+    "Range#inspect",
+    "Dir#inspect",
+    "IO#inspect",
+    "Thread#inspect",
+    "Fiber#inspect"
+  ],
+  "method": [
+    "Kernel#method"
+  ],
+  "singleton_method": [
+    "Kernel#singleton_method"
+  ],
+  "object_id": [
+    "Kernel#object_id"
+  ],
+  "public_method": [
+    "Kernel#public_method"
+  ],
+  "define_singleton_method": [
+    "Kernel#define_singleton_method"
+  ],
+  "send": [
+    "Kernel#send"
+  ],
+  "to_s": [
+    "Kernel#to_s",
+    "Module#to_s",
+    "String#to_s",
+    "Integer#to_s",
+    "Float#to_s",
+    "Symbol#to_s",
+    "Array#to_s",
+    "Hash#to_s",
+    "Time#to_s",
+    "Date#to_s",
+    "DateTime#to_s",
+    "Regexp#to_s",
+    "Range#to_s",
+    "Thread#to_s",
+    "Fiber#to_s"
+  ],
+  "with_warnings": [
+    "Kernel.with_warnings"
+  ],
+  "enable_warnings": [
+    "Kernel.enable_warnings"
+  ],
+  "rand": [
+    "Kernel.rand"
+  ],
+  "suppress": [
+    "Kernel.suppress"
+  ],
+  "srand": [
+    "Kernel.srand"
+  ],
+  "console": [
+    "Kernel.console",
+    "IO.console"
+  ],
+  "sleep": [
+    "Kernel.sleep"
+  ],
+  "trap": [
+    "Kernel.trap"
+  ],
+  "Integer": [
+    "Kernel.Integer"
+  ],
+  "load": [
+    "Kernel.load",
+    "JSON.load",
+    "Psych.load"
+  ],
+  "require": [
+    "Kernel.require"
+  ],
+  "require_relative": [
+    "Kernel.require_relative"
+  ],
+  "autoload": [
+    "Kernel.autoload",
+    "Module#autoload"
+  ],
+  "syscall": [
+    "Kernel.syscall"
+  ],
+  "open": [
+    "Kernel.open",
+    "Dir.open",
+    "IO.open"
+  ],
+  "printf": [
+    "Kernel.printf",
+    "IO#printf"
+  ],
+  "print": [
+    "Kernel.print",
+    "IO#print"
+  ],
+  "sprintf": [
+    "Kernel.sprintf"
+  ],
+  "format": [
+    "Kernel.format"
+  ],
+  "String": [
+    "Kernel.String"
+  ],
+  "Array": [
+    "Kernel.Array"
+  ],
+  "Hash": [
+    "Kernel.Hash"
+  ],
+  "p": [
+    "Kernel.p"
+  ],
+  "putc": [
+    "Kernel.putc",
+    "IO#putc"
+  ],
+  "puts": [
+    "Kernel.puts",
+    "IO#puts"
+  ],
+  "readline": [
+    "Kernel.readline",
+    "IO#readline"
+  ],
+  "readlines": [
+    "Kernel.readlines",
+    "IO#readlines",
+    "IO.readlines"
+  ],
+  "Float": [
+    "Kernel.Float"
+  ],
+  "binding": [
+    "Kernel.binding"
+  ],
+  "local_variables": [
+    "Kernel.local_variables"
+  ],
+  "concern": [
+    "Kernel.concern"
+  ],
+  "autoload?": [
+    "Kernel.autoload?",
+    "Module#autoload?"
+  ],
+  "warn": [
+    "Kernel.warn"
+  ],
+  "Rational": [
+    "Kernel.Rational"
+  ],
+  "URI": [
+    "Kernel.URI"
+  ],
+  "gets": [
+    "Kernel.gets",
+    "IO#gets"
+  ],
+  "no_warning_require": [
+    "Kernel.no_warning_require"
+  ],
+  "BigDecimal": [
+    "Kernel.BigDecimal"
+  ],
+  "proc": [
+    "Kernel.proc"
+  ],
+  "lambda": [
+    "Kernel.lambda"
+  ],
+  "exec": [
+    "Kernel.exec"
+  ],
+  "exit!": [
+    "Kernel.exit!"
+  ],
+  "raise": [
+    "Kernel.raise",
+    "Thread#raise",
+    "Fiber#raise"
+  ],
+  "fail": [
+    "Kernel.fail"
+  ],
+  "global_variables": [
+    "Kernel.global_variables"
+  ],
+  "__method__": [
+    "Kernel.__method__"
+  ],
+  "__callee__": [
+    "Kernel.__callee__"
+  ],
+  "__dir__": [
+    "Kernel.__dir__"
+  ],
+  "caller_locations": [
+    "Kernel.caller_locations"
+  ],
+  "spawn": [
+    "Kernel.spawn"
+  ],
+  "caller": [
+    "Kernel.caller"
+  ],
+  "system": [
+    "Kernel.system"
+  ],
+  "Complex": [
+    "Kernel.Complex"
+  ],
+  "abort": [
+    "Kernel.abort"
+  ],
+  "test": [
+    "Kernel.test"
+  ],
+  "eval": [
+    "Kernel.eval"
+  ],
+  "iterator?": [
+    "Kernel.iterator?"
+  ],
+  "block_given?": [
+    "Kernel.block_given?"
+  ],
+  "catch": [
+    "Kernel.catch"
+  ],
+  "throw": [
+    "Kernel.throw"
+  ],
+  "Pathname": [
+    "Kernel.Pathname"
+  ],
+  "`": [
+    "Kernel.`"
+  ],
+  "fork": [
+    "Kernel.fork",
+    "Thread.fork"
+  ],
+  "exit": [
+    "Kernel.exit",
+    "Thread#exit",
+    "Thread.exit"
+  ],
+  "select": [
+    "Kernel.select",
+    "Array#select",
+    "Hash#select",
+    "Enumerable#select",
+    "IO.select"
+  ],
+  "set_trace_func": [
+    "Kernel.set_trace_func",
+    "Thread#set_trace_func"
+  ],
+  "zeitwerk_original_require": [
+    "Kernel.zeitwerk_original_require"
+  ],
+  "loop": [
+    "Kernel.loop"
+  ],
+  "silence_warnings": [
+    "Kernel.silence_warnings"
+  ],
+  "trace_var": [
+    "Kernel.trace_var"
+  ],
+  "untrace_var": [
+    "Kernel.untrace_var"
+  ],
+  "at_exit": [
+    "Kernel.at_exit"
+  ],
+  "redefine_method": [
+    "Module#redefine_method"
+  ],
+  "remove_possible_method": [
+    "Module#remove_possible_method"
+  ],
+  "remove_possible_singleton_method": [
+    "Module#remove_possible_singleton_method"
+  ],
+  "method_visibility": [
+    "Module#method_visibility"
+  ],
+  "mattr_reader": [
+    "Module#mattr_reader"
+  ],
+  "cattr_reader": [
+    "Module#cattr_reader"
+  ],
+  "mattr_writer": [
+    "Module#mattr_writer"
+  ],
+  "included_modules": [
+    "Module#included_modules"
+  ],
+  "set_temporary_name": [
+    "Module#set_temporary_name"
+  ],
+  "ancestors": [
+    "Module#ancestors"
+  ],
+  "attr": [
+    "Module#attr"
+  ],
+  "attr_reader": [
+    "Module#attr_reader"
+  ],
+  "attr_writer": [
+    "Module#attr_writer"
+  ],
+  "attr_accessor": [
+    "Module#attr_accessor"
+  ],
+  "cattr_writer": [
+    "Module#cattr_writer"
+  ],
+  "instance_methods": [
+    "Module#instance_methods"
+  ],
+  "public_instance_methods": [
+    "Module#public_instance_methods"
+  ],
+  "protected_instance_methods": [
+    "Module#protected_instance_methods"
+  ],
+  "private_instance_methods": [
+    "Module#private_instance_methods"
+  ],
+  "undefined_instance_methods": [
+    "Module#undefined_instance_methods"
+  ],
+  "constants": [
+    "Module#constants",
+    "Module.constants"
+  ],
+  "const_get": [
+    "Module#const_get"
+  ],
+  "const_set": [
+    "Module#const_set"
+  ],
+  "const_defined?": [
+    "Module#const_defined?"
+  ],
+  "const_source_location": [
+    "Module#const_source_location"
+  ],
+  "class_variables": [
+    "Module#class_variables"
+  ],
+  "remove_class_variable": [
+    "Module#remove_class_variable"
+  ],
+  "class_variable_get": [
+    "Module#class_variable_get"
+  ],
+  "class_variable_set": [
+    "Module#class_variable_set"
+  ],
+  "class_variable_defined?": [
+    "Module#class_variable_defined?"
+  ],
+  "public_constant": [
+    "Module#public_constant"
+  ],
+  "<": [
+    "Module#<",
+    "Integer#<",
+    "Float#<",
+    "Hash#<"
+  ],
+  "private_constant": [
+    "Module#private_constant"
+  ],
+  ">": [
+    "Module#>",
+    "Integer#>",
+    "Float#>",
+    "Hash#>"
+  ],
+  "singleton_class?": [
+    "Module#singleton_class?"
+  ],
+  "deprecate_constant": [
+    "Module#deprecate_constant"
+  ],
+  "mattr_accessor": [
+    "Module#mattr_accessor"
+  ],
+  "delegate_missing_to": [
+    "Module#delegate_missing_to"
+  ],
+  "include": [
+    "Module#include"
+  ],
+  "refinements": [
+    "Module#refinements"
+  ],
+  "cattr_accessor": [
+    "Module#cattr_accessor"
+  ],
+  "module_exec": [
+    "Module#module_exec"
+  ],
+  "class_exec": [
+    "Module#class_exec"
+  ],
+  "module_eval": [
+    "Module#module_eval"
+  ],
+  "remove_method": [
+    "Module#remove_method"
+  ],
+  "undef_method": [
+    "Module#undef_method"
+  ],
+  "alias_method": [
+    "Module#alias_method"
+  ],
+  "method_defined?": [
+    "Module#method_defined?"
+  ],
+  "public_method_defined?": [
+    "Module#public_method_defined?"
+  ],
+  "private_method_defined?": [
+    "Module#private_method_defined?"
+  ],
+  "protected_method_defined?": [
+    "Module#protected_method_defined?"
+  ],
+  "public_class_method": [
+    "Module#public_class_method"
+  ],
+  "private_class_method": [
+    "Module#private_class_method"
+  ],
+  "silence_redefinition_of_method": [
+    "Module#silence_redefinition_of_method"
+  ],
+  "redefine_singleton_method": [
+    "Module#redefine_singleton_method"
+  ],
+  "deprecate": [
+    "Module#deprecate"
+  ],
+  "module_parents": [
+    "Module#module_parents"
+  ],
+  "<=": [
+    "Module#<=",
+    "Integer#<=",
+    "Float#<=",
+    "Hash#<="
+  ],
+  ">=": [
+    "Module#>=",
+    "Integer#>=",
+    "Float#>=",
+    "Hash#>="
+  ],
+  "alias_attribute": [
+    "Module#alias_attribute"
+  ],
+  "include?": [
+    "Module#include?",
+    "String#include?",
+    "Array#include?",
+    "Hash#include?",
+    "Enumerable#include?",
+    "Range#include?"
+  ],
+  "rake_extension": [
+    "Module#rake_extension"
+  ],
+  "module_parent_name": [
+    "Module#module_parent_name"
+  ],
+  "module_parent": [
+    "Module#module_parent"
+  ],
+  "const_missing": [
+    "Module#const_missing"
+  ],
+  "instance_method": [
+    "Module#instance_method"
+  ],
+  "define_method": [
+    "Module#define_method"
+  ],
+  "public_instance_method": [
+    "Module#public_instance_method"
+  ],
+  "thread_mattr_accessor": [
+    "Module#thread_mattr_accessor"
+  ],
+  "prepend": [
+    "Module#prepend",
+    "String#prepend",
+    "Array#prepend"
+  ],
+  "name": [
+    "Module#name",
+    "Symbol#name",
+    "Thread#name"
+  ],
+  "thread_mattr_reader": [
+    "Module#thread_mattr_reader"
+  ],
+  "thread_cattr_reader": [
+    "Module#thread_cattr_reader"
+  ],
+  "thread_mattr_writer": [
+    "Module#thread_mattr_writer"
+  ],
+  "thread_cattr_writer": [
+    "Module#thread_cattr_writer"
+  ],
+  "thread_cattr_accessor": [
+    "Module#thread_cattr_accessor"
+  ],
+  "anonymous?": [
+    "Module#anonymous?"
+  ],
+  "attr_internal_reader": [
+    "Module#attr_internal_reader"
+  ],
+  "attr_internal_writer": [
+    "Module#attr_internal_writer"
+  ],
+  "attr_internal_accessor": [
+    "Module#attr_internal_accessor"
+  ],
+  "attr_internal": [
+    "Module#attr_internal"
+  ],
+  "delegate": [
+    "Module#delegate"
+  ],
+  "used_modules": [
+    "Module.used_modules"
+  ],
+  "used_refinements": [
+    "Module.used_refinements"
+  ],
+  "nesting": [
+    "Module.nesting"
+  ],
+  "attr_internal_naming_format=": [
+    "Module.attr_internal_naming_format="
+  ],
+  "attr_internal_naming_format": [
+    "Module.attr_internal_naming_format"
+  ],
+  "subclasses": [
+    "Class#subclasses"
+  ],
+  "attached_object": [
+    "Class#attached_object"
+  ],
+  "new": [
+    "Class#new",
+    "String.new",
+    "Array.new",
+    "DateTime.new",
+    "IO.new",
+    "Thread.new"
+  ],
+  "allocate": [
+    "Class#allocate",
+    "Class.allocate"
+  ],
+  "class_attribute": [
+    "Class#class_attribute"
+  ],
+  "descendants": [
+    "Class#descendants"
+  ],
+  "superclass": [
+    "Class#superclass"
+  ],
+  "chomp": [
+    "String#chomp"
+  ],
+  "strip": [
+    "String#strip"
+  ],
+  "strip!": [
+    "String#strip!"
+  ],
+  "unicode_normalize": [
+    "String#unicode_normalize"
+  ],
+  "unicode_normalize!": [
+    "String#unicode_normalize!"
+  ],
+  "unicode_normalized?": [
+    "String#unicode_normalized?"
+  ],
+  "sub!": [
+    "String#sub!"
+  ],
+  "gsub!": [
+    "String#gsub!"
+  ],
+  "chop!": [
+    "String#chop!"
+  ],
+  "chomp!": [
+    "String#chomp!"
+  ],
+  "squeeze": [
+    "String#squeeze"
+  ],
+  "end_with?": [
+    "String#end_with?",
+    "Symbol#end_with?"
+  ],
+  "rstrip!": [
+    "String#rstrip!"
+  ],
+  "delete_prefix!": [
+    "String#delete_prefix!"
+  ],
+  "delete_suffix": [
+    "String#delete_suffix"
+  ],
+  "tr": [
+    "String#tr"
+  ],
+  "tr_s": [
+    "String#tr_s"
+  ],
+  "delete": [
+    "String#delete",
+    "Array#delete",
+    "Hash#delete",
+    "File.delete",
+    "Dir.delete"
+  ],
+  "tr!": [
+    "String#tr!"
+  ],
+  "lstrip!": [
+    "String#lstrip!"
+  ],
+  "delete!": [
+    "String#delete!"
+  ],
+  "squeeze!": [
+    "String#squeeze!"
+  ],
+  "delete_suffix!": [
+    "String#delete_suffix!"
+  ],
+  "each_byte": [
+    "String#each_byte",
+    "IO#each_byte"
+  ],
+  "each_char": [
+    "String#each_char",
+    "IO#each_char"
+  ],
+  "last": [
+    "String#last",
+    "Array#last",
+    "Range#last"
+  ],
+  "tr_s!": [
+    "String#tr_s!"
+  ],
+  "each_line": [
+    "String#each_line",
+    "IO#each_line"
+  ],
+  "%": [
+    "String#%",
+    "Integer#%",
+    "Float#%",
+    "Numeric#%",
+    "Range#%"
+  ],
+  "to_date": [
+    "String#to_date",
+    "Time#to_date",
+    "Date#to_date",
+    "DateTime#to_date"
+  ],
+  "to_datetime": [
+    "String#to_datetime",
+    "Time#to_datetime",
+    "Date#to_datetime",
+    "DateTime#to_datetime"
+  ],
+  "*": [
+    "String#*",
+    "Integer#*",
+    "Float#*",
+    "Array#*"
+  ],
+  "+": [
+    "String#+",
+    "Integer#+",
+    "Float#+",
+    "Array#+",
+    "Time#+",
+    "Date#+"
+  ],
+  "in_time_zone": [
+    "String#in_time_zone"
+  ],
+  "indent": [
+    "String#indent"
+  ],
+  "remove": [
+    "String#remove"
+  ],
+  "starts_with?": [
+    "String#starts_with?",
+    "Symbol#starts_with?"
+  ],
+  "ends_with?": [
+    "String#ends_with?",
+    "Symbol#ends_with?"
+  ],
+  "html_safe": [
+    "String#html_safe"
+  ],
+  "shellsplit": [
+    "String#shellsplit"
+  ],
+  "shellescape": [
+    "String#shellescape"
+  ],
+  "to": [
+    "String#to",
+    "Array#to"
+  ],
+  "+@": [
+    "String#+@",
+    "Numeric#+@"
+  ],
+  "-@": [
+    "String#-@",
+    "Integer#-@",
+    "Float#-@",
+    "Numeric#-@"
+  ],
+  "<<": [
+    "String#<<",
+    "Integer#<<",
+    "Array#<<",
+    "Date#<<",
+    "IO#<<"
+  ],
+  "truncate": [
+    "String#truncate",
+    "Integer#truncate",
+    "Float#truncate",
+    "Numeric#truncate",
+    "File#truncate",
+    "File.truncate"
+  ],
+  "=~": [
+    "String#=~",
+    "Symbol#=~",
+    "Regexp#=~"
+  ],
+  "[]": [
+    "String#[]",
+    "Integer#[]",
+    "Symbol#[]",
+    "Array#[]",
+    "Array.[]",
+    "Hash#[]",
+    "Hash.[]",
+    "Dir.[]",
+    "Thread#[]",
+    "Fiber.[]",
+    "JSON.[]"
+  ],
+  "[]=": [
+    "String#[]=",
+    "Array#[]=",
+    "Hash#[]=",
+    "Thread#[]=",
+    "Fiber.[]="
+  ],
+  "empty?": [
+    "String#empty?",
+    "Symbol#empty?",
+    "Array#empty?",
+    "Hash#empty?",
+    "File.empty?",
+    "Dir.empty?"
+  ],
+  "pathmap_explode": [
+    "String#pathmap_explode"
+  ],
+  "pathmap_partial": [
+    "String#pathmap_partial"
+  ],
+  "from": [
+    "String#from",
+    "Array#from"
+  ],
+  "pathmap_replace": [
+    "String#pathmap_replace"
+  ],
+  "pathmap": [
+    "String#pathmap"
+  ],
+  "intern": [
+    "String#intern",
+    "Symbol#intern"
+  ],
+  "length": [
+    "String#length",
+    "Symbol#length",
+    "Array#length",
+    "Hash#length"
+  ],
+  "size": [
+    "String#size",
+    "Integer#size",
+    "Symbol#size",
+    "Array#size",
+    "Hash#size",
+    "Range#size",
+    "File#size",
+    "File.size"
+  ],
+  "succ": [
+    "String#succ",
+    "Integer#succ",
+    "Symbol#succ",
+    "Date#succ"
+  ],
+  "unpack": [
+    "String#unpack"
+  ],
+  "unpack1": [
+    "String#unpack1"
+  ],
+  "squish": [
+    "String#squish"
+  ],
+  "to_str": [
+    "String#to_str"
+  ],
+  "to_sym": [
+    "String#to_sym",
+    "Symbol#to_sym"
+  ],
+  "ext": [
+    "String#ext"
+  ],
+  "to_i": [
+    "String#to_i",
+    "Integer#to_i",
+    "Float#to_i",
+    "Time#to_i",
+    "DateTime#to_i",
+    "IO#to_i"
+  ],
+  "to_f": [
+    "String#to_f",
+    "Integer#to_f",
+    "Float#to_f",
+    "Time#to_f",
+    "DateTime#to_f"
+  ],
+  "to_r": [
+    "String#to_r",
+    "Integer#to_r",
+    "Float#to_r",
+    "Time#to_r"
+  ],
+  "squish!": [
+    "String#squish!"
+  ],
+  "remove!": [
+    "String#remove!"
+  ],
+  "exclude?": [
+    "String#exclude?",
+    "Enumerable#exclude?"
+  ],
+  "truncate_bytes": [
+    "String#truncate_bytes"
+  ],
+  "truncate_words": [
+    "String#truncate_words"
+  ],
+  "at": [
+    "String#at",
+    "Array#at",
+    "Time.at"
+  ],
+  "to_c": [
+    "String#to_c",
+    "Numeric#to_c"
+  ],
+  "count": [
+    "String#count",
+    "Array#count",
+    "Enumerable#count",
+    "Range#count"
+  ],
+  "inquiry": [
+    "String#inquiry",
+    "Array#inquiry"
+  ],
+  "indent!": [
+    "String#indent!"
+  ],
+  "partition": [
+    "String#partition",
+    "Enumerable#partition"
+  ],
+  "first": [
+    "String#first",
+    "Array#first",
+    "Enumerable#first",
+    "Range#first"
+  ],
+  "classify": [
+    "String#classify"
+  ],
+  "to_time": [
+    "String#to_time",
+    "Time#to_time",
+    "Date#to_time",
+    "DateTime#to_time"
+  ],
+  "sum": [
+    "String#sum",
+    "Array#sum",
+    "Enumerable#sum",
+    "Range#sum"
+  ],
+  "strip_heredoc": [
+    "String#strip_heredoc"
+  ],
+  "next": [
+    "String#next",
+    "Integer#next",
+    "Symbol#next",
+    "Date#next"
+  ],
+  "acts_like_string?": [
+    "String#acts_like_string?"
+  ],
+  "replace": [
+    "String#replace",
+    "Array#replace",
+    "Hash#replace"
+  ],
+  "casecmp": [
+    "String#casecmp",
+    "Symbol#casecmp"
+  ],
+  "casecmp?": [
+    "String#casecmp?",
+    "Symbol#casecmp?"
+  ],
+  "insert": [
+    "String#insert",
+    "Array#insert"
+  ],
+  "bytesize": [
+    "String#bytesize"
+  ],
+  "match": [
+    "String#match",
+    "Symbol#match",
+    "Regexp#match"
+  ],
+  "match?": [
+    "String#match?",
+    "Symbol#match?",
+    "Regexp#match?"
+  ],
+  "succ!": [
+    "String#succ!"
+  ],
+  "next!": [
+    "String#next!"
+  ],
+  "upto": [
+    "String#upto",
+    "Integer#upto",
+    "Date#upto"
+  ],
+  "index": [
+    "String#index",
+    "Array#index"
+  ],
+  "byteindex": [
+    "String#byteindex"
+  ],
+  "rindex": [
+    "String#rindex",
+    "Array#rindex"
+  ],
+  "byterindex": [
+    "String#byterindex"
+  ],
+  "clear": [
+    "String#clear",
+    "Array#clear",
+    "Hash#clear"
+  ],
+  "chr": [
+    "String#chr",
+    "Integer#chr"
+  ],
+  "getbyte": [
+    "String#getbyte",
+    "IO#getbyte"
+  ],
+  "to_d": [
+    "String#to_d",
+    "Integer#to_d",
+    "Float#to_d"
+  ],
+  "setbyte": [
+    "String#setbyte"
+  ],
+  "bytesplice": [
+    "String#bytesplice"
+  ],
+  "scrub": [
+    "String#scrub"
+  ],
+  "byteslice": [
+    "String#byteslice"
+  ],
+  "dedup": [
+    "String#dedup"
+  ],
+  "dump": [
+    "String#dump",
+    "JSON.dump",
+    "Psych.dump"
+  ],
+  "scrub!": [
+    "String#scrub!"
+  ],
+  "undump": [
+    "String#undump"
+  ],
+  "underscore": [
+    "String#underscore"
+  ],
+  "upcase": [
+    "String#upcase",
+    "Symbol#upcase"
+  ],
+  "capitalize": [
+    "String#capitalize",
+    "Symbol#capitalize"
+  ],
+  "swapcase": [
+    "String#swapcase",
+    "Symbol#swapcase"
+  ],
+  "upcase!": [
+    "String#upcase!"
+  ],
+  "downcase!": [
+    "String#downcase!"
+  ],
+  "capitalize!": [
+    "String#capitalize!"
+  ],
+  "downcase": [
+    "String#downcase",
+    "Symbol#downcase"
+  ],
+  "swapcase!": [
+    "String#swapcase!"
+  ],
+  "hex": [
+    "String#hex"
+  ],
+  "pluralize": [
+    "String#pluralize"
+  ],
+  "titlecase": [
+    "String#titlecase"
+  ],
+  "parameterize": [
+    "String#parameterize"
+  ],
+  "camelcase": [
+    "String#camelcase"
+  ],
+  "lines": [
+    "String#lines"
+  ],
+  "oct": [
+    "String#oct"
+  ],
+  "singularize": [
+    "String#singularize"
+  ],
+  "reverse!": [
+    "String#reverse!",
+    "Array#reverse!"
+  ],
+  "camelize": [
+    "String#camelize"
+  ],
+  "reverse": [
+    "String#reverse",
+    "Array#reverse"
+  ],
+  "split": [
+    "String#split",
+    "Array#split",
+    "File.split"
+  ],
+  "mb_chars": [
+    "String#mb_chars"
+  ],
+  "chars": [
+    "String#chars"
+  ],
+  "crypt": [
+    "String#crypt"
+  ],
+  "scan": [
+    "String#scan"
+  ],
+  "is_utf8?": [
+    "String#is_utf8?"
+  ],
+  "humanize": [
+    "String#humanize"
+  ],
+  "center": [
+    "String#center"
+  ],
+  "ljust": [
+    "String#ljust"
+  ],
+  "grapheme_clusters": [
+    "String#grapheme_clusters"
+  ],
+  "gsub": [
+    "String#gsub"
+  ],
+  "upcase_first": [
+    "String#upcase_first"
+  ],
+  "downcase_first": [
+    "String#downcase_first"
+  ],
+  "titleize": [
+    "String#titleize"
+  ],
+  "encode": [
+    "String#encode"
+  ],
+  "encode!": [
+    "String#encode!"
+  ],
+  "ord": [
+    "String#ord",
+    "Integer#ord"
+  ],
+  "dasherize": [
+    "String#dasherize"
+  ],
+  "demodulize": [
+    "String#demodulize"
+  ],
+  "foreign_key": [
+    "String#foreign_key"
+  ],
+  "tableize": [
+    "String#tableize"
+  ],
+  "constantize": [
+    "String#constantize"
+  ],
+  "safe_constantize": [
+    "String#safe_constantize"
+  ],
+  "sub": [
+    "String#sub"
+  ],
+  "deconstantize": [
+    "String#deconstantize"
+  ],
+  "concat": [
+    "String#concat",
+    "Array#concat"
+  ],
+  "append_as_bytes": [
+    "String#append_as_bytes"
+  ],
+  "bytes": [
+    "String#bytes",
+    "Numeric#bytes"
+  ],
+  "lstrip": [
+    "String#lstrip"
+  ],
+  "codepoints": [
+    "String#codepoints"
+  ],
+  "start_with?": [
+    "String#start_with?",
+    "Symbol#start_with?"
+  ],
+  "chop": [
+    "String#chop"
+  ],
+  "rjust": [
+    "String#rjust"
+  ],
+  "rstrip": [
+    "String#rstrip"
+  ],
+  "delete_prefix": [
+    "String#delete_prefix"
+  ],
+  "each_codepoint": [
+    "String#each_codepoint",
+    "IO#each_codepoint"
+  ],
+  "each_grapheme_cluster": [
+    "String#each_grapheme_cluster"
+  ],
+  "slice": [
+    "String#slice",
+    "Symbol#slice",
+    "Array#slice",
+    "Hash#slice"
+  ],
+  "slice!": [
+    "String#slice!",
+    "Array#slice!",
+    "Hash#slice!"
+  ],
+  "rpartition": [
+    "String#rpartition"
+  ],
+  "encoding": [
+    "String#encoding",
+    "Symbol#encoding",
+    "Regexp#encoding"
+  ],
+  "force_encoding": [
+    "String#force_encoding"
+  ],
+  "b": [
+    "String#b"
+  ],
+  "valid_encoding?": [
+    "String#valid_encoding?"
+  ],
+  "ascii_only?": [
+    "String#ascii_only?"
+  ],
+  "try_convert": [
+    "String.try_convert",
+    "Integer.try_convert",
+    "Array.try_convert",
+    "Hash.try_convert",
+    "Regexp.try_convert",
+    "IO.try_convert"
+  ],
+  "modulo": [
+    "Integer#modulo",
+    "Float#modulo",
+    "Numeric#modulo"
+  ],
+  "remainder": [
+    "Integer#remainder",
+    "Numeric#remainder"
+  ],
+  "abs": [
+    "Integer#abs",
+    "Float#abs",
+    "Numeric#abs"
+  ],
+  "magnitude": [
+    "Integer#magnitude",
+    "Float#magnitude",
+    "Numeric#magnitude"
+  ],
+  "zero?": [
+    "Integer#zero?",
+    "Float#zero?",
+    "Numeric#zero?",
+    "File.zero?"
+  ],
+  "floor": [
+    "Integer#floor",
+    "Float#floor",
+    "Numeric#floor",
+    "Time#floor"
+  ],
+  "ceil": [
+    "Integer#ceil",
+    "Float#ceil",
+    "Numeric#ceil",
+    "Time#ceil"
+  ],
+  "round": [
+    "Integer#round",
+    "Float#round",
+    "Numeric#round",
+    "Time#round"
+  ],
+  "**": [
+    "Integer#**",
+    "Float#**"
+  ],
+  "allbits?": [
+    "Integer#allbits?"
+  ],
+  "anybits?": [
+    "Integer#anybits?"
+  ],
+  "nobits?": [
+    "Integer#nobits?"
+  ],
+  "downto": [
+    "Integer#downto",
+    "Date#downto"
+  ],
+  "pred": [
+    "Integer#pred"
+  ],
+  "pow": [
+    "Integer#pow"
+  ],
+  ">>": [
+    "Integer#>>",
+    "Date#>>"
+  ],
+  "digits": [
+    "Integer#digits"
+  ],
+  "bit_length": [
+    "Integer#bit_length"
+  ],
+  "even?": [
+    "Integer#even?"
+  ],
+  "odd?": [
+    "Integer#odd?"
+  ],
+  "ceildiv": [
+    "Integer#ceildiv"
+  ],
+  "to_bn": [
+    "Integer#to_bn"
+  ],
+  "&": [
+    "Integer#&",
+    "Array#&"
+  ],
+  "-": [
+    "Integer#-",
+    "Float#-",
+    "Array#-",
+    "Time#-",
+    "Date#-"
+  ],
+  "/": [
+    "Integer#/",
+    "Float#/"
+  ],
+  "times": [
+    "Integer#times"
+  ],
+  "integer?": [
+    "Integer#integer?",
+    "Numeric#integer?"
+  ],
+  "numerator": [
+    "Integer#numerator",
+    "Float#numerator",
+    "Numeric#numerator"
+  ],
+  "rationalize": [
+    "Integer#rationalize",
+    "Float#rationalize"
+  ],
+  "gcd": [
+    "Integer#gcd"
+  ],
+  "lcm": [
+    "Integer#lcm"
+  ],
+  "gcdlcm": [
+    "Integer#gcdlcm"
+  ],
+  "denominator": [
+    "Integer#denominator",
+    "Float#denominator",
+    "Numeric#denominator"
+  ],
+  "to_int": [
+    "Integer#to_int",
+    "Float#to_int",
+    "Numeric#to_int"
+  ],
+  "year": [
+    "Integer#year",
+    "Time#year",
+    "Date#year"
+  ],
+  "month": [
+    "Integer#month",
+    "Time#month",
+    "Date#month"
+  ],
+  "^": [
+    "Integer#^"
+  ],
+  "div": [
+    "Integer#div",
+    "Numeric#div"
+  ],
+  "divmod": [
+    "Integer#divmod",
+    "Float#divmod",
+    "Numeric#divmod"
+  ],
+  "fdiv": [
+    "Integer#fdiv",
+    "Float#fdiv",
+    "Numeric#fdiv"
+  ],
+  "ordinalize": [
+    "Integer#ordinalize"
+  ],
+  "months": [
+    "Integer#months"
+  ],
+  "years": [
+    "Integer#years"
+  ],
+  "multiple_of?": [
+    "Integer#multiple_of?"
+  ],
+  "coerce": [
+    "Integer#coerce",
+    "Float#coerce",
+    "Numeric#coerce"
+  ],
+  "ordinal": [
+    "Integer#ordinal",
+    "Date.ordinal",
+    "DateTime.ordinal"
+  ],
+  "|": [
+    "Integer#|",
+    "Array#|"
+  ],
+  "~": [
+    "Integer#~",
+    "Regexp#~"
+  ],
+  "sqrt": [
+    "Integer.sqrt",
+    "Math.sqrt"
+  ],
+  "positive?": [
+    "Float#positive?",
+    "Numeric#positive?"
+  ],
+  "negative?": [
+    "Float#negative?",
+    "Numeric#negative?"
+  ],
+  "nan?": [
+    "Float#nan?"
+  ],
+  "infinite?": [
+    "Float#infinite?",
+    "Numeric#infinite?",
+    "Date#infinite?"
+  ],
+  "finite?": [
+    "Float#finite?",
+    "Numeric#finite?"
+  ],
+  "prev_float": [
+    "Float#prev_float"
+  ],
+  "next_float": [
+    "Float#next_float"
+  ],
+  "arg": [
+    "Float#arg",
+    "Numeric#arg"
+  ],
+  "angle": [
+    "Float#angle",
+    "Numeric#angle"
+  ],
+  "phase": [
+    "Float#phase",
+    "Numeric#phase"
+  ],
+  "quo": [
+    "Float#quo",
+    "Numeric#quo"
+  ],
+  "step": [
+    "Numeric#step",
+    "Date#step",
+    "Range#step"
+  ],
+  "nonzero?": [
+    "Numeric#nonzero?"
+  ],
+  "hours": [
+    "Numeric#hours"
+  ],
+  "seconds": [
+    "Numeric#seconds"
+  ],
+  "days": [
+    "Numeric#days"
+  ],
+  "minutes": [
+    "Numeric#minutes"
+  ],
+  "minute": [
+    "Numeric#minute",
+    "DateTime#minute"
+  ],
+  "kilobytes": [
+    "Numeric#kilobytes"
+  ],
+  "megabytes": [
+    "Numeric#megabytes"
+  ],
+  "megabyte": [
+    "Numeric#megabyte"
+  ],
+  "gigabytes": [
+    "Numeric#gigabytes"
+  ],
+  "gigabyte": [
+    "Numeric#gigabyte"
+  ],
+  "terabytes": [
+    "Numeric#terabytes"
+  ],
+  "terabyte": [
+    "Numeric#terabyte"
+  ],
+  "petabytes": [
+    "Numeric#petabytes"
+  ],
+  "petabyte": [
+    "Numeric#petabyte"
+  ],
+  "exabytes": [
+    "Numeric#exabytes"
+  ],
+  "exabyte": [
+    "Numeric#exabyte"
+  ],
+  "zettabytes": [
+    "Numeric#zettabytes"
+  ],
+  "zettabyte": [
+    "Numeric#zettabyte"
+  ],
+  "byte": [
+    "Numeric#byte"
+  ],
+  "second": [
+    "Numeric#second",
+    "Array#second",
+    "DateTime#second"
+  ],
+  "weeks": [
+    "Numeric#weeks"
+  ],
+  "singleton_method_added": [
+    "Numeric#singleton_method_added"
+  ],
+  "real?": [
+    "Numeric#real?"
+  ],
+  "kilobyte": [
+    "Numeric#kilobyte"
+  ],
+  "rectangular": [
+    "Numeric#rectangular"
+  ],
+  "rect": [
+    "Numeric#rect"
+  ],
+  "polar": [
+    "Numeric#polar"
+  ],
+  "real": [
+    "Numeric#real"
+  ],
+  "imaginary": [
+    "Numeric#imaginary"
+  ],
+  "abs2": [
+    "Numeric#abs2"
+  ],
+  "conjugate": [
+    "Numeric#conjugate"
+  ],
+  "conj": [
+    "Numeric#conj"
+  ],
+  "imag": [
+    "Numeric#imag"
+  ],
+  "hour": [
+    "Numeric#hour",
+    "Time#hour",
+    "DateTime#hour"
+  ],
+  "fortnights": [
+    "Numeric#fortnights"
+  ],
+  "fortnight": [
+    "Numeric#fortnight"
+  ],
+  "in_milliseconds": [
+    "Numeric#in_milliseconds"
+  ],
+  "day": [
+    "Numeric#day",
+    "Time#day",
+    "Date#day"
+  ],
+  "week": [
+    "Numeric#week"
+  ],
+  "i": [
+    "Numeric#i"
+  ],
+  "to_msgpack_ext": [
+    "Symbol#to_msgpack_ext"
+  ],
+  "to_proc": [
+    "Symbol#to_proc",
+    "Hash#to_proc"
+  ],
+  "id2name": [
+    "Symbol#id2name"
+  ],
+  "all_symbols": [
+    "Symbol.all_symbols"
+  ],
+  "from_msgpack_ext": [
+    "Symbol.from_msgpack_ext"
+  ],
+  "including": [
+    "Array#including",
+    "Enumerable#including"
+  ],
+  "to_fs": [
+    "Array#to_fs",
+    "Time#to_fs",
+    "Date#to_fs",
+    "DateTime#to_fs"
+  ],
+  "to_formatted_s": [
+    "Array#to_formatted_s",
+    "Time#to_formatted_s",
+    "Date#to_formatted_s",
+    "DateTime#to_formatted_s"
+  ],
+  "excluding": [
+    "Array#excluding",
+    "Enumerable#excluding"
+  ],
+  "shuffle!": [
+    "Array#shuffle!"
+  ],
+  "shuffle": [
+    "Array#shuffle"
+  ],
+  "sample": [
+    "Array#sample"
+  ],
+  "compact_blank!": [
+    "Array#compact_blank!",
+    "Hash#compact_blank!"
+  ],
+  "third": [
+    "Array#third"
+  ],
+  "fourth": [
+    "Array#fourth"
+  ],
+  "fifth": [
+    "Array#fifth"
+  ],
+  "forty_two": [
+    "Array#forty_two"
+  ],
+  "third_to_last": [
+    "Array#third_to_last"
+  ],
+  "second_to_last": [
+    "Array#second_to_last"
+  ],
+  "to_h": [
+    "Array#to_h",
+    "Hash#to_h",
+    "Enumerable#to_h"
+  ],
+  "fetch": [
+    "Array#fetch",
+    "Hash#fetch",
+    "Thread#fetch"
+  ],
+  "union": [
+    "Array#union",
+    "Regexp.union"
+  ],
+  "difference": [
+    "Array#difference"
+  ],
+  "intersection": [
+    "Array#intersection"
+  ],
+  "intersect?": [
+    "Array#intersect?"
+  ],
+  "push": [
+    "Array#push"
+  ],
+  "append": [
+    "Array#append"
+  ],
+  "pop": [
+    "Array#pop"
+  ],
+  "shift": [
+    "Array#shift",
+    "Hash#shift"
+  ],
+  "find": [
+    "Array#find",
+    "Enumerable#find"
+  ],
+  "each_index": [
+    "Array#each_index"
+  ],
+  "rfind": [
+    "Array#rfind"
+  ],
+  "join": [
+    "Array#join",
+    "File.join",
+    "Thread#join"
+  ],
+  "rotate": [
+    "Array#rotate"
+  ],
+  "rotate!": [
+    "Array#rotate!"
+  ],
+  "unshift": [
+    "Array#unshift"
+  ],
+  "sort!": [
+    "Array#sort!"
+  ],
+  "sort_by!": [
+    "Array#sort_by!"
+  ],
+  "collect!": [
+    "Array#collect!"
+  ],
+  "map!": [
+    "Array#map!"
+  ],
+  "select!": [
+    "Array#select!",
+    "Hash#select!"
+  ],
+  "keep_if": [
+    "Array#keep_if",
+    "Hash#keep_if"
+  ],
+  "sort": [
+    "Array#sort",
+    "Enumerable#sort"
+  ],
+  "values_at": [
+    "Array#values_at",
+    "Hash#values_at"
+  ],
+  "delete_if": [
+    "Array#delete_if",
+    "Hash#delete_if"
+  ],
+  "reject!": [
+    "Array#reject!",
+    "Hash#reject!"
+  ],
+  "filter!": [
+    "Array#filter!",
+    "Hash#filter!"
+  ],
+  "detect": [
+    "Array#detect",
+    "Enumerable#detect"
+  ],
+  "find_index": [
+    "Array#find_index",
+    "Enumerable#find_index"
+  ],
+  "rassoc": [
+    "Array#rassoc",
+    "Hash#rassoc"
+  ],
+  "filter": [
+    "Array#filter",
+    "Hash#filter",
+    "Enumerable#filter"
+  ],
+  "flatten": [
+    "Array#flatten",
+    "Hash#flatten"
+  ],
+  "fill": [
+    "Array#fill"
+  ],
+  "collect": [
+    "Array#collect",
+    "Enumerable#collect"
+  ],
+  "map": [
+    "Array#map",
+    "Enumerable#map"
+  ],
+  "reject": [
+    "Array#reject",
+    "Hash#reject",
+    "Enumerable#reject"
+  ],
+  "compact!": [
+    "Array#compact!",
+    "Hash#compact!"
+  ],
+  "delete_at": [
+    "Array#delete_at"
+  ],
+  "flatten!": [
+    "Array#flatten!"
+  ],
+  "uniq!": [
+    "Array#uniq!"
+  ],
+  "transpose": [
+    "Array#transpose"
+  ],
+  "repeated_permutation": [
+    "Array#repeated_permutation"
+  ],
+  "assoc": [
+    "Array#assoc",
+    "Hash#assoc"
+  ],
+  "permutation": [
+    "Array#permutation"
+  ],
+  "combination": [
+    "Array#combination"
+  ],
+  "bsearch_index": [
+    "Array#bsearch_index"
+  ],
+  "minmax": [
+    "Array#minmax",
+    "Enumerable#minmax",
+    "Range#minmax"
+  ],
+  "bsearch": [
+    "Array#bsearch",
+    "Range#bsearch"
+  ],
+  "all?": [
+    "Array#all?",
+    "Enumerable#all?"
+  ],
+  "any?": [
+    "Array#any?",
+    "Hash#any?",
+    "Enumerable#any?"
+  ],
+  "repeated_combination": [
+    "Array#repeated_combination"
+  ],
+  "reverse_each": [
+    "Array#reverse_each",
+    "Enumerable#reverse_each",
+    "Range#reverse_each"
+  ],
+  "one?": [
+    "Array#one?",
+    "Enumerable#one?"
+  ],
+  "none?": [
+    "Array#none?",
+    "Enumerable#none?"
+  ],
+  "zip": [
+    "Array#zip",
+    "Enumerable#zip"
+  ],
+  "take": [
+    "Array#take",
+    "Enumerable#take"
+  ],
+  "take_while": [
+    "Array#take_while",
+    "Enumerable#take_while"
+  ],
+  "drop": [
+    "Array#drop",
+    "Enumerable#drop"
+  ],
+  "drop_while": [
+    "Array#drop_while",
+    "Enumerable#drop_while"
+  ],
+  "product": [
+    "Array#product"
+  ],
+  "cycle": [
+    "Array#cycle",
+    "Enumerable#cycle"
+  ],
+  "extract!": [
+    "Array#extract!",
+    "Hash#extract!"
+  ],
+  "uniq": [
+    "Array#uniq",
+    "Enumerable#uniq"
+  ],
+  "compact": [
+    "Array#compact",
+    "Hash#compact",
+    "Enumerable#compact"
+  ],
+  "deconstruct": [
+    "Array#deconstruct"
+  ],
+  "fetch_values": [
+    "Array#fetch_values",
+    "Hash#fetch_values"
+  ],
+  "to_sentence": [
+    "Array#to_sentence"
+  ],
+  "shelljoin": [
+    "Array#shelljoin"
+  ],
+  "to_xml": [
+    "Array#to_xml",
+    "Hash#to_xml"
+  ],
+  "without": [
+    "Array#without",
+    "Enumerable#without"
+  ],
+  "max": [
+    "Array#max",
+    "Enumerable#max",
+    "Range#max"
+  ],
+  "min": [
+    "Array#min",
+    "Enumerable#min",
+    "Time#min",
+    "DateTime#min",
+    "Range#min"
+  ],
+  "each": [
+    "Array#each",
+    "Hash#each",
+    "Range#each",
+    "Dir#each",
+    "IO#each"
+  ],
+  "to_ary": [
+    "Array#to_ary"
+  ],
+  "to_a": [
+    "Array#to_a",
+    "Hash#to_a",
+    "Enumerable#to_a",
+    "Time#to_a",
+    "Range#to_a"
+  ],
+  "extract_options!": [
+    "Array#extract_options!"
+  ],
+  "in_groups_of": [
+    "Array#in_groups_of"
+  ],
+  "in_groups": [
+    "Array#in_groups"
+  ],
+  "pack": [
+    "Array#pack"
+  ],
+  "dig": [
+    "Array#dig",
+    "Hash#dig"
+  ],
+  "wrap": [
+    "Array.wrap"
+  ],
+  "compact_blank": [
+    "Hash#compact_blank",
+    "Enumerable#compact_blank"
+  ],
+  "with_indifferent_access": [
+    "Hash#with_indifferent_access"
+  ],
+  "nested_under_indifferent_access": [
+    "Hash#nested_under_indifferent_access"
+  ],
+  "with_defaults!": [
+    "Hash#with_defaults!"
+  ],
+  "reverse_update": [
+    "Hash#reverse_update"
+  ],
+  "key": [
+    "Hash#key"
+  ],
+  "deep_merge?": [
+    "Hash#deep_merge?"
+  ],
+  "except!": [
+    "Hash#except!"
+  ],
+  "rehash": [
+    "Hash#rehash"
+  ],
+  "store": [
+    "Hash#store"
+  ],
+  "default=": [
+    "Hash#default="
+  ],
+  "default_proc": [
+    "Hash#default_proc"
+  ],
+  "default_proc=": [
+    "Hash#default_proc="
+  ],
+  "each_value": [
+    "Hash#each_value"
+  ],
+  "each_key": [
+    "Hash#each_key"
+  ],
+  "each_pair": [
+    "Hash#each_pair"
+  ],
+  "member?": [
+    "Hash#member?",
+    "Enumerable#member?",
+    "Range#member?"
+  ],
+  "transform_values": [
+    "Hash#transform_values"
+  ],
+  "transform_keys": [
+    "Hash#transform_keys"
+  ],
+  "transform_keys!": [
+    "Hash#transform_keys!"
+  ],
+  "keys": [
+    "Hash#keys",
+    "Thread#keys"
+  ],
+  "except": [
+    "Hash#except"
+  ],
+  "invert": [
+    "Hash#invert"
+  ],
+  "update": [
+    "Hash#update"
+  ],
+  "merge!": [
+    "Hash#merge!"
+  ],
+  "merge": [
+    "Hash#merge"
+  ],
+  "has_key?": [
+    "Hash#has_key?"
+  ],
+  "has_value?": [
+    "Hash#has_value?"
+  ],
+  "key?": [
+    "Hash#key?",
+    "Thread#key?"
+  ],
+  "value?": [
+    "Hash#value?"
+  ],
+  "compare_by_identity": [
+    "Hash#compare_by_identity"
+  ],
+  "compare_by_identity?": [
+    "Hash#compare_by_identity?"
+  ],
+  "values": [
+    "Hash#values"
+  ],
+  "deconstruct_keys": [
+    "Hash#deconstruct_keys",
+    "Time#deconstruct_keys",
+    "Date#deconstruct_keys",
+    "DateTime#deconstruct_keys"
+  ],
+  "stringify_keys": [
+    "Hash#stringify_keys"
+  ],
+  "transform_values!": [
+    "Hash#transform_values!"
+  ],
+  "stringify_keys!": [
+    "Hash#stringify_keys!"
+  ],
+  "to_options!": [
+    "Hash#to_options!"
+  ],
+  "to_options": [
+    "Hash#to_options"
+  ],
+  "deep_stringify_keys": [
+    "Hash#deep_stringify_keys"
+  ],
+  "assert_valid_keys": [
+    "Hash#assert_valid_keys"
+  ],
+  "deep_transform_keys": [
+    "Hash#deep_transform_keys"
+  ],
+  "symbolize_keys!": [
+    "Hash#symbolize_keys!"
+  ],
+  "deep_transform_keys!": [
+    "Hash#deep_transform_keys!"
+  ],
+  "deep_symbolize_keys!": [
+    "Hash#deep_symbolize_keys!"
+  ],
+  "reverse_merge!": [
+    "Hash#reverse_merge!"
+  ],
+  "deep_stringify_keys!": [
+    "Hash#deep_stringify_keys!"
+  ],
+  "with_defaults": [
+    "Hash#with_defaults"
+  ],
+  "reverse_merge": [
+    "Hash#reverse_merge"
+  ],
+  "deep_symbolize_keys": [
+    "Hash#deep_symbolize_keys"
+  ],
+  "to_hash": [
+    "Hash#to_hash"
+  ],
+  "extractable_options?": [
+    "Hash#extractable_options?"
+  ],
+  "symbolize_keys": [
+    "Hash#symbolize_keys"
+  ],
+  "deep_transform_values!": [
+    "Hash#deep_transform_values!"
+  ],
+  "deep_transform_values": [
+    "Hash#deep_transform_values"
+  ],
+  "default": [
+    "Hash#default"
+  ],
+  "from_xml": [
+    "Hash.from_xml"
+  ],
+  "from_trusted_xml": [
+    "Hash.from_trusted_xml"
+  ],
+  "ruby2_keywords_hash?": [
+    "Hash.ruby2_keywords_hash?"
+  ],
+  "ruby2_keywords_hash": [
+    "Hash.ruby2_keywords_hash"
+  ],
+  "each_cons": [
+    "Enumerable#each_cons"
+  ],
+  "each_with_object": [
+    "Enumerable#each_with_object"
+  ],
+  "chunk": [
+    "Enumerable#chunk"
+  ],
+  "slice_before": [
+    "Enumerable#slice_before"
+  ],
+  "slice_after": [
+    "Enumerable#slice_after"
+  ],
+  "slice_when": [
+    "Enumerable#slice_when"
+  ],
+  "chunk_while": [
+    "Enumerable#chunk_while"
+  ],
+  "chain": [
+    "Enumerable#chain"
+  ],
+  "minimum": [
+    "Enumerable#minimum"
+  ],
+  "lazy": [
+    "Enumerable#lazy"
+  ],
+  "index_with": [
+    "Enumerable#index_with"
+  ],
+  "to_set": [
+    "Enumerable#to_set",
+    "Range#to_set"
+  ],
+  "pick": [
+    "Enumerable#pick"
+  ],
+  "maximum": [
+    "Enumerable#maximum"
+  ],
+  "sole": [
+    "Enumerable#sole",
+    "Range#sole"
+  ],
+  "pluck": [
+    "Enumerable#pluck"
+  ],
+  "many?": [
+    "Enumerable#many?"
+  ],
+  "in_order_of": [
+    "Enumerable#in_order_of"
+  ],
+  "index_by": [
+    "Enumerable#index_by"
+  ],
+  "entries": [
+    "Enumerable#entries",
+    "Range#entries",
+    "Dir.entries"
+  ],
+  "sort_by": [
+    "Enumerable#sort_by"
+  ],
+  "grep": [
+    "Enumerable#grep"
+  ],
+  "grep_v": [
+    "Enumerable#grep_v"
+  ],
+  "find_all": [
+    "Enumerable#find_all"
+  ],
+  "filter_map": [
+    "Enumerable#filter_map"
+  ],
+  "flat_map": [
+    "Enumerable#flat_map"
+  ],
+  "collect_concat": [
+    "Enumerable#collect_concat"
+  ],
+  "inject": [
+    "Enumerable#inject"
+  ],
+  "reduce": [
+    "Enumerable#reduce"
+  ],
+  "group_by": [
+    "Enumerable#group_by"
+  ],
+  "tally": [
+    "Enumerable#tally"
+  ],
+  "min_by": [
+    "Enumerable#min_by"
+  ],
+  "max_by": [
+    "Enumerable#max_by"
+  ],
+  "minmax_by": [
+    "Enumerable#minmax_by"
+  ],
+  "each_with_index": [
+    "Enumerable#each_with_index"
+  ],
+  "each_entry": [
+    "Enumerable#each_entry"
+  ],
+  "each_slice": [
+    "Enumerable#each_slice"
+  ],
+  "rfc3339": [
+    "Time#rfc3339",
+    "Time.rfc3339",
+    "Date#rfc3339",
+    "Date.rfc3339",
+    "DateTime#rfc3339",
+    "DateTime.rfc3339"
+  ],
+  "rfc2822": [
+    "Time#rfc2822",
+    "Time.rfc2822",
+    "Date#rfc2822",
+    "Date.rfc2822",
+    "DateTime.rfc2822"
+  ],
+  "rfc822": [
+    "Time#rfc822",
+    "Time.rfc822",
+    "Date#rfc822",
+    "Date.rfc822",
+    "DateTime.rfc822"
+  ],
+  "httpdate": [
+    "Time#httpdate",
+    "Time.httpdate",
+    "Date#httpdate",
+    "Date.httpdate",
+    "DateTime.httpdate"
+  ],
+  "advance": [
+    "Time#advance",
+    "Date#advance",
+    "DateTime#advance"
+  ],
+  "next_day": [
+    "Time#next_day",
+    "Date#next_day"
+  ],
+  "prev_day": [
+    "Time#prev_day",
+    "Date#prev_day"
+  ],
+  "next_month": [
+    "Time#next_month",
+    "Date#next_month"
+  ],
+  "prev_month": [
+    "Time#prev_month",
+    "Date#prev_month"
+  ],
+  "next_year": [
+    "Time#next_year",
+    "Date#next_year"
+  ],
+  "prev_year": [
+    "Time#prev_year",
+    "Date#prev_year"
+  ],
+  "zone": [
+    "Time#zone",
+    "Time.zone",
+    "DateTime#zone"
+  ],
+  "nsec": [
+    "Time#nsec",
+    "DateTime#nsec"
+  ],
+  "usec": [
+    "Time#usec",
+    "DateTime#usec"
+  ],
+  "mon": [
+    "Time#mon",
+    "Date#mon"
+  ],
+  "mday": [
+    "Time#mday",
+    "Date#mday"
+  ],
+  "sec": [
+    "Time#sec",
+    "DateTime#sec"
+  ],
+  "isdst": [
+    "Time#isdst"
+  ],
+  "yday": [
+    "Time#yday",
+    "Date#yday"
+  ],
+  "wday": [
+    "Time#wday",
+    "Date#wday"
+  ],
+  "subsec": [
+    "Time#subsec",
+    "DateTime#subsec"
+  ],
+  "utc": [
+    "Time#utc",
+    "Time.utc",
+    "DateTime#utc"
+  ],
+  "localtime": [
+    "Time#localtime",
+    "DateTime#localtime"
+  ],
+  "gmtime": [
+    "Time#gmtime",
+    "DateTime#gmtime"
+  ],
+  "getlocal": [
+    "Time#getlocal",
+    "DateTime#getlocal"
+  ],
+  "getgm": [
+    "Time#getgm",
+    "DateTime#getgm"
+  ],
+  "getutc": [
+    "Time#getutc",
+    "DateTime#getutc"
+  ],
+  "asctime": [
+    "Time#asctime",
+    "Date#asctime"
+  ],
+  "dst?": [
+    "Time#dst?"
+  ],
+  "gmtoff": [
+    "Time#gmtoff"
+  ],
+  "gmt_offset": [
+    "Time#gmt_offset"
+  ],
+  "utc_offset": [
+    "Time#utc_offset",
+    "DateTime#utc_offset"
+  ],
+  "utc?": [
+    "Time#utc?",
+    "DateTime#utc?"
+  ],
+  "gmt?": [
+    "Time#gmt?"
+  ],
+  "sunday?": [
+    "Time#sunday?",
+    "Date#sunday?"
+  ],
+  "monday?": [
+    "Time#monday?",
+    "Date#monday?"
+  ],
+  "tuesday?": [
+    "Time#tuesday?",
+    "Date#tuesday?"
+  ],
+  "wednesday?": [
+    "Time#wednesday?",
+    "Date#wednesday?"
+  ],
+  "thursday?": [
+    "Time#thursday?",
+    "Date#thursday?"
+  ],
+  "friday?": [
+    "Time#friday?",
+    "Date#friday?"
+  ],
+  "saturday?": [
+    "Time#saturday?",
+    "Date#saturday?"
+  ],
+  "tv_sec": [
+    "Time#tv_sec"
+  ],
+  "tv_usec": [
+    "Time#tv_usec"
+  ],
+  "tv_nsec": [
+    "Time#tv_nsec"
+  ],
+  "strftime": [
+    "Time#strftime",
+    "Date#strftime",
+    "DateTime#strftime"
+  ],
+  "xmlschema": [
+    "Time#xmlschema",
+    "Time.xmlschema",
+    "Date#xmlschema",
+    "Date.xmlschema",
+    "DateTime#xmlschema",
+    "DateTime.xmlschema"
+  ],
+  "iso8601": [
+    "Time#iso8601",
+    "Time.iso8601",
+    "Date#iso8601",
+    "Date.iso8601",
+    "DateTime#iso8601",
+    "DateTime.iso8601"
+  ],
+  "change": [
+    "Time#change",
+    "Date#change",
+    "DateTime#change"
+  ],
+  "acts_like_time?": [
+    "Time#acts_like_time?",
+    "DateTime#acts_like_time?"
+  ],
+  "ctime": [
+    "Time#ctime",
+    "Date#ctime",
+    "File#ctime",
+    "File.ctime"
+  ],
+  "seconds_since_midnight": [
+    "Time#seconds_since_midnight",
+    "DateTime#seconds_since_midnight"
+  ],
+  "formatted_offset": [
+    "Time#formatted_offset",
+    "DateTime#formatted_offset"
+  ],
+  "seconds_until_end_of_day": [
+    "Time#seconds_until_end_of_day",
+    "DateTime#seconds_until_end_of_day"
+  ],
+  "in": [
+    "Time#in",
+    "Date#in",
+    "DateTime#in"
+  ],
+  "since": [
+    "Time#since",
+    "Date#since",
+    "DateTime#since"
+  ],
+  "ago": [
+    "Time#ago",
+    "Date#ago",
+    "DateTime#ago"
+  ],
+  "beginning_of_day": [
+    "Time#beginning_of_day",
+    "Date#beginning_of_day",
+    "DateTime#beginning_of_day"
+  ],
+  "midnight": [
+    "Time#midnight",
+    "Date#midnight",
+    "DateTime#midnight"
+  ],
+  "at_midnight": [
+    "Time#at_midnight",
+    "Date#at_midnight",
+    "DateTime#at_midnight"
+  ],
+  "at_beginning_of_day": [
+    "Time#at_beginning_of_day",
+    "Date#at_beginning_of_day",
+    "DateTime#at_beginning_of_day"
+  ],
+  "middle_of_day": [
+    "Time#middle_of_day",
+    "Date#middle_of_day",
+    "DateTime#middle_of_day"
+  ],
+  "midday": [
+    "Time#midday",
+    "Date#midday",
+    "DateTime#midday"
+  ],
+  "noon": [
+    "Time#noon",
+    "Date#noon",
+    "DateTime#noon"
+  ],
+  "at_midday": [
+    "Time#at_midday",
+    "Date#at_midday",
+    "DateTime#at_midday"
+  ],
+  "at_noon": [
+    "Time#at_noon",
+    "Date#at_noon",
+    "DateTime#at_noon"
+  ],
+  "at_middle_of_day": [
+    "Time#at_middle_of_day",
+    "Date#at_middle_of_day",
+    "DateTime#at_middle_of_day"
+  ],
+  "end_of_day": [
+    "Time#end_of_day",
+    "Date#end_of_day",
+    "DateTime#end_of_day"
+  ],
+  "at_end_of_day": [
+    "Time#at_end_of_day",
+    "Date#at_end_of_day",
+    "DateTime#at_end_of_day"
+  ],
+  "beginning_of_hour": [
+    "Time#beginning_of_hour",
+    "DateTime#beginning_of_hour"
+  ],
+  "at_beginning_of_hour": [
+    "Time#at_beginning_of_hour",
+    "DateTime#at_beginning_of_hour"
+  ],
+  "end_of_hour": [
+    "Time#end_of_hour",
+    "DateTime#end_of_hour"
+  ],
+  "at_end_of_hour": [
+    "Time#at_end_of_hour",
+    "DateTime#at_end_of_hour"
+  ],
+  "beginning_of_minute": [
+    "Time#beginning_of_minute",
+    "DateTime#beginning_of_minute"
+  ],
+  "at_beginning_of_minute": [
+    "Time#at_beginning_of_minute",
+    "DateTime#at_beginning_of_minute"
+  ],
+  "end_of_minute": [
+    "Time#end_of_minute",
+    "DateTime#end_of_minute"
+  ],
+  "at_end_of_minute": [
+    "Time#at_end_of_minute",
+    "DateTime#at_end_of_minute"
+  ],
+  "plus_with_duration": [
+    "Time#plus_with_duration",
+    "Date#plus_with_duration"
+  ],
+  "plus_without_duration": [
+    "Time#plus_without_duration",
+    "Date#plus_without_duration"
+  ],
+  "minus_with_duration": [
+    "Time#minus_with_duration",
+    "Date#minus_with_duration"
+  ],
+  "minus_without_duration": [
+    "Time#minus_without_duration",
+    "Date#minus_without_duration"
+  ],
+  "sec_fraction": [
+    "Time#sec_fraction",
+    "DateTime#sec_fraction"
+  ],
+  "minus_with_coercion": [
+    "Time#minus_with_coercion"
+  ],
+  "minus_without_coercion": [
+    "Time#minus_without_coercion"
+  ],
+  "compare_with_coercion": [
+    "Time#compare_with_coercion",
+    "Date#compare_with_coercion"
+  ],
+  "compare_without_coercion": [
+    "Time#compare_without_coercion",
+    "Date#compare_without_coercion"
+  ],
+  "eql_with_coercion": [
+    "Time#eql_with_coercion"
+  ],
+  "eql_without_coercion": [
+    "Time#eql_without_coercion"
+  ],
+  "zone_offset": [
+    "Time.zone_offset"
+  ],
+  "zone_default=": [
+    "Time.zone_default="
+  ],
+  "find_zone!": [
+    "Time.find_zone!"
+  ],
+  "now": [
+    "Time.now",
+    "DateTime.now"
+  ],
+  "days_in_month": [
+    "Time.days_in_month"
+  ],
+  "days_in_year": [
+    "Time.days_in_year"
+  ],
+  "at_with_coercion": [
+    "Time.at_with_coercion"
+  ],
+  "current": [
+    "Time.current",
+    "Date.current",
+    "DateTime.current",
+    "Thread.current",
+    "Fiber.current"
+  ],
+  "find_zone": [
+    "Time.find_zone"
+  ],
+  "local": [
+    "Time.local"
+  ],
+  "gm": [
+    "Time.gm"
+  ],
+  "mktime": [
+    "Time.mktime"
+  ],
+  "zone_default": [
+    "Time.zone_default"
+  ],
+  "zone=": [
+    "Time.zone="
+  ],
+  "parse": [
+    "Time.parse",
+    "Date.parse",
+    "DateTime.parse",
+    "JSON.parse",
+    "Psych.parse"
+  ],
+  "use_zone": [
+    "Time.use_zone"
+  ],
+  "at_without_coercion": [
+    "Time.at_without_coercion"
+  ],
+  "strptime": [
+    "Time.strptime",
+    "Date.strptime",
+    "DateTime.strptime"
+  ],
+  "jisx0301": [
+    "Date#jisx0301",
+    "Date.jisx0301",
+    "DateTime#jisx0301",
+    "DateTime.jisx0301"
+  ],
+  "ajd": [
+    "Date#ajd"
+  ],
+  "amjd": [
+    "Date#amjd"
+  ],
+  "mjd": [
+    "Date#mjd"
+  ],
+  "ld": [
+    "Date#ld"
+  ],
+  "day_fraction": [
+    "Date#day_fraction"
+  ],
+  "cwyear": [
+    "Date#cwyear"
+  ],
+  "cweek": [
+    "Date#cweek"
+  ],
+  "cwday": [
+    "Date#cwday"
+  ],
+  "julian?": [
+    "Date#julian?"
+  ],
+  "gregorian?": [
+    "Date#gregorian?"
+  ],
+  "new_start": [
+    "Date#new_start"
+  ],
+  "italy": [
+    "Date#italy"
+  ],
+  "england": [
+    "Date#england"
+  ],
+  "julian": [
+    "Date#julian"
+  ],
+  "gregorian": [
+    "Date#gregorian"
+  ],
+  "start": [
+    "Date#start",
+    "Thread.start"
+  ],
+  "acts_like_date?": [
+    "Date#acts_like_date?",
+    "DateTime#acts_like_date?"
+  ],
+  "readable_inspect": [
+    "Date#readable_inspect",
+    "DateTime#readable_inspect"
+  ],
+  "default_inspect": [
+    "Date#default_inspect",
+    "DateTime#default_inspect"
+  ],
+  "leap?": [
+    "Date#leap?",
+    "Date.leap?"
+  ],
+  "jd": [
+    "Date#jd",
+    "Date.jd",
+    "DateTime.jd"
+  ],
+  "marshal_dump": [
+    "Date#marshal_dump"
+  ],
+  "marshal_load": [
+    "Date#marshal_load"
+  ],
+  "_iso8601": [
+    "Date._iso8601"
+  ],
+  "_rfc3339": [
+    "Date._rfc3339"
+  ],
+  "_xmlschema": [
+    "Date._xmlschema"
+  ],
+  "_parse": [
+    "Date._parse"
+  ],
+  "_rfc822": [
+    "Date._rfc822"
+  ],
+  "_rfc2822": [
+    "Date._rfc2822"
+  ],
+  "_httpdate": [
+    "Date._httpdate"
+  ],
+  "_jisx0301": [
+    "Date._jisx0301"
+  ],
+  "_load": [
+    "Date._load"
+  ],
+  "beginning_of_week": [
+    "Date.beginning_of_week"
+  ],
+  "find_beginning_of_week!": [
+    "Date.find_beginning_of_week!"
+  ],
+  "beginning_of_week_default=": [
+    "Date.beginning_of_week_default="
+  ],
+  "beginning_of_week_default": [
+    "Date.beginning_of_week_default"
+  ],
+  "beginning_of_week=": [
+    "Date.beginning_of_week="
+  ],
+  "tomorrow": [
+    "Date.tomorrow"
+  ],
+  "yesterday": [
+    "Date.yesterday"
+  ],
+  "valid_jd?": [
+    "Date.valid_jd?"
+  ],
+  "today": [
+    "Date.today"
+  ],
+  "valid_ordinal?": [
+    "Date.valid_ordinal?"
+  ],
+  "valid_civil?": [
+    "Date.valid_civil?"
+  ],
+  "valid_date?": [
+    "Date.valid_date?"
+  ],
+  "valid_commercial?": [
+    "Date.valid_commercial?"
+  ],
+  "julian_leap?": [
+    "Date.julian_leap?"
+  ],
+  "gregorian_leap?": [
+    "Date.gregorian_leap?"
+  ],
+  "civil": [
+    "Date.civil",
+    "DateTime.civil"
+  ],
+  "commercial": [
+    "Date.commercial",
+    "DateTime.commercial"
+  ],
+  "_strptime": [
+    "Date._strptime",
+    "DateTime._strptime"
+  ],
+  "second_fraction": [
+    "DateTime#second_fraction"
+  ],
+  "new_offset": [
+    "DateTime#new_offset"
+  ],
+  "offset": [
+    "DateTime#offset"
+  ],
+  "civil_from_format": [
+    "DateTime.civil_from_format"
+  ],
+  "casefold?": [
+    "Regexp#casefold?"
+  ],
+  "options": [
+    "Regexp#options"
+  ],
+  "source": [
+    "Regexp#source"
+  ],
+  "named_captures": [
+    "Regexp#named_captures"
+  ],
+  "fixed_encoding?": [
+    "Regexp#fixed_encoding?"
+  ],
+  "timeout": [
+    "Regexp#timeout",
+    "Regexp.timeout",
+    "IO#timeout"
+  ],
+  "names": [
+    "Regexp#names"
+  ],
+  "multiline?": [
+    "Regexp#multiline?"
+  ],
+  "quote": [
+    "Regexp.quote"
+  ],
+  "escape": [
+    "Regexp.escape"
+  ],
+  "last_match": [
+    "Regexp.last_match"
+  ],
+  "linear_time?": [
+    "Regexp.linear_time?"
+  ],
+  "timeout=": [
+    "Regexp.timeout=",
+    "IO#timeout="
+  ],
+  "compile": [
+    "Regexp.compile"
+  ],
+  "exclude_end?": [
+    "Range#exclude_end?"
+  ],
+  "overlap?": [
+    "Range#overlap?"
+  ],
+  "cover?": [
+    "Range#cover?"
+  ],
+  "overlaps?": [
+    "Range#overlaps?"
+  ],
+  "begin": [
+    "Range#begin"
+  ],
+  "end": [
+    "Range#end"
+  ],
+  "birthtime": [
+    "File#birthtime",
+    "File.birthtime"
+  ],
+  "chmod": [
+    "File#chmod",
+    "File.chmod"
+  ],
+  "chown": [
+    "File#chown",
+    "File.chown"
+  ],
+  "flock": [
+    "File#flock"
+  ],
+  "lstat": [
+    "File#lstat",
+    "File.lstat"
+  ],
+  "atime": [
+    "File#atime",
+    "File.atime"
+  ],
+  "mtime": [
+    "File#mtime",
+    "File.mtime"
+  ],
+  "directory?": [
+    "File.directory?"
+  ],
+  "exist?": [
+    "File.exist?",
+    "Dir.exist?"
+  ],
+  "readable?": [
+    "File.readable?"
+  ],
+  "readable_real?": [
+    "File.readable_real?"
+  ],
+  "world_readable?": [
+    "File.world_readable?"
+  ],
+  "writable?": [
+    "File.writable?"
+  ],
+  "writable_real?": [
+    "File.writable_real?"
+  ],
+  "world_writable?": [
+    "File.world_writable?"
+  ],
+  "executable?": [
+    "File.executable?"
+  ],
+  "executable_real?": [
+    "File.executable_real?"
+  ],
+  "file?": [
+    "File.file?"
+  ],
+  "size?": [
+    "File.size?"
+  ],
+  "owned?": [
+    "File.owned?"
+  ],
+  "grpowned?": [
+    "File.grpowned?"
+  ],
+  "pipe?": [
+    "File.pipe?"
+  ],
+  "symlink?": [
+    "File.symlink?"
+  ],
+  "socket?": [
+    "File.socket?"
+  ],
+  "blockdev?": [
+    "File.blockdev?"
+  ],
+  "chardev?": [
+    "File.chardev?"
+  ],
+  "setuid?": [
+    "File.setuid?"
+  ],
+  "setgid?": [
+    "File.setgid?"
+  ],
+  "sticky?": [
+    "File.sticky?"
+  ],
+  "identical?": [
+    "File.identical?"
+  ],
+  "stat": [
+    "File.stat",
+    "IO#stat"
+  ],
+  "ftype": [
+    "File.ftype"
+  ],
+  "utime": [
+    "File.utime"
+  ],
+  "lchown": [
+    "File.lchown"
+  ],
+  "lchmod": [
+    "File.lchmod"
+  ],
+  "link": [
+    "File.link"
+  ],
+  "lutime": [
+    "File.lutime"
+  ],
+  "readlink": [
+    "File.readlink"
+  ],
+  "symlink": [
+    "File.symlink"
+  ],
+  "rename": [
+    "File.rename"
+  ],
+  "unlink": [
+    "File.unlink",
+    "Dir.unlink"
+  ],
+  "mkfifo": [
+    "File.mkfifo"
+  ],
+  "umask": [
+    "File.umask"
+  ],
+  "absolute_path": [
+    "File.absolute_path"
+  ],
+  "expand_path": [
+    "File.expand_path"
+  ],
+  "realpath": [
+    "File.realpath"
+  ],
+  "absolute_path?": [
+    "File.absolute_path?"
+  ],
+  "basename": [
+    "File.basename"
+  ],
+  "realdirpath": [
+    "File.realdirpath"
+  ],
+  "dirname": [
+    "File.dirname"
+  ],
+  "extname": [
+    "File.extname"
+  ],
+  "fnmatch": [
+    "File.fnmatch"
+  ],
+  "fnmatch?": [
+    "File.fnmatch?"
+  ],
+  "path": [
+    "File.path",
+    "Dir#path",
+    "IO#path"
+  ],
+  "atomic_write": [
+    "File.atomic_write"
+  ],
+  "probe_stat_in": [
+    "File.probe_stat_in"
+  ],
+  "to_path": [
+    "Dir#to_path",
+    "IO#to_path"
+  ],
+  "read": [
+    "Dir#read",
+    "IO#read",
+    "IO.read"
+  ],
+  "tell": [
+    "Dir#tell",
+    "IO#tell"
+  ],
+  "seek": [
+    "Dir#seek",
+    "IO#seek"
+  ],
+  "rewind": [
+    "Dir#rewind",
+    "IO#rewind"
+  ],
+  "pos": [
+    "Dir#pos",
+    "IO#pos"
+  ],
+  "pos=": [
+    "Dir#pos=",
+    "IO#pos="
+  ],
+  "fileno": [
+    "Dir#fileno",
+    "IO#fileno"
+  ],
+  "each_child": [
+    "Dir#each_child",
+    "Dir.each_child"
+  ],
+  "children": [
+    "Dir#children",
+    "Dir.children"
+  ],
+  "close": [
+    "Dir#close",
+    "IO#close"
+  ],
+  "chdir": [
+    "Dir#chdir",
+    "Dir.chdir"
+  ],
+  "rmdir": [
+    "Dir.rmdir"
+  ],
+  "home": [
+    "Dir.home"
+  ],
+  "tmpdir": [
+    "Dir.tmpdir"
+  ],
+  "glob": [
+    "Dir.glob"
+  ],
+  "for_fd": [
+    "Dir.for_fd",
+    "IO.for_fd"
+  ],
+  "mktmpdir": [
+    "Dir.mktmpdir"
+  ],
+  "foreach": [
+    "Dir.foreach",
+    "IO.foreach"
+  ],
+  "fchdir": [
+    "Dir.fchdir"
+  ],
+  "getwd": [
+    "Dir.getwd"
+  ],
+  "chroot": [
+    "Dir.chroot"
+  ],
+  "mkdir": [
+    "Dir.mkdir"
+  ],
+  "pwd": [
+    "Dir.pwd"
+  ],
+  "binmode": [
+    "IO#binmode"
+  ],
+  "getc": [
+    "IO#getc"
+  ],
+  "flush": [
+    "IO#flush"
+  ],
+  "readpartial": [
+    "IO#readpartial"
+  ],
+  "set_encoding": [
+    "IO#set_encoding"
+  ],
+  "cursor": [
+    "IO#cursor"
+  ],
+  "echo?": [
+    "IO#echo?"
+  ],
+  "nonblock?": [
+    "IO#nonblock?"
+  ],
+  "nonblock=": [
+    "IO#nonblock="
+  ],
+  "nonblock": [
+    "IO#nonblock"
+  ],
+  "reopen": [
+    "IO#reopen"
+  ],
+  "write": [
+    "IO#write",
+    "IO.write"
+  ],
+  "syswrite": [
+    "IO#syswrite"
+  ],
+  "sysread": [
+    "IO#sysread"
+  ],
+  "pread": [
+    "IO#pread"
+  ],
+  "pwrite": [
+    "IO#pwrite"
+  ],
+  "fsync": [
+    "IO#fsync"
+  ],
+  "sync": [
+    "IO#sync"
+  ],
+  "sync=": [
+    "IO#sync="
+  ],
+  "lineno": [
+    "IO#lineno"
+  ],
+  "lineno=": [
+    "IO#lineno="
+  ],
+  "readchar": [
+    "IO#readchar"
+  ],
+  "readbyte": [
+    "IO#readbyte"
+  ],
+  "ungetbyte": [
+    "IO#ungetbyte"
+  ],
+  "ungetc": [
+    "IO#ungetc"
+  ],
+  "fdatasync": [
+    "IO#fdatasync"
+  ],
+  "eof": [
+    "IO#eof"
+  ],
+  "eof?": [
+    "IO#eof?"
+  ],
+  "close_on_exec?": [
+    "IO#close_on_exec?"
+  ],
+  "close_on_exec=": [
+    "IO#close_on_exec="
+  ],
+  "closed?": [
+    "IO#closed?"
+  ],
+  "close_read": [
+    "IO#close_read"
+  ],
+  "close_write": [
+    "IO#close_write"
+  ],
+  "isatty": [
+    "IO#isatty"
+  ],
+  "tty?": [
+    "IO#tty?"
+  ],
+  "binmode?": [
+    "IO#binmode?"
+  ],
+  "sysseek": [
+    "IO#sysseek"
+  ],
+  "advise": [
+    "IO#advise"
+  ],
+  "ioctl": [
+    "IO#ioctl"
+  ],
+  "fcntl": [
+    "IO#fcntl"
+  ],
+  "pid": [
+    "IO#pid"
+  ],
+  "external_encoding": [
+    "IO#external_encoding"
+  ],
+  "internal_encoding": [
+    "IO#internal_encoding"
+  ],
+  "set_encoding_by_bom": [
+    "IO#set_encoding_by_bom"
+  ],
+  "autoclose?": [
+    "IO#autoclose?"
+  ],
+  "autoclose=": [
+    "IO#autoclose="
+  ],
+  "wait": [
+    "IO#wait"
+  ],
+  "wait_readable": [
+    "IO#wait_readable"
+  ],
+  "wait_writable": [
+    "IO#wait_writable"
+  ],
+  "wait_priority": [
+    "IO#wait_priority"
+  ],
+  "pathconf": [
+    "IO#pathconf"
+  ],
+  "noecho": [
+    "IO#noecho"
+  ],
+  "read_nonblock": [
+    "IO#read_nonblock"
+  ],
+  "getch": [
+    "IO#getch"
+  ],
+  "raw!": [
+    "IO#raw!"
+  ],
+  "cooked": [
+    "IO#cooked"
+  ],
+  "cooked!": [
+    "IO#cooked!"
+  ],
+  "echo=": [
+    "IO#echo="
+  ],
+  "console_mode": [
+    "IO#console_mode"
+  ],
+  "console_mode=": [
+    "IO#console_mode="
+  ],
+  "winsize=": [
+    "IO#winsize="
+  ],
+  "write_nonblock": [
+    "IO#write_nonblock"
+  ],
+  "iflush": [
+    "IO#iflush"
+  ],
+  "oflush": [
+    "IO#oflush"
+  ],
+  "ioflush": [
+    "IO#ioflush"
+  ],
+  "beep": [
+    "IO#beep"
+  ],
+  "goto": [
+    "IO#goto"
+  ],
+  "cursor_up": [
+    "IO#cursor_up"
+  ],
+  "cursor_left": [
+    "IO#cursor_left"
+  ],
+  "cursor_down": [
+    "IO#cursor_down"
+  ],
+  "raw": [
+    "IO#raw"
+  ],
+  "erase_line": [
+    "IO#erase_line"
+  ],
+  "cursor=": [
+    "IO#cursor="
+  ],
+  "goto_column": [
+    "IO#goto_column"
+  ],
+  "scroll_backward": [
+    "IO#scroll_backward"
+  ],
+  "erase_screen": [
+    "IO#erase_screen"
+  ],
+  "cursor_right": [
+    "IO#cursor_right"
+  ],
+  "check_winsize_changed": [
+    "IO#check_winsize_changed"
+  ],
+  "clear_screen": [
+    "IO#clear_screen"
+  ],
+  "pressed?": [
+    "IO#pressed?"
+  ],
+  "scroll_forward": [
+    "IO#scroll_forward"
+  ],
+  "getpass": [
+    "IO#getpass"
+  ],
+  "ttyname": [
+    "IO#ttyname"
+  ],
+  "to_io": [
+    "IO#to_io"
+  ],
+  "winsize": [
+    "IO#winsize"
+  ],
+  "sysopen": [
+    "IO.sysopen"
+  ],
+  "popen": [
+    "IO.popen"
+  ],
+  "binread": [
+    "IO.binread"
+  ],
+  "binwrite": [
+    "IO.binwrite"
+  ],
+  "pipe": [
+    "IO.pipe"
+  ],
+  "copy_stream": [
+    "IO.copy_stream"
+  ],
+  "console_size": [
+    "IO.console_size"
+  ],
+  "default_console_size": [
+    "IO.default_console_size"
+  ],
+  "backtrace": [
+    "Thread#backtrace",
+    "Fiber#backtrace"
+  ],
+  "backtrace_locations": [
+    "Thread#backtrace_locations",
+    "Fiber#backtrace_locations"
+  ],
+  "status": [
+    "Thread#status"
+  ],
+  "kill": [
+    "Thread#kill",
+    "Thread.kill",
+    "Fiber#kill"
+  ],
+  "value": [
+    "Thread#value"
+  ],
+  "abort_on_exception": [
+    "Thread#abort_on_exception",
+    "Thread.abort_on_exception"
+  ],
+  "abort_on_exception=": [
+    "Thread#abort_on_exception=",
+    "Thread.abort_on_exception="
+  ],
+  "report_on_exception": [
+    "Thread#report_on_exception",
+    "Thread.report_on_exception"
+  ],
+  "report_on_exception=": [
+    "Thread#report_on_exception=",
+    "Thread.report_on_exception="
+  ],
+  "add_trace_func": [
+    "Thread#add_trace_func"
+  ],
+  "pending_interrupt?": [
+    "Thread#pending_interrupt?",
+    "Thread.pending_interrupt?"
+  ],
+  "terminate": [
+    "Thread#terminate"
+  ],
+  "run": [
+    "Thread#run"
+  ],
+  "wakeup": [
+    "Thread#wakeup"
+  ],
+  "priority": [
+    "Thread#priority"
+  ],
+  "priority=": [
+    "Thread#priority="
+  ],
+  "thread_variable_get": [
+    "Thread#thread_variable_get"
+  ],
+  "thread_variable_set": [
+    "Thread#thread_variable_set"
+  ],
+  "thread_variables": [
+    "Thread#thread_variables"
+  ],
+  "thread_variable?": [
+    "Thread#thread_variable?"
+  ],
+  "alive?": [
+    "Thread#alive?",
+    "Fiber#alive?"
+  ],
+  "stop?": [
+    "Thread#stop?"
+  ],
+  "group": [
+    "Thread#group"
+  ],
+  "name=": [
+    "Thread#name="
+  ],
+  "native_thread_id": [
+    "Thread#native_thread_id"
+  ],
+  "main": [
+    "Thread.main"
+  ],
+  "stop": [
+    "Thread.stop"
+  ],
+  "pass": [
+    "Thread.pass"
+  ],
+  "each_caller_location": [
+    "Thread.each_caller_location"
+  ],
+  "ignore_deadlock": [
+    "Thread.ignore_deadlock"
+  ],
+  "list": [
+    "Thread.list"
+  ],
+  "handle_interrupt": [
+    "Thread.handle_interrupt"
+  ],
+  "ignore_deadlock=": [
+    "Thread.ignore_deadlock="
+  ],
+  "storage": [
+    "Fiber#storage"
+  ],
+  "blocking?": [
+    "Fiber#blocking?",
+    "Fiber.blocking?"
+  ],
+  "storage=": [
+    "Fiber#storage="
+  ],
+  "resume": [
+    "Fiber#resume"
+  ],
+  "transfer": [
+    "Fiber#transfer"
+  ],
+  "yield": [
+    "Fiber.yield"
+  ],
+  "scheduler": [
+    "Fiber.scheduler"
+  ],
+  "set_scheduler": [
+    "Fiber.set_scheduler"
+  ],
+  "current_scheduler": [
+    "Fiber.current_scheduler"
+  ],
+  "schedule": [
+    "Fiber.schedule"
+  ],
+  "blocking": [
+    "Fiber.blocking"
+  ],
+  "atan2": [
+    "Math.atan2"
+  ],
+  "cos": [
+    "Math.cos"
+  ],
+  "sin": [
+    "Math.sin"
+  ],
+  "tan": [
+    "Math.tan"
+  ],
+  "acos": [
+    "Math.acos"
+  ],
+  "asin": [
+    "Math.asin"
+  ],
+  "atan": [
+    "Math.atan"
+  ],
+  "cosh": [
+    "Math.cosh"
+  ],
+  "sinh": [
+    "Math.sinh"
+  ],
+  "tanh": [
+    "Math.tanh"
+  ],
+  "acosh": [
+    "Math.acosh"
+  ],
+  "asinh": [
+    "Math.asinh"
+  ],
+  "atanh": [
+    "Math.atanh"
+  ],
+  "exp": [
+    "Math.exp"
+  ],
+  "expm1": [
+    "Math.expm1"
+  ],
+  "log": [
+    "Math.log"
+  ],
+  "log2": [
+    "Math.log2"
+  ],
+  "log10": [
+    "Math.log10"
+  ],
+  "log1p": [
+    "Math.log1p"
+  ],
+  "cbrt": [
+    "Math.cbrt"
+  ],
+  "frexp": [
+    "Math.frexp"
+  ],
+  "ldexp": [
+    "Math.ldexp"
+  ],
+  "hypot": [
+    "Math.hypot"
+  ],
+  "erf": [
+    "Math.erf"
+  ],
+  "erfc": [
+    "Math.erfc"
+  ],
+  "gamma": [
+    "Math.gamma"
+  ],
+  "lgamma": [
+    "Math.lgamma"
+  ],
+  "parse!": [
+    "JSON.parse!"
+  ],
+  "state": [
+    "JSON.state"
+  ],
+  "load_file!": [
+    "JSON.load_file!"
+  ],
+  "fast_generate": [
+    "JSON.fast_generate"
+  ],
+  "pretty_generate": [
+    "JSON.pretty_generate"
+  ],
+  "unsafe_load_default_options": [
+    "JSON.unsafe_load_default_options"
+  ],
+  "load_default_options": [
+    "JSON.load_default_options"
+  ],
+  "_unsafe_load_default_options": [
+    "JSON._unsafe_load_default_options"
+  ],
+  "_load_default_options": [
+    "JSON._load_default_options"
+  ],
+  "dump_default_options": [
+    "JSON.dump_default_options"
+  ],
+  "_dump_default_options": [
+    "JSON._dump_default_options"
+  ],
+  "unparse": [
+    "JSON.unparse"
+  ],
+  "fast_unparse": [
+    "JSON.fast_unparse"
+  ],
+  "pretty_unparse": [
+    "JSON.pretty_unparse"
+  ],
+  "generate": [
+    "JSON.generate"
+  ],
+  "unsafe_load_default_options=": [
+    "JSON.unsafe_load_default_options="
+  ],
+  "load_default_options=": [
+    "JSON.load_default_options="
+  ],
+  "dump_default_options=": [
+    "JSON.dump_default_options="
+  ],
+  "parser": [
+    "JSON.parser",
+    "Psych.parser"
+  ],
+  "restore": [
+    "JSON.restore"
+  ],
+  "create_id": [
+    "JSON.create_id"
+  ],
+  "parser=": [
+    "JSON.parser="
+  ],
+  "unsafe_load": [
+    "JSON.unsafe_load",
+    "Psych.unsafe_load"
+  ],
+  "generator=": [
+    "JSON.generator="
+  ],
+  "state=": [
+    "JSON.state="
+  ],
+  "deprecation_warning": [
+    "JSON.deprecation_warning"
+  ],
+  "generator": [
+    "JSON.generator"
+  ],
+  "load_file": [
+    "JSON.load_file",
+    "Psych.load_file"
+  ],
+  "create_id=": [
+    "JSON.create_id="
+  ],
+  "parse_stream": [
+    "Psych.parse_stream"
+  ],
+  "safe_dump": [
+    "Psych.safe_dump"
+  ],
+  "dump_stream": [
+    "Psych.dump_stream"
+  ],
+  "to_json": [
+    "Psych.to_json"
+  ],
+  "load_stream": [
+    "Psych.load_stream"
+  ],
+  "safe_load_stream": [
+    "Psych.safe_load_stream"
+  ],
+  "safe_load_file": [
+    "Psych.safe_load_file"
+  ],
+  "add_domain_type": [
+    "Psych.add_domain_type"
+  ],
+  "domain_types": [
+    "Psych.domain_types"
+  ],
+  "add_builtin_type": [
+    "Psych.add_builtin_type"
+  ],
+  "remove_type": [
+    "Psych.remove_type"
+  ],
+  "add_tag": [
+    "Psych.add_tag"
+  ],
+  "safe_load": [
+    "Psych.safe_load"
+  ],
+  "load_tags": [
+    "Psych.load_tags"
+  ],
+  "unsafe_load_file": [
+    "Psych.unsafe_load_file"
+  ],
+  "dump_tags": [
+    "Psych.dump_tags"
+  ],
+  "parse_file": [
+    "Psych.parse_file"
+  ],
+  "config": [
+    "Psych.config"
+  ],
+  "libyaml_version": [
+    "Psych.libyaml_version"
+  ],
+  "load_tags=": [
+    "Psych.load_tags="
+  ],
+  "dump_tags=": [
+    "Psych.dump_tags="
+  ],
+  "domain_types=": [
+    "Psych.domain_types="
+  ]
+}
