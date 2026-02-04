@@ -8,7 +8,6 @@ export default class extends Controller {
       await this.loadEditor()
       this.initEditor()
     } catch (error) {
-      // Create a fallback error message in the editor container
       this.containerTarget.innerText = "Failed to load editor."
       console.error(error)
     }
@@ -23,42 +22,46 @@ export default class extends Controller {
     }
   }
 
-  loadEditor() {
+  async loadEditor() {
+    if (window.monaco) return
+
+    const LOADER_ID = "editor-loader"
+    if (document.getElementById(LOADER_ID)) {
+      await this.waitForMonaco()
+      return
+    }
+
+    const LOADER_URL = "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"
+    await this.injectScript(LOADER_URL, LOADER_ID)
+    await this.configureAndLoadModule()
+  }
+
+  injectScript(src, id) {
     return new Promise((resolve, reject) => {
-      // Check if global object exists
-      if (window.monaco) {
-        resolve()
-        return
-      }
-
-      // Check if loader is already added
-      if (document.getElementById("editor-loader")) {
-        // Poll for completion
-        const check = setInterval(() => {
-          if (window.monaco) {
-            clearInterval(check)
-            resolve()
-          }
-        }, 100)
-        return
-      }
-
-      const LOADER_URL = "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"
-      
       const script = document.createElement("script")
-      script.id = "editor-loader"
-      script.src = LOADER_URL
-      script.onload = () => {
-        // Configure loader
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
-        
-        // Load the editor module
-        require(['vs/editor/editor.main'], () => {
-          resolve()
-        });
-      }
+      script.id = id
+      script.src = src
+      script.onload = () => resolve()
       script.onerror = reject
       document.head.appendChild(script)
+    })
+  }
+
+  configureAndLoadModule() {
+    return new Promise((resolve) => {
+      require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } })
+      require(['vs/editor/editor.main'], () => resolve())
+    })
+  }
+
+  waitForMonaco() {
+    return new Promise((resolve) => {
+      const check = setInterval(() => {
+        if (window.monaco) {
+          clearInterval(check)
+          resolve()
+        }
+      }, 100)
     })
   }
 
