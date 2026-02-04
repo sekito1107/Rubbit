@@ -62,3 +62,4 @@ group :development, :test do
 end
 
 gem "view_component", "~> 4.2"
+gem "inline_svg"
