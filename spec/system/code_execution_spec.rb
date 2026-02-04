@@ -7,15 +7,14 @@ RSpec.describe "Code Execution", type: :system do
     driven_by(:selenium_chrome_headless)
   end
 
-  it "executes Ruby code and displays output" do
+  it "Rubyコードを実行して結果を表示する" do
     visit root_path
 
-    # Wait for Ruby WASM to initialize
+    # Ruby WASM の初期化を待機
     expect(page).to have_content("Ruby WASM ready!", wait: 30)
 
-    # Clear editor and type code
-    # Monaco editor is accessed via its model, which is complex in Capybara.
-    # Instead, we'll use JavaScript to set the value directly.
+    # エディタをクリアしてコードを入力
+    # Monaco Editor はモデル経由でアクセスする必要があるため、JSで直接値をセットする
     page.execute_script(<<~JS)
       const editor = window.monaco?.editor?.getEditors()[0];
       if (editor) {
@@ -23,20 +22,20 @@ RSpec.describe "Code Execution", type: :system do
       }
     JS
 
-    # Click Run button
+    # Runボタンをクリック
     click_button "Run"
 
-    # Verify output appears in terminal
+    # 出力がターミナルに表示されることを検証
     expect(page).to have_content("Hello from WASM!", wait: 10)
   end
 
-  it "handles Ruby errors gracefully" do
+  it "Rubyのエラーを適切にハンドリングする" do
     visit root_path
 
-    # Wait for Ruby WASM to initialize
+    # Ruby WASM の初期化を待機
     expect(page).to have_content("Ruby WASM ready!", wait: 30)
 
-    # Set code with an error
+    # エラーになるコードをセット
     page.execute_script(<<~JS)
       const editor = window.monaco?.editor?.getEditors()[0];
       if (editor) {
@@ -44,27 +43,23 @@ RSpec.describe "Code Execution", type: :system do
       }
     JS
 
-    # Click Run button
+    # Runボタンをクリック
     click_button "Run"
 
-    # Verify error is displayed
+    # エラーメッセージが表示されることを検証
     expect(page).to have_content("Error:", wait: 10)
   end
 
-  it "clears terminal output" do
+  it "ターミナルの出力をクリアする" do
     visit root_path
 
-    # Wait for Ruby WASM to initialize
+    # Ruby WASM の初期化を待機
     expect(page).to have_content("Ruby WASM ready!", wait: 30)
 
-    # Output something to terminal (init message is already there)
-    # Use execute_script to simulate run or just use what's there.
-    # The init message "// Ruby WASM ready!" should be present.
-
-    # Click Clear button
+    # Clearボタンをクリック
     click_button "Clear"
 
-    # Verify terminal is empty (or at least doesn't have the init message)
+    # ターミナルが空になっている（初期メッセージが消えている）ことを検証
     expect(page).not_to have_content("Ruby WASM ready!")
     expect(page).not_to have_content("//")
   end
