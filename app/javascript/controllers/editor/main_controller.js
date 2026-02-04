@@ -99,6 +99,12 @@ export default class extends Controller {
       attributes: true,
       attributeFilter: ["class"]
     })
+
+    // Dispatch initialized event for other controllers
+    this.element.dispatchEvent(new CustomEvent("editor--main:initialized", {
+      detail: { editor: this.editor },
+      bubbles: true 
+    }))
   }
 
   updateTheme() {
