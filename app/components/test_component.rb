@@ -1,0 +1,2 @@
+class TestComponent < ApplicationComponent
+end
