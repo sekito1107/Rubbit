@@ -9,7 +9,7 @@ const RUREMA_SEARCH_URL = "https://rurema.clear-code.com/query:"
 const METHOD_CALL_REGEX = /\.([a-zA-Z_][a-zA-Z0-9_]*[!?]?)/g
 
 export default class extends Controller {
-  static targets = ["content"]
+  static targets = ["content", "cardTemplate", "linkTemplate", "searchTemplate"]
 
   async connect() {
     this.index = null
@@ -63,9 +63,14 @@ export default class extends Controller {
       return
     }
 
-    // 各メソッドに対してパネルを生成
-    const html = methods.map(method => this.renderMethodCard(method)).join("")
-    this.contentTarget.innerHTML = html
+    // 表示をクリア
+    this.contentTarget.innerHTML = ""
+
+    // 各メソッドに対してパネルを生成して追加
+    methods.forEach(method => {
+      const card = this.createMethodCard(method)
+      this.contentTarget.appendChild(card)
+    })
   }
 
   extractMethods(code) {
@@ -87,35 +92,43 @@ export default class extends Controller {
     return methods
   }
 
-  renderMethodCard(method) {
-    if (!this.index) return ""
+  createMethodCard(method) {
+    // カードテンプレートを複製
+    const cardNode = this.cardTemplateTarget.content.cloneNode(true)
+    const container = cardNode.querySelector("div") // ルートdiv
 
-    const matches = this.index[method]
+    // メソッド名をセット
+    cardNode.querySelector('[data-role="methodName"]').textContent = `.${method}`
+
+    const matches = this.index ? this.index[method] : null
+    const detailsContainer = cardNode.querySelector('[data-role="linksDetails"]')
+    const icon = cardNode.querySelector('[data-role="icon"]')
 
     if (matches && matches.length > 0) {
       // メソッドが見つかった場合
-      return this.renderFoundMethod(method, matches)
+      // アイコンはそのままでいい (<>)
+      
+      matches.forEach(match => {
+        const linkNode = this.createMatchLink(match)
+        detailsContainer.appendChild(linkNode)
+      })
     } else {
       // 見つからなかった場合
-      return this.renderUnknownMethod(method)
+      // アイコンを ? に変更
+      icon.textContent = "?"
+      icon.classList.remove("text-blue-600", "dark:text-blue-400")
+      icon.classList.add("text-slate-400", "dark:text-slate-500")
+
+      const searchLinkNode = this.createSearchLink(method)
+      detailsContainer.appendChild(searchLinkNode)
     }
+
+    return container
   }
 
-  renderFoundMethod(method, matches) {
-    return `
-      <div class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-white/5 rounded-md overflow-hidden shadow-sm dark:shadow-none">
-        <div class="px-3 py-2 bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center gap-2">
-          <span class="text-blue-600 dark:text-blue-400 text-xs font-mono">&lt;&gt;</span>
-          <span class="text-slate-800 dark:text-slate-200 text-sm font-semibold font-mono">.${this.escapeHtml(method)}</span>
-        </div>
-        <div class="p-3 space-y-2">
-          ${matches.map(match => this.renderMatchLink(match)).join("")}
-        </div>
-      </div>
-    `
-  }
-
-  renderMatchLink(match) {
+  createMatchLink(match) {
+    const node = this.linkTemplateTarget.content.cloneNode(true)
+    
     // "Array#map" や "Kernel.puts" のような形式をパース
     const isInstanceMethod = match.includes("#")
     const separator = isInstanceMethod ? "#" : "."
@@ -126,34 +139,25 @@ export default class extends Controller {
     const encodedMethod = this.encodeMethodName(methodName)
     const url = `${RUREMA_BASE_URL}/${className}/${methodType}/${encodedMethod}.html`
 
-    return `
-      <a href="${url}" target="_blank" rel="noopener noreferrer"
-         class="block text-xs text-slate-600 dark:text-slate-400 font-mono hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-        ${this.escapeHtml(className)}<span class="text-red-500 dark:text-red-400">${separator}${this.escapeHtml(methodName)}</span>
-      </a>
-    `
+    // リンク要素の設定
+    const anchor = node.querySelector("a")
+    anchor.href = url
+    
+    node.querySelector('[data-role="className"]').textContent = className
+    node.querySelector('[data-role="separatorMethod"]').textContent = separator + methodName
+
+    return node
   }
 
-  renderUnknownMethod(method) {
+  createSearchLink(method) {
+    const node = this.searchTemplateTarget.content.cloneNode(true)
+    const anchor = node.querySelector("a")
+    
+    // るりまサーチのURL
     const searchUrl = `${RUREMA_SEARCH_URL}${encodeURIComponent(method)}/`
+    anchor.href = searchUrl
 
-    return `
-      <div class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-white/5 rounded-md overflow-hidden shadow-sm dark:shadow-none">
-        <div class="px-3 py-2 bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center gap-2">
-          <span class="text-slate-400 dark:text-slate-500 text-sm">?</span>
-          <span class="text-slate-800 dark:text-slate-200 text-sm font-semibold font-mono">.${this.escapeHtml(method)}</span>
-        </div>
-        <div class="p-3">
-          <a href="${searchUrl}" target="_blank" rel="noopener noreferrer"
-             class="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-            Search in Rurema
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    `
+    return node
   }
 
   encodeMethodName(name) {
@@ -176,11 +180,5 @@ export default class extends Controller {
       .replace(/\&/g, "=26")
       .replace(/\|/g, "=7c")
       .replace(/\`/g, "=60")
-  }
-
-  escapeHtml(str) {
-    const div = document.createElement("div")
-    div.textContent = str
-    return div.innerHTML
   }
 }
