@@ -15,31 +15,42 @@ export default class extends Controller {
     this.editor = event.detail.editor
   }
 
-  download() {
+  async download() {
     if (!this.editor) {
       console.warn("Editor not initialized yet")
       return
     }
 
-    let filename = prompt("保存するファイル名を入力してください", "main.rb")
-    if (filename === null) return // キャンセル
-    
-    // 空入力の場合はデフォルトに戻す、あるいは警告？今回はデフォルトにする
-    if (!filename.trim()) {
-      filename = "main.rb"
-    }
-
-    // 拡張子 .rb を補完
-    if (!filename.endsWith(".rb")) {
-      filename += ".rb"
-    }
-
     const content = this.editor.getValue()
+
+    // 1. File System Access API (Modern Browsers)
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'main.rb',
+          types: [{
+            description: 'Ruby Script',
+            accept: { 'text/x-ruby': ['.rb'] },
+          }],
+        })
+        const writable = await handle.createWritable()
+        await writable.write(content)
+        await writable.close()
+        return
+      } catch (err) {
+        if (err.name === 'AbortError') return // User cancelled
+        console.error('SaveFilePicker failed:', err)
+        // Fallback to method 2
+      }
+    }
+
+    // 2. Classic Download (Fallback)
+    // ブラウザ設定で「ダウンロード前にファイルの保存場所を確認する」がONならOSダイアログが出る
     const blob = new Blob([content], { type: "text/x-ruby" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = filename
+    a.download = "main.rb"
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
