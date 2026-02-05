@@ -1,5 +1,5 @@
 module Ui
-  class ModalComponent < ViewComponent::Base
+  class ModalComponent < ApplicationComponent
     renders_one :body
     renders_one :footer
 
