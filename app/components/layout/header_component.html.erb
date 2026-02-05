@@ -27,8 +27,11 @@
       </span>
     </button>
 
-    <button class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors" title="About RubPad" onclick="document.getElementById('about-modal').showModal()">
+    <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+    <button class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10" title="About RubPad" onclick="document.getElementById('about-modal').showModal()">
       <%= inline_svg_tag "icons/info.svg", class: "w-4 h-4" %>
+      <span>About</span>
     </button>
 
     <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
@@ -117,6 +120,7 @@
       <div class="space-y-2">
         <h5 class="font-semibold text-slate-900 dark:text-white">Libraries & Credits</h5>
         <ul class="list-disc list-inside space-y-1 ml-2">
+          <li><a href="https://docs.ruby-lang.org/ja/" target="_blank" class="text-blue-600 hover:underline">Ruby Reference Manual (るりま)</a> - API Documentation</li>
           <li><a href="https://github.com/ruby/ruby.wasm" target="_blank" class="text-blue-600 hover:underline">ruby.wasm</a> - Ruby Client-side Execution</li>
           <li><a href="https://tailwindcss.com/" target="_blank" class="text-blue-600 hover:underline">Tailwind CSS</a> - Styling Framework</li>
           <li><a href="https://stimulus.hotwired.dev/" target="_blank" class="text-blue-600 hover:underline">Stimulus</a> - JavaScript Framework</li>
