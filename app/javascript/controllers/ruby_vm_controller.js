@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { LSPClient } from "utils/lsp_client"
 
 const RUBY_WASM_URL = "/js/rubpad.wasm"
 // Rails 8 / Importmap: Workerのパス解決が必要
@@ -11,6 +12,7 @@ const WORKER_URL = "/js/ruby_worker.js"
 export default class extends Controller {
   async connect() {
     this.worker = null
+    this.lspClient = null
     
     // まだ準備ができていない場合、バックグラウンドでVMを初期化する
     if (!window.__rubyVMInitializing && !window.__rubyVMReady) {
@@ -27,10 +29,16 @@ export default class extends Controller {
       // type: "module" は、Worker内で 'import' を使用するために重要
       this.worker = new Worker(WORKER_URL, { type: "module" })
       
-      this.worker.onmessage = (event) => {
+      // WorkerをラップしたLSPクライアントを初期化
+      this.lspClient = new LSPClient(this.worker)
+      
+      // 他のコントローラー（エディタなど）からアクセスできるように公開する
+      window.rubyLSP = this.lspClient 
+      
+      this.worker.addEventListener("message", (event) => {
         const { type, payload } = event.data
         this.handleWorkerMessage(type, payload)
-      }
+      })
 
       this.worker.postMessage({ 
         type: "initialize", 
@@ -52,6 +60,9 @@ export default class extends Controller {
             window.__rubyVMReady = true
             delete window.__rubyVMInitializing
             this.dispatch("ready", { detail: { version: payload.version } })
+            
+            // LSPの自動検証を開始
+            this.verifyLSP()
             break
         case "error":
             this.dispatchOutput(`// VM Error: ${payload.message}`)
@@ -74,9 +85,30 @@ export default class extends Controller {
     this.dispatch("output", { detail: { text } })
   }
   
+  async verifyLSP() {
+    console.log("Verifying LSP connection...")
+    try {
+      // TypeProf に 'initialize' リクエストを送信
+      const result = await this.lspClient.sendRequest("initialize", {
+        processId: null,
+        rootUri: "inmemory:///",
+        capabilities: {},
+        workspaceFolders: []
+      })
+      console.log("LSP Initialize Result:", result)
+      // 注意: UIに通知するとコンソールがうるさくなるため、ここでは確認に留めるが、
+      // LSPが動作していることを確認できる。
+    } catch (e) {
+      console.error("LSP Verification Failed:", e)
+    }
+  }
+
   disconnect() {
       if (this.worker) {
           this.worker.terminate()
+      }
+      if (window.rubyLSP === this.lspClient) {
+        delete window.rubyLSP
       }
   }
 }
