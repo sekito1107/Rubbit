@@ -1,82 +1,82 @@
 import { Controller } from "@hotwired/stimulus"
 
-const WASM_API_URL = "https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser/+esm"
 const RUBY_WASM_URL = "/js/rubpad.wasm"
+// Rails 8 / Importmap: Workerのパス解決が必要
+// moduleタイプのWorkerがサポートされていると仮定し、必要に応じてclassicスクリプトとして読み込む
+// ただ、Worker内でimportを使用しているため、type: "module" が必須
+// Asset Pipelineの問題を回避するため、Workerファイル自体は public/js から読み込む
+const WORKER_URL = "/js/ruby_worker.js" 
 
-// Ruby VMのライフサイクルと実行を管理する
+// Ruby VMのライフサイクルと実行を管理する (Worker版)
 export default class extends Controller {
   async connect() {
-    this.vm = null
+    this.worker = null
     
     // まだ準備ができていない場合、バックグラウンドでVMを初期化する
-    if (!window.__rubyVM && !window.__rubyVMInitializing) {
+    if (!window.__rubyVMInitializing && !window.__rubyVMReady) {
       window.__rubyVMInitializing = true
-      await this.initializeVM()
-      delete window.__rubyVMInitializing
-    } else if (window.__rubyVM) {
+      this.initializeWorker()
+    } else {
+        // 必要ならここで再接続機能を追加できる（Workerインスタンスをグローバルに保持する場合など）
+        // 現状はシングルページ利用またはリロードを前提とする
     }
   }
 
-  async initializeVM() {
+  initializeWorker() {
     try {
-      this.dispatchOutput("// Ruby WASM initializing...")
+      // type: "module" は、Worker内で 'import' を使用するために重要
+      this.worker = new Worker(WORKER_URL, { type: "module" })
       
-      const { DefaultRubyVM } = await import(WASM_API_URL)
-      const response = await fetch(RUBY_WASM_URL)
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch WASM: ${response.statusText}`)
+      this.worker.onmessage = (event) => {
+        const { type, payload } = event.data
+        this.handleWorkerMessage(type, payload)
       }
 
-      const module = await WebAssembly.compileStreaming(response)
-      const { vm } = await DefaultRubyVM(module)
-      
-      this.vm = vm
-      window.__rubyVM = vm
-      
-      this.dispatchOutput("// Ruby WASM ready!")
-      this.dispatch("ready", { detail: { version: this.getRubyVersion() } })
+      this.worker.postMessage({ 
+        type: "initialize", 
+        payload: { wasmUrl: RUBY_WASM_URL } 
+      })
 
     } catch (error) {
-      console.error("Ruby VM Init Error:", error)
-      this.dispatchOutput(`// Error: ${error.message}`)
+      console.error("Worker Init Error:", error)
+      this.dispatchOutput(`// Error starting worker: ${error.message}`)
     }
   }
 
-  getRubyVersion() {
-    if (!this.vm) return "Unknown"
-    return `Ruby ${this.vm.eval("RUBY_VERSION").toString()}`
+  handleWorkerMessage(type, payload) {
+    switch (type) {
+        case "output":
+            this.dispatchOutput(payload.text)
+            break
+        case "ready":
+            window.__rubyVMReady = true
+            delete window.__rubyVMInitializing
+            this.dispatch("ready", { detail: { version: payload.version } })
+            break
+        case "error":
+            this.dispatchOutput(`// VM Error: ${payload.message}`)
+            break
+    }
   }
 
-  // API to run code
+  // コードを実行するAPI
   run(code) {
-    if (!this.vm) {
-      this.dispatchOutput("// Ruby VM is not ready yet.")
+    if (!this.worker) {
+      this.dispatchOutput("// Ruby VM Worker is not initialized.")
       return
     }
-
-    try {
-      // 標準出力をキャプチャするためにコードをラップする
-      const wrappedCode = [
-        "require 'stringio'",
-        "$stdout = StringIO.new",
-        "begin",
-        code,
-        "rescue => e",
-        '  puts "Error: #{e.class}: #{e.message}"',
-        "end",
-        "$stdout.string"
-      ].join("\n")
-      
-      const result = this.vm.eval(wrappedCode)
-      this.dispatchOutput(result.toString())
-    } catch (error) {
-      this.dispatchOutput(`Error: ${error.message}`)
-    }
+    
+    this.worker.postMessage({ type: "run", payload: { code } })
   }
 
   dispatchOutput(text) {
     // リスナー（ConsoleControllerなど）に通知する
     this.dispatch("output", { detail: { text } })
+  }
+  
+  disconnect() {
+      if (this.worker) {
+          this.worker.terminate()
+      }
   }
 }
