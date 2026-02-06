@@ -36,7 +36,12 @@ export default class extends Controller {
       await this.loadScript(LOADER_URL, LOADER_ID)
     }
 
-    await this.waitForMonaco()
+    // require is defined by loader.js
+    if (typeof window.require === 'undefined') {
+       console.error("[Editor] Monaco loader loaded but 'require' is undefined.")
+       return
+    }
+
     await this.configureMonaco()
   }
 

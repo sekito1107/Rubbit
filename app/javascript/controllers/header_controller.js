@@ -5,11 +5,11 @@ export default class extends Controller {
 
   connect() {
     this.boundUpdateVersion = this.updateVersion.bind(this)
-    window.addEventListener("editor--runner:version-loaded", this.boundUpdateVersion)
+    window.addEventListener("ruby-vm:version-loaded", this.boundUpdateVersion)
   }
 
   disconnect() {
-    window.removeEventListener("editor--runner:version-loaded", this.boundUpdateVersion)
+    window.removeEventListener("ruby-vm:version-loaded", this.boundUpdateVersion)
   }
 
   updateVersion(event) {

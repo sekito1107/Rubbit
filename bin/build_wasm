@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# Based on https://github.com/mame/typeprof.wasm/blob/main/wasm-build/build.sh
+
+# Ensure rbenv and cargo are in PATH
+export PATH="$HOME/.cargo/bin:$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
+if command -v rbenv > /dev/null; then
+  eval "$(rbenv init - bash)"
+fi
+
+cd "$(dirname "$0")/.."
+
+echo "=== Building TypeProf WASM ==="
+
+# Use the wasm-specific Gemfile
+export BUNDLE_GEMFILE=Gemfile.wasm
+export RB_SYS_STABLE_API_COMPILED_FALLBACK=true
+
+echo "=== 1. Install dependencies ==="
+bundle install
+
+echo "=== 2. Build Ruby WASM with gems ==="
+bundle exec rbwasm build -o public/js/rubpad.wasm --ruby-version 4.0
+
+echo "=== SUCCESS! ==="
+ls -lh public/js/rubpad.wasm

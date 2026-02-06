@@ -39,3 +39,12 @@
 
 # Agent plans (local only)
 /.agent/
+*.wasm
+
+# WASM build artifacts
+build/
+build.log
+rubies/
+vendor/wasm_gems/
+/vendor/bundle
+bin/restart_server

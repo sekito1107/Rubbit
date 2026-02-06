@@ -1,0 +1,39 @@
+GIT
+  remote: https://github.com/ruby/ruby.wasm.git
+  revision: 24fbf24f0942a17fac4aa8d7d9966411af7d4b13
+  specs:
+    ruby_wasm (2.8.1.dev)
+      logger
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    js (2.8.1)
+    logger (1.7.0)
+    rbs (3.10.3)
+      logger
+      tsort
+    tsort (0.2.0)
+    typeprof (0.30.1)
+      rbs (>= 3.6.0)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  js!
+  rbs
+  ruby_wasm!
+  typeprof (= 0.30.1)
+
+CHECKSUMS
+  js (2.8.1) sha256=d323712badd700346c6fc1e4f053d48c4ed68a51b6aa259455a80effd7bc4338
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  rbs (3.10.3) sha256=70627f3919016134d554e6c99195552ae3ef6020fe034c8e983facc9c192daa6
+  ruby_wasm (2.8.1.dev)
+  tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
+  typeprof (0.30.1) sha256=32ff72dab03050d8e7cb7a7dae035a9939f8bf12827cb194ab7dbda761030e75
+
+BUNDLED WITH
+  4.0.3
