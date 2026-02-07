@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { LSPClient } from "utils/lsp_client"
+import { LSPInteractor } from "interactors/lsp_interactor"
 
 const RUBY_WASM_URL = "/js/rubpad.wasm"
 // Rails 8 / Importmap: Workerのパス解決が必要
@@ -13,6 +14,12 @@ export default class extends Controller {
   async connect() {
     this.worker = null
     this.lspClient = null
+    this.editor = null
+    this.interactor = null
+
+    // エディタの初期化イベントを監視
+    this.boundHandleEditorInitialized = this.handleEditorInitialized.bind(this)
+    window.addEventListener("editor--main:initialized", this.boundHandleEditorInitialized)
     
     // まだ準備ができていない場合、バックグラウンドでVMを初期化する
     if (!window.__rubyVMInitializing && !window.__rubyVMReady) {
@@ -85,30 +92,47 @@ export default class extends Controller {
     this.dispatch("output", { detail: { text } })
   }
   
+  disconnect() {
+    window.removeEventListener("editor--main:initialized", this.boundHandleEditorInitialized)
+    if (this.worker) {
+      this.worker.terminate()
+    }
+    if (window.rubyLSP === this.lspClient) {
+      delete window.rubyLSP
+    }
+  }
+
+  handleEditorInitialized(event) {
+    this.editor = event.detail.editor
+    this.tryActivateInteractor()
+  }
+
+  tryActivateInteractor() {
+    // VMが準備完了(ready)し、かつエディタも初期化されている場合のみアクティブ化する
+    if (this.lspClient && this.editor && !this.interactor && window.__rubyVMReady) {
+      this.interactor = new LSPInteractor(this.lspClient, this.editor)
+      this.interactor.activate()
+    }
+  }
+
   async verifyLSP() {
-    console.log("Verifying LSP connection...")
     try {
       // TypeProf に 'initialize' リクエストを送信
       const result = await this.lspClient.sendRequest("initialize", {
         processId: null,
-        rootUri: "inmemory:///",
+        rootUri: "inmemory:///workspace/",
         capabilities: {},
-        workspaceFolders: []
+        workspaceFolders: [{ uri: "inmemory:///workspace/", name: "workspace" }]
       })
-      console.log("LSP Initialize Result:", result)
-      // 注意: UIに通知するとコンソールがうるさくなるため、ここでは確認に留めるが、
-      // LSPが動作していることを確認できる。
+      
+      this.tryActivateInteractor()
+
+      // 初回のドキュメント同期を行うために通知
+      if (this.editor) {
+        // ...必要であれば
+      }
     } catch (e) {
       console.error("LSP Verification Failed:", e)
     }
-  }
-
-  disconnect() {
-      if (this.worker) {
-          this.worker.terminate()
-      }
-      if (window.rubyLSP === this.lspClient) {
-        delete window.rubyLSP
-      }
   }
 }

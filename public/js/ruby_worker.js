@@ -20,9 +20,9 @@ self.onmessage = async (event) => {
        if (!vm) return
        // Ruby側の server.add_msg(json_string) メソッドを呼び出す
        // code 引数は LSPClient から渡された JSON 文字列
-       // vm.call は存在しないため、グローバル変数を介してデータを渡す
-       try {
-         self._tmpLspMsg = payload.code
+         // vm.call は存在しないため、グローバル変数を介してデータを渡す
+         try {
+           self._tmpLspMsg = payload.code
          vm.eval(`$server.add_msg(JS.global[:_tmpLspMsg].to_s)`)
          self._tmpLspMsg = null
        } catch (e) {
@@ -97,16 +97,18 @@ async function initializeVM(wasmUrl) {
 function runCode(code) {
     try {
         // 標準出力をキャプチャするためにコードをラップする
-        const wrappedCode = [
-          "require 'stringio'",
-          "$stdout = StringIO.new",
-          "begin",
-          code,
-          "rescue => e",
-          '  puts "Error: #{e.class}: #{e.message}"',
-          "end",
-          "$stdout.string"
-        ].join("\n")
+        // $server.run_code を使用して、Measure Value と同じBindingで実行する
+        const wrappedCode = `
+          require 'stringio'
+          $stdout = StringIO.new
+          begin
+            $server.run_code(${JSON.stringify(code)})
+          rescue => e
+            puts "Error: #{e.class}: #{e.message}"
+            puts e.backtrace.join("\n")
+          end
+          $stdout.string
+        `
         
         const result = vm.eval(wrappedCode)
         postMessage({ type: "output", payload: { text: result.toString() } })

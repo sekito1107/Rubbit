@@ -6,7 +6,7 @@ export class LSPClient {
       this.worker = worker
       this.requestId = 0
       this.pendingRequests = new Map()
-      this.notificationHandlers = []
+      this.notificationHandlers = {}
       
       // Workerからのメッセージを監視する
       this.worker.addEventListener("message", this.handleMessage.bind(this))
@@ -59,10 +59,20 @@ export class LSPClient {
   
     /**
      * 受信した通知に対するコールバックを登録する
-     * @param {Function} callback 
+     * @param {string} method - 通知メソッド名
+     * @param {Function} callback - コールバック関数 (paramsを受け取る)
      */
-    onNotification(callback) {
-      this.notificationHandlers.push(callback)
+    onNotification(method, callback) {
+      // 後方互換性: 引数が1つの場合はすべての通知を受け取る (今回は使用しない想定だが念のため)
+      if (typeof method === 'function') {
+        callback = method
+        method = '*'
+      }
+      
+      if (!this.notificationHandlers[method]) {
+        this.notificationHandlers[method] = []
+      }
+      this.notificationHandlers[method].push(callback)
     }
   
     handleMessage(event) {
@@ -85,7 +95,18 @@ export class LSPClient {
         } 
         // サーバーからの通知またはリクエスト
         else {
-          this.notificationHandlers.forEach(handler => handler(message))
+          const method = message.method
+          const params = message.params
+          
+          // 特定のメソッドに対するハンドラを実行
+          if (this.notificationHandlers[method]) {
+            this.notificationHandlers[method].forEach(handler => handler(params))
+          }
+          
+          // 全通知ハンドラを実行 ('*' キー)
+          if (this.notificationHandlers['*']) {
+            this.notificationHandlers['*'].forEach(handler => handler(params))
+          }
         }
       } catch (e) {
         console.error("LSPメッセージのパースに失敗しました", e)

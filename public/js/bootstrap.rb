@@ -2,52 +2,246 @@
 # (これらは ruby.wasm 上の TypeProf では使用されないため)
 $LOADED_FEATURES << "io/console.so" << "socket.so"
 
+require "rubygems"
+
 # File.readable? は bjorn3/browser_wasi_shim では動作しないため代用
 def File.readable?(...) = File.file?(...)
 
 # ワークスペースのセットアップ
-Dir.mkdir("/workspace")
+# TypeProfは /workspace などのディレクトリ構造を期待している可能性があるため
+# リファレンス実装(typeprof.wasm)に合わせて /workspace を作成する
+if !Dir.exist?("/workspace")
+  Dir.mkdir("/workspace")
+end
+
 File.write("/workspace/typeprof.conf.json", <<JSON)
 {
   "typeprof_version": "experimental",
   "rbs_dir": ".",
-  "analysis_unit_dirs": ["."],
+  "analysis_unit_dirs": ["."]
 }
 JSON
 
-# 初期化エラーを防ぐためのプレースホルダーファイル
 File.write("/workspace/test.rb", "")
 File.write("/workspace/test.rbs", "")
+File.write("/workspace/main.rb", "") # TypeProfの初期スキャンで検出させるために作成
 
 require "typeprof"
+
+# モンキーパッチ: apply_changes でのフルテキスト同期（rangeなし）のサポート
+# TypeProf 0.30.1 の実装ではパターンマッチングにおいて range が必須となっており、
+# Monaco からフルテキスト更新を受け取った際にクラッシュする問題を回避する。
+module TypeProf::LSP
+  class Text
+    def apply_changes(changes, version)
+      changes.each do |change|
+        if !change[:range] && change[:text]
+          @lines = Text.split(change[:text])
+          next
+        end
+
+        change => {
+            range: {
+                start: { line: start_row, character: start_col },
+                end:   { line: end_row  , character: end_col   }
+            },
+            text: new_text,
+        }
+
+        new_text = Text.split(new_text)
+
+        prefix = @lines[start_row][0...start_col]
+        suffix = @lines[end_row][end_col...]
+        if new_text.size == 1
+          new_text[0] = prefix + new_text[0] + suffix
+        else
+          new_text[0] = prefix + new_text[0]
+          new_text[-1] = new_text[-1] + suffix
+        end
+        @lines[start_row .. end_row] = new_text
+      end
+
+      validate
+
+      @version = version
+    end
+  end
+end
 
 class Server
   def initialize
     @read_msg = nil
     @error = nil
+    setup
   end
 
   def setup
+    # TypeProfコアの初期化
     @core = TypeProf::Core::Service.new({})
+    
+    # ユーザーコード実行用のBindingを作成 (ローカル変数を保持するため)
+    @user_binding = TOPLEVEL_BINDING.eval("binding")
+
+    # CRITICAL: TypeProfがカレントディレクトリの設定ファイルを探すため
+    # 設定ファイルのある /workspace に移動する
+    begin
+      Dir.chdir("/workspace")
+    rescue => err
+      log("Chdir failed: " + err.message)
+    end
+    
+    # RBS environment verification
+    begin
+        require "rbs"
+        loader = RBS::EnvironmentLoader.new
+        dirs = []
+        loader.each_dir { |d| dirs << d }
+        if dirs.empty?
+            log("WARNING: RBS EnvironmentLoader found no directories! Type definitions may be missing.")
+        else
+            log("RBS EnvironmentLoader has dirs: " + dirs.take(3).join(", "))
+        end
+    rescue => e
+        log("RBS check failed: " + e.message)
+    end
+
     nil
+  end
+
+  # ユーザーコードを実行し、ローカル変数を保持する
+  def run_code(code)
+    eval(code, @user_binding)
+  end
+
+  def log(msg)
+    JS.global[:console].call(:log, "[Ruby] " + msg.to_s)
+  rescue
+    # 無視
   end
 
   def start(post_message)
     @post_message = post_message
     @fiber = Fiber.new do
       # TypeProf LSPサーバーを開始
-      # self を reader と writer の両方として渡す
-      TypeProf::LSP::Server.new(@core, self, self, url_schema: "inmemory:", publish_all_diagnostics: true).run
+      # リファレンス実装に合わせて inmemory: スキームを使用
+      # URIが inmemory:// 以降のパスとして解決されるように設定
+      TypeProf::LSP::Server.new(@core, self, self, url_schema: "inmemory://", publish_all_diagnostics: true).run
     end
     @fiber.resume
   end
 
   def add_msg(msg)
-    @read_msg = JSON.parse(msg.to_s, symbolize_names: true)
+    json = JSON.parse(msg.to_s, symbolize_names: true)
+    
+    # ファイル内容の同期 (Measure Valueのため)
+    if json[:method] == "textDocument/didOpen"
+      text = json[:params][:textDocument][:text]
+      File.write("/workspace/main.rb", text)
+    end
+    if json[:method] == "textDocument/didChange"
+      changes = json[:params][:contentChanges]
+      # Full Text Syncなので changes[0][:text] を使用
+      if changes && changes[0] && changes[0][:text]
+        File.write("/workspace/main.rb", changes[0][:text])
+      end
+    end
+
+
+
+    # カスタムコマンド (Measure Value) の処理
+    if json[:method] == "workspace/executeCommand"
+      handle_execute_command(json)
+      return
+    end
+
+    # 構文チェックを実行 (TypeProfが構文エラーを報告しない場合があるため)
+    if json[:method] == "textDocument/didOpen" || json[:method] == "textDocument/didChange"
+      check_syntax
+    end
+
+    @read_msg = json
     @fiber.resume
     if @error
       error, @error = @error, nil
       raise error
+    end
+  end
+
+  def check_syntax
+    code = File.read("/workspace/main.rb")
+    begin
+      RubyVM::InstructionSequence.compile(code)
+      # 構文エラーなし -> クリア
+      write(method: "rubpad/syntaxCheck", params: { valid: true })
+    rescue SyntaxError => e
+      # e.message 例: "(eval):1: syntax error, unexpected end-of-input, expecting end"
+      msg = e.message
+      
+      # メッセージから行番号を抽出
+      # format: (eval):<line>: <message>
+      line = 0
+      if msg =~ /:(\d+): (.*)/
+        line = ($1.to_i || 1) - 1
+        msg = $2
+      end
+      
+      diag = {
+        range: {
+          start: { line: line, character: 0 },
+          end: { line: line, character: 999 } # 行全体
+        },
+        severity: 1, # Error
+        message: msg,
+        source: "RubyVM"
+      }
+      write(method: "rubpad/syntaxCheck", params: { valid: false, diagnostics: [diag] })
+    rescue => e
+      # その他のエラーは無視
+    end
+  end
+
+  def handle_execute_command(json)
+    params = json[:params]
+    if params[:command] == "typeprof.measureValue"
+      # 引数は配列の最初の要素に入っている
+      args = params[:arguments][0]
+      expression = args[:expression]
+      # 1-based line number coming from Monaco
+      target_line = args[:line]
+      
+      result_str = ""
+      
+      begin
+        # Measure Value 用に独立したBindingを作成
+        measure_binding = TOPLEVEL_BINDING.eval("binding")
+        
+        # 最新のコードを読み込み、対象行まで（その行を含む）を実行してコンテキストを構築する
+        if File.exist?("/workspace/main.rb")
+          code_str = File.read("/workspace/main.rb")
+          lines = code_str.lines
+          
+          # target_line が指定されている場合は、その行までを実行対象とする
+          if target_line && target_line > 0
+            lines_to_run = lines.take(target_line)
+            code_to_run = lines_to_run.join
+          else
+            code_to_run = code_str
+          end
+
+          # 標準出力を抑制しつつ実行
+          eval("require 'stringio'; $stdout = StringIO.new; " + code_to_run, measure_binding)
+        end
+
+        # 対象の式を評価
+        val = eval(expression, measure_binding)
+        result_str = val.inspect
+      rescue => e
+        result_str = "(Error: " + e.message + ")"
+      end
+      
+      write(id: json[:id], result: result_str)
+    else
+      write(id: json[:id], error: { code: -32601, message: "Method not found" })
     end
   end
 
@@ -67,9 +261,12 @@ class Server
   end
 
   def write(**json)
-    json = JSON.generate(json.merge(jsonrpc: "2.0"))
-    @post_message.apply(json)
+    json_obj = json.merge(jsonrpc: "2.0")
+    json_str = JSON.generate(json_obj)
+    
+    # JS.global.call を使用してグローバル関数として呼び出す
+    JS.global.call(:sendLspResponse, json_str)
   end
 end
 
-Server.new
+$server = Server.new
