@@ -1,0 +1,66 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "bootstrap_rb_eval_run_code",
+      "check_name": "Evaluation",
+      "message": "Dynamic code evaluation",
+      "file": "public/js/bootstrap.rb",
+      "line": 113,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "eval(code, @user_binding)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Server",
+        "method": "run_code"
+      },
+      "user_input": "code",
+      "confidence": "Weak",
+      "note": "Intentionally execute user code in playground environment"
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "bootstrap_rb_eval_measure_value_context",
+      "check_name": "Evaluation",
+      "message": "Dynamic string evaluated as code",
+      "file": "public/js/bootstrap.rb",
+      "line": 232,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "eval((\"require 'stringio'; $stdout = StringIO.new; \" + (File.read(\"/workspace/main.rb\").lines.take(json[:params][:arguments][0][:line]).join or File.read(\"/workspace/main.rb\"))), TOPLEVEL_BINDING.eval(\"binding\"))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Server",
+        "method": "handle_execute_command"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "note": "Intentionally execute code context for TypeProf analysis"
+    },
+    {
+      "warning_type": "Dangerous Eval",
+      "warning_code": 13,
+      "fingerprint": "bootstrap_rb_eval_measure_value_expression",
+      "check_name": "Evaluation",
+      "message": "Dynamic code evaluation",
+      "file": "public/js/bootstrap.rb",
+      "line": 236,
+      "link": "https://brakemanscanner.org/docs/warning_types/dangerous_eval/",
+      "code": "eval(json[:params][:arguments][0][:expression], TOPLEVEL_BINDING.eval(\"binding\"))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Server",
+        "method": "handle_execute_command"
+      },
+      "user_input": "json[:params][:arguments][0][:expression]",
+      "confidence": "Weak",
+      "note": "Intentionally evaluate expression in context"
+    }
+  ],
+  "updated": "2026-02-07 18:45:00 +0900",
+  "brakeman_version": "8.0.2"
+}
