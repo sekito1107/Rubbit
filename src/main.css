@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --font-logo: "Outfit", ui-sans-serif, system-ui;
+}
+
+@variant dark (&:is(.dark, .dark *));
