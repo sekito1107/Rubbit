@@ -34,20 +34,33 @@ self.onmessage = async (event) => {
 
 async function initializeVM(wasmUrl) {
     try {
-      postMessage({ type: "output", payload: { text: "// Ruby WASM initializing..." } })
-      
-      const response = await fetch(wasmUrl)
+      const fullUrl = new URL(wasmUrl, self.location.origin);
+      const response = await fetch(fullUrl);
     
     if (!response.ok) {
-        throw new Error(`Failed to fetch WASM: ${response.statusText}`)
+        throw new Error(`Failed to fetch WASM: ${response.statusText} (URL: ${fullUrl})`)
     }
 
-    const module = await WebAssembly.compileStreaming(response)
-    const result = await DefaultRubyVM(module)
-    vm = result.vm
+    // MIMEタイプのエラー (Incorrect response MIME type) を回避するため、
+    // ストリーミングコンパイルではなく ArrayBuffer を介したコンパイルを使用します。
+    const buffer = await response.arrayBuffer();
+    
+    try {
+      const module = await WebAssembly.compile(buffer);
+      const result = await DefaultRubyVM(module)
+      vm = result.vm
+    } catch (e) {
+      // 失敗した場合の詳細ログ（デバッグ用）
+      const firstChars = new Uint8Array(buffer.slice(0, 100));
+      const text = new TextDecoder().decode(firstChars);
+      const msg = `WASM Compile Error: ${e.message}\nStatus: ${response.status}\nContent-Type: ${response.headers.get('Content-Type')}\nBody start: ${text}`;
+      console.error(msg);
+      throw new Error(msg);
+    }
 
     // bootstrap.rb (Polyfills & LSP Server) をロードする
-    const bootstrapResponse = await fetch("/js/bootstrap.rb")
+    const bootstrapUrl = new URL("./bootstrap.rb", import.meta.url);
+    const bootstrapResponse = await fetch(bootstrapUrl)
     const bootstrapCode = await bootstrapResponse.text()
 
     // VFSに書き込んで読み込む

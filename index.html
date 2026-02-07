@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html class="h-full">
+
+  <head>
+    <title>Rubpad</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Rubpad">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet">
+
+    <script>
+      if (localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+
+  <body class="h-full bg-white dark:bg-[#0D1117] text-zinc-900 dark:text-zinc-100 overflow-hidden">
+    <main class="flex flex-col h-full w-full">
+
+      <!-- Layout::MainComponent -->
+      <div class="flex flex-col h-full bg-white dark:bg-[#0D1117] transition-colors"
+        data-controller="editor--console ruby-vm">
+
+        <!-- Layout::HeaderComponent -->
+        <header
+          class="h-14 border-b border-slate-200 dark:border-white/5 bg-white dark:bg-[#0D1117] flex items-center justify-between px-4 shrink-0 transition-colors"
+          data-controller="header">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <!-- icons/ruby.svg -->
+              <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="24" height="24">
+                <linearGradient id="ruby-gradient" x1="50%" y1="0%" x2="50%" y2="100%">
+                  <stop offset="0%" stop-color="#e52222" />
+                  <stop offset="100%" stop-color="#8b0000" />
+                </linearGradient>
+                <path fill="url(#ruby-gradient)" d="M64 8L8 64l20 56h72l20-56L64 8zm0 16l40 40-12 36H36L24 64l40-40z" />
+                <polygon fill="#cc1515" points="64,24 104,64 92,100 36,100 24,64" />
+              </svg>
+              <span class="text-lg font-logo font-bold text-slate-800 dark:text-gray-100 tracking-tight">
+                RubPad
+              </span>
+              <span class="ml-1 text-[10px] font-medium text-slate-500" data-header-target="version">
+                Running...
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button id="theme-toggle"
+              class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors"
+              title="テーマ切り替え" data-controller="theme" data-action="click->theme#toggle">
+              <span class="dark:hidden">
+                <!-- icons/moon.svg -->
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              </span>
+              <span class="hidden dark:inline">
+                <!-- icons/sun.svg -->
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              </span>
+            </button>
+
+            <button
+              class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors"
+              title="Editor Settings" onclick="document.getElementById('settings-modal').showModal()">
+              <!-- icons/cog.svg -->
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+              <span>Settings</span>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+            <button
+              class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+              title="About RubPad" onclick="document.getElementById('about-modal').showModal()">
+              <!-- icons/info.svg -->
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+              <span>About</span>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+            <button
+              class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+              title="コードを保存" data-controller="download" data-action="click->download#download">
+              <!-- icons/download.svg -->
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              <span>Download</span>
+            </button>
+
+            <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+            <!-- Examples Dropdown -->
+            <div class="relative" data-controller="examples">
+              <button
+                class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+                data-action="click->examples#toggle" title="サンプルコード">
+                <!-- icons/code.svg -->
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 18" />
+                </svg>
+                <span>Examples</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-3 h-3 text-slate-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-[#1C2128] rounded-md shadow-lg border border-slate-200 dark:border-white/10 py-1 hidden z-50 transform origin-top-right transition-all duration-100 ease-out"
+                data-examples-target="menu">
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                  data-action="click->examples#load" data-key="hello">
+                  Hello World
+                </button>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                  data-action="click->examples#load" data-key="fizzbuzz">
+                  FizzBuzz
+                </button>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                  data-action="click->examples#load" data-key="fibonacci">
+                  Fibonacci
+                </button>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                  data-action="click->examples#load" data-key="primes">
+                  Prime Numbers
+                </button>
+              </div>
+            </div>
+
+            <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+            <button
+              class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+              data-controller="share" data-action="click->share#share">
+              <!-- icons/share.svg -->
+              <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+              <span>Share</span>
+            </button>
+
+            <button
+              class="inline-flex items-center gap-2 px-4 py-1.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 dark:bg-red-600/90 dark:hover:bg-red-600 rounded-md transition-colors shadow-sm dark:shadow-red-900/20"
+              data-action="click->editor--console#run">
+              <!-- icons/play.svg -->
+              <svg class="w-3 h-3 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Run</span>
+            </button>
+          </div>
+        </header>
+
+
+        <!-- Settings Modal (Expanded from loop) -->
+        <dialog id="settings-modal"
+          class="backdrop:bg-gray-900/50 dark:backdrop:bg-black/70 rounded-lg shadow-xl p-0 w-full max-w-lg bg-white dark:bg-[#161b22] dark:text-zinc-100">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Editor Settings</h3>
+            <form method="dialog">
+              <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <!-- icons/x.svg -->
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div class="px-6 py-4">
+            <div class="space-y-6" data-controller="settings">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">Font Size</label>
+                  <select
+                    class="form-select w-full text-sm rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:border-blue-500 focus:ring-blue-500"
+                    data-settings-target="fontSize" data-action="change->settings#save">
+                    <option value="12">12px</option>
+                    <option value="14">14px</option>
+                    <option value="16">16px</option>
+                    <option value="18">18px</option>
+                    <option value="20">20px</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">Indent Size</label>
+                  <select
+                    class="form-select w-full text-sm rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:border-blue-500 focus:ring-blue-500"
+                    data-settings-target="tabSize" data-action="change->settings#save">
+                    <option value="2">2 spaces</option>
+                    <option value="4">4 spaces</option>
+                    <option value="8">8 spaces</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-white/10">
+                <!-- Loop unrolled manually for static HTML -->
+                <div class="flex items-center justify-between">
+                  <label class="font-medium text-slate-700 dark:text-slate-200">Word Wrap</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" data-settings-target="wordWrap"
+                      data-action="change->settings#save">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <label class="font-medium text-slate-700 dark:text-slate-200">Auto Closing Brackets</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" data-settings-target="autoClosingBrackets"
+                      data-action="change->settings#save">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <label class="font-medium text-slate-700 dark:text-slate-200">Minimap</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" data-settings-target="minimap"
+                      data-action="change->settings#save">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <label class="font-medium text-slate-700 dark:text-slate-200">Mouse Wheel Zoom</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" data-settings-target="mouseWheelZoom"
+                      data-action="change->settings#save">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <label class="font-medium text-slate-700 dark:text-slate-200">Render Whitespace</label>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" data-settings-target="renderWhitespace"
+                      data-action="change->settings#save">
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+            <form method="dialog">
+              <button
+                class="px-4 py-2 bg-slate-800 text-white rounded-md text-sm font-medium hover:bg-slate-700 transition-colors">Close</button>
+            </form>
+          </div>
+        </dialog>
+
+        <!-- About Modal -->
+        <dialog id="about-modal"
+          class="backdrop:bg-gray-900/50 dark:backdrop:bg-black/70 rounded-lg shadow-xl p-0 w-full max-w-lg bg-white dark:bg-[#161b22] dark:text-zinc-100">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">About RubPad</h3>
+            <form method="dialog">
+              <button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div class="px-6 py-4">
+            <div class="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+              <div class="flex flex-col items-center justify-center p-4">
+                <!-- icons/ruby.svg -->
+                <svg class="w-12 h-12 mb-2 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"
+                  width="24" height="24">
+                  <linearGradient id="ruby-gradient-2" x1="50%" y1="0%" x2="50%" y2="100%">
+                    <stop offset="0%" stop-color="#e52222" />
+                    <stop offset="100%" stop-color="#8b0000" />
+                  </linearGradient>
+                  <path fill="url(#ruby-gradient-2)"
+                    d="M64 8L8 64l20 56h72l20-56L64 8zm0 16l40 40-12 36H36L24 64l40-40z" />
+                  <polygon fill="#cc1515" points="64,24 104,64 92,100 36,100 24,64" />
+                </svg>
+                <h4 class="text-xl font-bold text-slate-900 dark:text-white font-logo">RubPad</h4>
+                <p class="text-slate-500">v0.1.0</p>
+              </div>
+
+              <div class="space-y-2">
+                <h5 class="font-semibold text-slate-900 dark:text-white">免責事項</h5>
+                <p>本サービスは現状有姿で提供され、動作を保証するものではありません。入力されたコードはサーバーに送信されず、すべてブラウザ内（WebAssembly）で実行されます。</p>
+              </div>
+
+              <div class="space-y-2">
+                <h5 class="font-semibold text-slate-900 dark:text-white">Libraries & Credits</h5>
+                <ul class="list-disc list-inside space-y-1 ml-2">
+                  <li><a href="https://docs.ruby-lang.org/ja/" target="_blank"
+                      class="text-blue-600 hover:underline">Ruby Reference Manual (るりま)</a> - API Documentation</li>
+                  <li><a href="https://github.com/ruby/ruby.wasm" target="_blank"
+                      class="text-blue-600 hover:underline">ruby.wasm</a> - Ruby Client-side Execution</li>
+                  <li><a href="https://tailwindcss.com/" target="_blank" class="text-blue-600 hover:underline">Tailwind
+                      CSS</a> - Styling Framework</li>
+                  <li><a href="https://stimulus.hotwired.dev/" target="_blank"
+                      class="text-blue-600 hover:underline">Stimulus</a> - JavaScript Framework</li>
+                  <li><a href="https://heroicons.com/" target="_blank"
+                      class="text-blue-600 hover:underline">Heroicons</a> - SVG Icons</li>
+                </ul>
+              </div>
+
+              <div class="pt-4 text-center border-t border-slate-200 dark:border-white/10">
+                <a href="https://github.com/sekito1107/RubPad" target="_blank"
+                  class="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <span>GitHub Repository</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+            <form method="dialog">
+              <button
+                class="px-4 py-2 bg-slate-800 text-white rounded-md text-sm font-medium hover:bg-slate-700 transition-colors">Close</button>
+            </form>
+          </div>
+        </dialog>
+
+        <!-- Ui::ToastComponent -->
+        <div data-controller="toast" data-action="show-toast@window->toast#show"
+          class="fixed top-4 right-4 z-50 transition-all duration-300 transform translate-y-[-100%] opacity-0 pointer-events-none"
+          data-toast-hidden-class="translate-y-[-100%] opacity-0 pointer-events-none"
+          data-toast-visible-class="translate-y-0 opacity-100">
+          <div
+            class="flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161b22] text-slate-800 dark:text-slate-200"
+            data-toast-target="container">
+            <!-- アイコンエリア -->
+            <div data-toast-target="icon">
+              <!-- Success Icon -->
+              <svg data-type="success" class="w-5 h-5 text-green-500" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <!-- Error Icon -->
+              <svg data-type="error" class="hidden w-5 h-5 text-red-500" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <!-- メッセージエリア -->
+            <div class="flex-1 text-sm font-medium" data-toast-target="message"></div>
+
+            <!-- 閉じるボタン -->
+            <button data-action="click->toast#hide"
+              class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 flex min-h-0">
+          <div class="flex-1 flex flex-col min-w-0">
+            <!-- Editor::MainComponent -->
+            <div class="flex-1 relative bg-white dark:bg-[#0D1117]" data-controller="editor--main editor--persistence">
+              <div data-editor--main-target="container" class="absolute inset-0 z-10 text-base"></div>
+            </div>
+
+            <!-- Terminal::OutputComponent -->
+            <div
+              class="h-1/3 min-h-[150px] border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0D1117] flex flex-col">
+              <div
+                class="flex items-center justify-between px-4 py-1 bg-slate-100 dark:bg-white/5 border-b border-slate-200 dark:border-white/5">
+                <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Terminal / Output</span>
+                <button class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                  data-action="click->editor--console#clear">Clear</button>
+              </div>
+              <div class="flex-1 p-4 font-mono text-sm text-slate-600 dark:text-slate-400 overflow-auto"
+                data-editor--console-target="output">
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Rurema::SidebarComponent -->
+          <aside
+            class="w-80 border-l border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0D1117] flex flex-col shrink-0"
+            data-controller="rurema--global rurema--contextual">
+            <div
+              class="h-10 border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-4 bg-slate-100 dark:bg-white/5">
+              <div class="flex items-center gap-2">
+                <!-- icons/ruby.svg (grayscale) -->
+                <svg class="w-3 h-3 grayscale opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"
+                  width="24" height="24">
+                  <linearGradient id="ruby-gradient-3" x1="50%" y1="0%" x2="50%" y2="100%">
+                    <stop offset="0%" stop-color="#e52222" />
+                    <stop offset="100%" stop-color="#8b0000" />
+                  </linearGradient>
+                  <path fill="url(#ruby-gradient-3)"
+                    d="M64 8L8 64l20 56h72l20-56L64 8zm0 16l40 40-12 36H36L24 64l40-40z" />
+                  <polygon fill="#cc1515" points="64,24 104,64 92,100 36,100 24,64" />
+                </svg>
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Rurema Context</span>
+              </div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-600 tracking-wider font-medium">LIVE</span>
+            </div>
+
+            <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <!-- Contextual List (Cursor based) -->
+              <div class="shrink-0 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                <div
+                  class="px-3 py-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                  <span>Contextual</span>
+                  <span class="text-blue-500 dark:text-blue-400 opacity-0 transition-opacity"
+                    data-rurema--contextual-target="contextualLoader">●</span>
+                </div>
+                <div class="px-3 pb-2 space-y-2 max-h-[400px] overflow-y-auto"
+                  data-rurema--contextual-target="contextualList">
+                  <div class="text-xs text-slate-400 dark:text-slate-600 text-center py-2 italic">
+                    Hover to see methods...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Global List (Regex based) -->
+              <div class="flex-1 flex flex-col min-h-0">
+                <div
+                  class="px-3 py-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider sticky top-0 bg-slate-50 dark:bg-[#0D1117] z-10">
+                  Global
+                </div>
+                <div class="flex-1 px-3 pb-3 overflow-y-auto space-y-3" data-rurema--global-target="globalList">
+                  <div class="text-xs text-slate-500 dark:text-slate-600 text-center py-4">
+                    No methods detected
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Templates -->
+            <template data-rurema--global-target="cardTemplate" data-rurema--contextual-target="cardTemplate">
+              <div
+                class="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-white/5 rounded-md overflow-hidden shadow-sm dark:shadow-none mb-3">
+                <div
+                  class="px-3 py-2 bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5 flex items-center gap-2">
+                  <span class="text-blue-600 dark:text-blue-400 text-xs font-mono" data-role="icon">&lt;&gt;</span>
+                  <span class="text-slate-800 dark:text-slate-200 text-sm font-semibold font-mono"
+                    data-role="methodName"></span>
+                </div>
+                <div class="p-3 space-y-2" data-role="linksDetails">
+                </div>
+              </div>
+            </template>
+
+            <template data-rurema--global-target="linkTemplate" data-rurema--contextual-target="linkTemplate">
+              <a href="#" target="_blank" rel="noopener noreferrer"
+                class="block text-xs text-slate-600 dark:text-slate-400 font-mono hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <span data-role="className"></span><span class="text-red-500 dark:text-red-400"
+                  data-role="separatorMethod"></span>
+              </a>
+            </template>
+
+            <template data-rurema--global-target="searchTemplate">
+              <a href="#" target="_blank" rel="noopener noreferrer"
+                class="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                Search in Rurema
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </a>
+            </template>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </body>
+
+</html>
