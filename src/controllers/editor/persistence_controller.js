@@ -9,7 +9,7 @@ export default class extends Controller {
     this.editor = event.detail.editor
     this.loadContent()
     
-    // Save on change (debounced)
+    // 変更時に保存（デバウンス付き）
     const debouncedSave = this.debounce((content) => {
       this.saveContent(content)
     }, 1000)

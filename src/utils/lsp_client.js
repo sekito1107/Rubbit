@@ -63,7 +63,7 @@ export class LSPClient {
      * @param {Function} callback - コールバック関数 (paramsを受け取る)
      */
     onNotification(method, callback) {
-      // 後方互換性: 引数が1つの場合はすべての通知を受け取る (今回は使用しない想定だが念のため)
+      // 後方互換性: 引数が1つの場合はすべての通知を受け取る (現在は使用しない想定だが念のため)
       if (typeof method === 'function') {
         callback = method
         method = '*'
@@ -109,7 +109,7 @@ export class LSPClient {
           }
         }
       } catch (e) {
-        console.error("LSPメッセージのパースに失敗しました", e)
+        console.error("Failed to parse LSP message", e)
       }
     }
   }

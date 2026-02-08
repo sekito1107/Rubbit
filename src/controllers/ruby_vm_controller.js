@@ -117,27 +117,37 @@ export default class extends Controller {
       this.interactor.activate()
       window.rubpadLSPInteractor = this.interactor
       
-      // Notify other controllers that LSP is ready
+      // LSPの準備完了を他のコントローラーに通知
       window.dispatchEvent(new CustomEvent("rubpad:lsp-ready"))
     }
   }
 
   async verifyLSP() {
     try {
+      // 初期解析完了フラグ
+      window.__rubyLSPInitialAnalysisFinished = false
+
+      // Diagnostics 通知を監視して、最初の解析完了を検知する
+      this.lspClient.onNotification("textDocument/publishDiagnostics", (params) => {
+        if (!window.__rubyLSPInitialAnalysisFinished) {
+          window.__rubyLSPInitialAnalysisFinished = true
+          window.dispatchEvent(new CustomEvent("rubpad:lsp-analysis-finished"))
+        }
+      })
+
       // TypeProf に 'initialize' リクエストを送信
       const result = await this.lspClient.sendRequest("initialize", {
         processId: null,
         rootUri: "inmemory:///workspace/",
-        capabilities: {},
+        capabilities: {
+          textDocument: {
+            publishDiagnostics: {}
+          }
+        },
         workspaceFolders: [{ uri: "inmemory:///workspace/", name: "workspace" }]
       })
       
       this.tryActivateInteractor()
-
-      // 初回のドキュメント同期を行うために通知
-      if (this.editor) {
-        // ...必要であれば
-      }
     } catch (e) {
       console.error("LSP Verification Failed:", e)
     }
