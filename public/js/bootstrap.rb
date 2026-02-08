@@ -1,7 +1,12 @@
+# エンコーディングを UTF-8 に固定
+Encoding.default_external = "UTF-8"
+Encoding.default_internal = "UTF-8"
+
 # "io/console" と "socket" の読み込みをスキップする
 # (これらは ruby.wasm 上の TypeProf では使用されないため)
 $LOADED_FEATURES << "io/console.so" << "socket.so"
 
+require "js"
 require "rubygems"
 
 # File.readable? は bjorn3/browser_wasi_shim では動作しないため代用
@@ -14,6 +19,10 @@ if !Dir.exist?("/workspace")
   Dir.mkdir("/workspace")
 end
 
+# CRITICAL: TypeProfがカレントディレクトリの設定ファイルを探すため
+# 設定ファイルのある /workspace に移動する
+Dir.chdir("/workspace")
+
 File.write("/workspace/typeprof.conf.json", <<JSON)
 {
   "typeprof_version": "experimental",
@@ -23,10 +32,14 @@ File.write("/workspace/typeprof.conf.json", <<JSON)
 JSON
 
 File.write("/workspace/test.rb", "")
-File.write("/workspace/test.rbs", "")
 File.write("/workspace/main.rb", "") # TypeProfの初期スキャンで検出させるために作成
 
+# 以前の test.rbs を stdlib.rbs に置き換える (ruby_worker.js が配置したフルセット)
+# もし stdlib.rbs がなければ空ファイルでフォールバック
+File.write("/workspace/stdlib.rbs", "") unless File.exist?("/workspace/stdlib.rbs")
+
 require "typeprof"
+require "typeprof/lsp"
 
 # モンキーパッチ: apply_changes でのフルテキスト同期（rangeなし）のサポート
 # TypeProf 0.30.1 の実装ではパターンマッチングにおいて range が必須となっており、
@@ -72,37 +85,40 @@ class Server
   def initialize
     @read_msg = nil
     @error = nil
-    setup
-  end
 
-  def setup
     # TypeProfコアの初期化
-    @core = TypeProf::Core::Service.new({})
+    # 明示的に stdlib.rbs を読み込むように設定
+    rbs_list = File.exist?("/workspace/stdlib.rbs") ? ["/workspace/stdlib.rbs"] : []
+    puts "[Ruby] Initializing TypeProf (RBS available: #{!rbs_list.empty?})"
+    @core = TypeProf::Core::Service.new(rbs_files: rbs_list)
     
     # ユーザーコード実行用のBindingを作成 (ローカル変数を保持するため)
     @user_binding = TOPLEVEL_BINDING.eval("binding")
 
-    # CRITICAL: TypeProfがカレントディレクトリの設定ファイルを探すため
-    # 設定ファイルのある /workspace に移動する
+    # ウォームアップ: 巨大なRBSの解析を事前にトリガー
     begin
-      Dir.chdir("/workspace")
-    rescue => err
-      log("Chdir failed: " + err.message)
-    end
-    
-    # RBS environment verification
-    begin
-        require "rbs"
-        loader = RBS::EnvironmentLoader.new
-        dirs = []
-        loader.each_dir { |d| dirs << d }
-        if dirs.empty?
-            log("WARNING: RBS EnvironmentLoader found no directories! Type definitions may be missing.")
-        else
-            log("RBS EnvironmentLoader has dirs: " + dirs.take(3).join(", "))
-        end
+      puts "[Ruby] Warming up RBS engine (Array, String, Hash)..."
+      # デバッグ: 利用可能な定数を確認
+      # puts "[Ruby] TypeProf constants: #{TypeProf.constants}"
+      # puts "[Ruby] TypeProf::Core constants: #{TypeProf::Core.constants}"
+
+      # TypeProf 0.30.1 以降では TypeProf::Core::ISeq かもしれない
+      iseq_klass = defined?(TypeProf::Core::ISeq) ? TypeProf::Core::ISeq : (defined?(TypeProf::ISeq) ? TypeProf::ISeq : nil)
+      
+      # さらに探索
+      if !iseq_klass && defined?(TypeProf::Core)
+        iseq_klass = TypeProf::Core.constants.include?(:ISeq) ? TypeProf::Core.const_get(:ISeq) : nil
+      end
+
+      if iseq_klass
+        puts "[Ruby] Using #{iseq_klass} for warm-up."
+        iseq_klass.compile("Array.new; 'str'.upcase; {a: 1}.keys").each { |iseq| @core.add_iseq(iseq) }
+      else
+        puts "[Ruby] Warm-up skipped: ISeq class not found. (TP constants: #{TypeProf.constants.take(5)}...)"
+      end
+      puts "[Ruby] Warm-up finished."
     rescue => e
-        log("RBS check failed: " + e.message)
+      puts "[Ruby] Warm-up warning: #{e.message}"
     end
 
     nil
@@ -269,4 +285,3 @@ class Server
   end
 end
 
-$server = Server.new

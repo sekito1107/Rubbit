@@ -1,54 +1,59 @@
 import { Controller } from "@hotwired/stimulus"
-import { RuremaSearcher } from "utils/rurema_searcher"
-import { RuremaUtils } from "utils/rurema_utils"
+import { RuremaInteractor } from "interactors/rurema_interactor"
+import { ResolutionInteractor } from "interactors/resolution_interactor"
 
 export default class extends Controller {
   static targets = [ "globalList", "cardTemplate", "linkTemplate", "searchTemplate" ]
 
   async connect() {
-    this.searcher = new RuremaSearcher()
-    await this.searcher.loadIndex()
+    this.rurema = new RuremaInteractor()
+    await this.rurema.loadIndex()
 
-    this.editor = null // Will be set via event
+    this.editor = null 
+    this.resolution = null
 
     // エディタの初期化を監視
-    this.boundHandleEditorInit = this.handleEditorInit.bind(this)
+    this.boundHandleEditorInit = (e) => {
+      this.editor = e.detail.editor
+      this.setupListeners()
+    }
     document.addEventListener("editor--main:initialized", this.boundHandleEditorInit)
 
     // LSPの準備完了を監視
-    this.boundHandleLSPReady = this.handleLSPReady.bind(this)
+    this.boundHandleLSPReady = () => {
+      this.initInteractors()
+      this.updateGlobalList()
+    }
     window.addEventListener("rubpad:lsp-ready", this.boundHandleLSPReady)
 
-    // すでにエディタが初期化されているかチェック
+    // 真の解析完了を監視
+    this.boundHandleAnalysisFinished = () => {
+      this.updateGlobalList()
+    }
+    window.addEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
+    
     if (window.monacoEditor) {
       this.editor = window.monacoEditor
       this.setupListeners()
+      if (window.rubpadLSPInteractor) this.initInteractors()
     }
   }
 
   disconnect() {
     document.removeEventListener("editor--main:initialized", this.boundHandleEditorInit)
     window.removeEventListener("rubpad:lsp-ready", this.boundHandleLSPReady)
+    window.removeEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
   }
 
-  handleEditorInit(e) {
-    this.editor = e.detail.editor
-    this.setupListeners()
-  }
-
-  handleLSPReady() {
-    this.updateGlobalList()
+  initInteractors() {
+    if (window.rubpadLSPInteractor) {
+        this.resolution = new ResolutionInteractor(window.rubpadLSPInteractor)
+    }
   }
 
   setupListeners() {
     if (!this.editor) return
-
-    // ファイル内容の変更 -> Global List 更新
-    this.editor.onDidChangeModelContent(() => {
-      this.updateGlobalList()
-    })
-
-    // 初回実行
+    this.editor.onDidChangeModelContent(() => this.updateGlobalList())
     this.updateGlobalList()
   }
 
@@ -58,14 +63,23 @@ export default class extends Controller {
   updateGlobalList() {
     if (!this.hasGlobalListTarget || !this.editor) return
 
+    // LSP準備待ち、および初回の解析（didOpen）完了待ちの表示
+    if (!window.rubpadLSPInteractor || !window.__rubyLSPInitialAnalysisFinished) {
+      this.globalListTarget.innerHTML = `
+        <div class="text-xs text-slate-500 dark:text-slate-600 text-center py-4">
+          <span class="inline-block animate-pulse">Initializing Ruby analysis engine...</span>
+          <div class="mt-1 opacity-50 text-[10px]">Analyzing RBS standard library and initial code</div>
+        </div>
+      `
+      return
+    }
+
     const code = this.editor.getValue()
     const foundMethods = this.extractMethodsWithPosition(code)
 
     if (foundMethods.length === 0) {
       this.globalListTarget.innerHTML = `
-        <div class="text-xs text-slate-500 dark:text-slate-600 text-center py-4">
-          No methods detected
-        </div>
+        <div class="text-xs text-slate-500 dark:text-slate-600 text-center py-4">No methods detected</div>
       `
       return
     }
@@ -73,116 +87,96 @@ export default class extends Controller {
     this.globalListTarget.innerHTML = ""
 
     foundMethods.forEach(item => {
-      const card = this.createGlobalMethodCard(item)
+      const card = this.cardTemplateTarget.content.cloneNode(true).querySelector("div")
+      card.querySelector('[data-role="methodName"]').textContent = item.name
+      
+      this.setCardLoading(card)
       this.globalListTarget.appendChild(card)
-
-      this.resolveMethodType(item, card)
+      this.resolveMethod(item, card)
     })
   }
 
   extractMethodsWithPosition(code) {
     const methods = []
     const seen = new Set()
-    let match
-
     const lines = code.split("\n")
 
     lines.forEach((lineText, lineIndex) => {
       const lineMethodRegex = /(?:\.|&:[ ]*)([a-zA-Z_][a-zA-Z0-9_]*[!?]?)/g
+      let match
       while ((match = lineMethodRegex.exec(lineText)) !== null) {
         const methodName = match[1]
-
-        // Col calculation: Match start + 1
-        const col = match.index + 1
-
         if (!seen.has(methodName)) {
              seen.add(methodName)
              methods.push({
                name: methodName,
                line: lineIndex + 1,
-               col: col,
+               col: match.index + 1,
                fullMatch: match[0]
              })
         }
       }
     })
-
     return methods
   }
 
-  async resolveMethodType(item, cardElement) {
-    if (!window.rubpadLSPInteractor) {
-        // Interactor not ready yet
-        return
-    }
-
-    await new Promise(r => setTimeout(r, 50))
+  async resolveMethod(item, card) {
+    if (!this.resolution) this.initInteractors()
+    if (!this.resolution) return
 
     const offset = item.fullMatch.indexOf(item.name)
     const probeCol = item.col + offset
 
-    const type = await window.rubpadLSPInteractor.getTypeAtPosition(item.line, probeCol)
+    const className = await this.resolution.resolveAtPosition(item.line, probeCol)
 
-    if (type) {
-      this.updateCardWithContext(cardElement, item.name, type)
+    if (className) {
+      const info = this.rurema.resolve(className, item.name)
+      if (info) {
+        this.updateCardWithInfo(card, info)
+        return
+      }
     }
+    
+    this.setCardUnknown(card, item.name)
   }
 
-  createGlobalMethodCard(item) {
-    const cardNode = this.cardTemplateTarget.content.cloneNode(true)
-    const container = cardNode.querySelector("div")
+  setCardLoading(card) {
+    const linksContainer = card.querySelector('[data-role="linksDetails"]')
+    linksContainer.innerHTML = `
+      <div class="flex items-center space-x-1 opacity-40 animate-pulse" data-role="loading-indicator">
+        <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
+        <span class="text-[9px]">Analyzing...</span>
+      </div>
+    `
+  }
 
-    cardNode.querySelector('[data-role="methodName"]').textContent = `.${item.name}`
-    const detailsContainer = cardNode.querySelector('[data-role="linksDetails"]')
-    const icon = cardNode.querySelector('[data-role="icon"]')
+  setCardUnknown(card, methodName) {
+    const detailsContainer = card.querySelector('[data-role="linksDetails"]')
+    detailsContainer.innerHTML = ""
 
+    const icon = card.querySelector('[data-role="icon"]')
     icon.textContent = "?"
     icon.classList.remove("text-blue-600", "dark:text-blue-400")
     icon.classList.add("text-slate-400", "dark:text-slate-500")
 
-    const searchLinkNode = this.createSearchLink(item.name)
-    detailsContainer.appendChild(searchLinkNode)
-
-    return container
+    const searchNode = this.searchTemplateTarget.content.cloneNode(true)
+    searchNode.querySelector("a").href = this.rurema.generateSearchUrl(methodName)
+    detailsContainer.appendChild(searchNode)
   }
 
-  updateCardWithContext(cardElement, methodName, className) {
-    const candidates = this.searcher.findMethod(methodName)
-    if (!candidates) return
+  updateCardWithInfo(card, info) {
+    const detailsContainer = card.querySelector('[data-role="linksDetails"]')
+    const icon = card.querySelector('[data-role="icon"]')
 
-    const match = candidates.find(c => c.startsWith(`${className}#`) || c.startsWith(`${className}.`))
+    detailsContainer.innerHTML = ""
+    icon.textContent = "<>"
+    icon.classList.remove("text-slate-400", "dark:text-slate-500")
+    icon.classList.add("text-blue-600", "dark:text-blue-400")
 
-    if (match) {
-        const detailsContainer = cardElement.querySelector('[data-role="linksDetails"]')
-        const icon = cardElement.querySelector('[data-role="icon"]')
-
-        detailsContainer.innerHTML = ""
-        icon.textContent = "<>"
-        icon.classList.remove("text-slate-400", "dark:text-slate-500")
-        icon.classList.add("text-blue-600", "dark:text-blue-400")
-
-        const linkNode = this.createLinkFromSignature(match)
-        detailsContainer.appendChild(linkNode)
-    }
-  }
-
-  createLinkFromSignature(signature) {
-    const node = this.linkTemplateTarget.content.cloneNode(true)
-    const info = RuremaUtils.generateUrlInfo(signature)
-
-    const anchor = node.querySelector("a")
-    anchor.href = info.url
-
-    node.querySelector('[data-role="className"]').textContent = info.className
-    node.querySelector('[data-role="separatorMethod"]').textContent = info.separator + info.methodName
-
-    return node
-  }
-
-  createSearchLink(method) {
-    const node = this.searchTemplateTarget.content.cloneNode(true)
-    const anchor = node.querySelector("a")
-    anchor.href = RuremaUtils.generateSearchUrl(method)
-    return node
+    const linkNode = this.linkTemplateTarget.content.cloneNode(true)
+    linkNode.querySelector("a").href = info.url
+    linkNode.querySelector('[data-role="className"]').textContent = info.className
+    linkNode.querySelector('[data-role="separatorMethod"]').textContent = info.separator + info.methodName
+    detailsContainer.appendChild(linkNode)
   }
 }
