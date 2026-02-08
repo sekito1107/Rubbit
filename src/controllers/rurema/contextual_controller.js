@@ -1,51 +1,58 @@
 import { Controller } from "@hotwired/stimulus"
-import { RuremaSearcher } from "utils/rurema_searcher"
-import { RuremaUtils } from "utils/rurema_utils"
+import { RuremaInteractor } from "interactors/rurema_interactor"
+import { ResolutionInteractor } from "interactors/resolution_interactor"
 
 export default class extends Controller {
   static targets = [ "contextualList", "contextualLoader", "cardTemplate", "linkTemplate" ]
 
   async connect() {
-    this.searcher = new RuremaSearcher()
-    await this.searcher.loadIndex()
+    this.rurema = new RuremaInteractor()
+    await this.rurema.loadIndex()
 
     this.editor = null
+    this.resolution = null
     this.debounceTimer = null
     this.CONTEXT_DEBOUNCE_MS = 300
 
-    this.boundHandleEditorInit = this.handleEditorInit.bind(this)
+    this.boundHandleEditorInit = (e) => {
+      this.editor = e.detail.editor
+      this.setupListeners()
+    }
     document.addEventListener("editor--main:initialized", this.boundHandleEditorInit)
 
-    // すでにエディタが初期化されているかチェック
+    // 解析完了を監視
+    this.boundHandleAnalysisFinished = () => this.updateContextualList()
+    window.addEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
+
     if (window.monacoEditor) {
       this.editor = window.monacoEditor
       this.setupListeners()
+      this.updateContextualList()
     }
   }
 
   disconnect() {
     document.removeEventListener("editor--main:initialized", this.boundHandleEditorInit)
+    window.removeEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
   }
 
-  handleEditorInit(e) {
-    this.editor = e.detail.editor
-    this.setupListeners()
+  initInteractors() {
+    if (window.rubpadLSPInteractor) {
+        this.resolution = new ResolutionInteractor(window.rubpadLSPInteractor)
+    }
   }
 
   setupListeners() {
     if (!this.editor) return
-
-    // カーソル位置の変更 -> Contextual List 更新
-    this.editor.onDidChangeCursorPosition(() => {
-      this.updateContextualList()
-    })
+    this.editor.onDidChangeCursorPosition(() => this.updateContextualList())
+    if (window.rubpadLSPInteractor) this.initInteractors()
   }
 
   updateContextualList() {
-    if (this.debounceTimer) clearTimeout(this.debounceTimer)
-
+    if (!this.editor) return
     this.toggleContextLoader(true)
 
+    if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this.debounceTimer = setTimeout(async () => {
       await this.performContextualUpdate()
       this.toggleContextLoader(false)
@@ -53,33 +60,25 @@ export default class extends Controller {
   }
 
   async performContextualUpdate() {
-    if (!this.hasContextualListTarget || !window.rubpadLSPInteractor || !this.editor) return
+    if (!this.hasContextualListTarget || !this.editor) return
+
+    if (!window.rubpadLSPInteractor || !window.__rubyLSPInitialAnalysisFinished) {
+        this.contextualListTarget.innerHTML = `
+            <div class="text-xs text-slate-500 dark:text-slate-600 text-center py-4">
+               <span class="animate-pulse">Waiting for analysis engine...</span>
+            </div>
+        `
+        return
+    }
+
+    if (!this.resolution) this.initInteractors()
+    if (!this.resolution) return
 
     const position = this.editor.getPosition()
     if (!position) return
 
-    let type = await window.rubpadLSPInteractor.getTypeAtPosition(position.lineNumber, position.column)
-
-    if (!type) {
-      const lineContent = this.editor.getModel().getLineContent(position.lineNumber)
-      const charBefore = lineContent[position.column - 2]
-
-      if (charBefore === ".") {
-         // ドット除去によるリトライ
-         const tempLine = lineContent.substring(0, position.column - 2) + " " + lineContent.substring(position.column - 1)
-
-         const model = this.editor.getModel()
-         const fullContent = model.getValue()
-         const lines = fullContent.split("\n")
-         lines[position.lineNumber - 1] = tempLine
-         const tempContent = lines.join("\n")
-
-         type = await window.rubpadLSPInteractor.probeTypeWithTemporaryContent(tempContent, position.lineNumber, position.column - 2)
-
-      } else if (charBefore === ":" && lineContent[position.column - 3] === "&") {
-         type = await window.rubpadLSPInteractor.getTypeAtPosition(position.lineNumber, position.column - 2)
-      }
-    }
+    // ResolutionInteractor にリトライとフォールバック（ドット除去など）を委譲
+    const type = await this.resolution.resolveWithFallback(this.editor, position)
 
     this.contextualListTarget.innerHTML = ""
 
@@ -92,7 +91,7 @@ export default class extends Controller {
       return
     }
 
-    const methods = this.searcher.findMethodsByClass(type)
+    const methods = this.rurema.getMethodsWithInfo(type)
 
     if (methods.length === 0) {
       this.contextualListTarget.innerHTML = `
@@ -103,6 +102,10 @@ export default class extends Controller {
       return
     }
 
+    this.renderContextualUI(type, methods)
+  }
+
+  renderContextualUI(type, methods) {
     // アコーディオン構築
     const container = document.createElement("details")
     container.className = "group"
@@ -132,14 +135,9 @@ export default class extends Controller {
     searchInput.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase()
       const cards = listContainer.querySelectorAll('[data-role="method-card"]')
-
       cards.forEach(card => {
         const methodName = card.getAttribute("data-method-name").toLowerCase()
-        if (methodName.includes(query)) {
-          card.style.display = ""
-        } else {
-          card.style.display = "none"
-        }
+        card.style.display = methodName.includes(query) ? "" : "none"
       })
     })
 
@@ -150,7 +148,6 @@ export default class extends Controller {
 
     methods.forEach(item => {
       const card = this.createContextualMethodCard(item)
-      // 検索用属性
       card.setAttribute("data-role", "method-card")
       card.setAttribute("data-method-name", `.${item.methodName}`)
       listContainer.appendChild(card)
@@ -172,26 +169,21 @@ export default class extends Controller {
 
     cardNode.querySelector('[data-role="methodName"]').textContent = `.${item.methodName}`
     const detailsContainer = cardNode.querySelector('[data-role="linksDetails"]')
-    const icon = cardNode.querySelector('[data-role="icon"]')
 
-    item.candidates.forEach(cand => {
-        const linkNode = this.createLinkFromSignature(cand)
+    item.links.forEach(linkInfo => {
+        const linkNode = this.createLinkFromInfo(linkInfo)
         detailsContainer.appendChild(linkNode)
     })
 
     return container
   }
 
-  createLinkFromSignature(signature) {
+  createLinkFromInfo(info) {
     const node = this.linkTemplateTarget.content.cloneNode(true)
-    const info = RuremaUtils.generateUrlInfo(signature)
-
     const anchor = node.querySelector("a")
     anchor.href = info.url
-
     node.querySelector('[data-role="className"]').textContent = info.className
     node.querySelector('[data-role="separatorMethod"]').textContent = info.separator + info.methodName
-
     return node
   }
 }
