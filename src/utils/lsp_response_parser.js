@@ -73,12 +73,4 @@ export class LSPResponseParser {
     const parts = normalized.split("::")
     return parts[parts.length - 1]
   }
-
-  /**
-   * ホバー内容からデバッグ情報等を抽出する (将来的な拡張用)
-   */
-  static extractMetadata(markdownContent) {
-    // 必要に応じて実装
-    return {}
-  }
 }

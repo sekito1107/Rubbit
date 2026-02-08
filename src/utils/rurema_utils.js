@@ -1,6 +1,4 @@
-// るりまリファレンスのベースURL
 const RUREMA_BASE_URL = "https://docs.ruby-lang.org/ja/latest/method"
-const RUREMA_SEARCH_URL = "https://rurema.clear-code.com/query:"
 
 export class RuremaUtils {
   /**
@@ -43,14 +41,5 @@ export class RuremaUtils {
       separator,
       displayName: separator + methodName
     }
-  }
-
-  /**
-   * 検索用URLを生成する
-   * @param {string} query
-   * @returns {string}
-   */
-  static generateSearchUrl(query) {
-    return `${RUREMA_SEARCH_URL}${encodeURIComponent(query)}/`
   }
 }

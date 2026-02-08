@@ -80,11 +80,4 @@ export class RuremaInteractor {
       }))
     }))
   }
-
-  /**
-   * 検索URLを生成する
-   */
-  generateSearchUrl(method) {
-    return RuremaUtils.generateSearchUrl(method)
-  }
 }

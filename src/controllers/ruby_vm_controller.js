@@ -48,9 +48,6 @@ export default class extends Controller {
       // WorkerをラップしたLSPクライアントを初期化
       this.lspClient = new LSPClient(this.worker)
       
-      // 他のコントローラー（エディタなど）からアクセスできるように公開する
-      window.rubyLSP = this.lspClient 
-      
       this.worker.addEventListener("message", (event) => {
         const { type, payload } = event.data
         this.handleWorkerMessage(type, payload)
@@ -105,12 +102,6 @@ export default class extends Controller {
     if (this.worker) {
       this.worker.terminate()
     }
-    if (window.rubyLSP === this.lspClient) {
-      delete window.rubyLSP
-    }
-    if (window.rubpadLSPInteractor === this.interactor) {
-      delete window.rubpadLSPInteractor
-    }
   }
 
   handleEditorInitialized(event) {
@@ -123,7 +114,6 @@ export default class extends Controller {
     if (this.lspClient && this.editor && !this.interactor && window.__rubyVMReady) {
       this.interactor = new LSPInteractor(this.lspClient, this.editor)
       this.interactor.activate()
-      window.rubpadLSPInteractor = this.interactor
 
       // 解析コーディネーターの初期化
       this.rurema = new RuremaInteractor()
