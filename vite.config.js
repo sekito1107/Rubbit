@@ -22,7 +22,8 @@ export default defineConfig({
           'monaco': ['monaco-editor'],
         }
       }
-    }
+    },
+    chunkSizeWarningLimit: 2000,
   },
   resolve: {
     alias: {
