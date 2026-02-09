@@ -154,7 +154,6 @@ export class LSPInteractor {
    */
   startDiagnostics() {
     this.client.onNotification("textDocument/publishDiagnostics", (params) => {
-      // console.log("[LSP] Received diagnostics:", params);
       const markers = params.diagnostics
         .filter(diag => {
           if (!diag || !diag.message) return true;
@@ -174,7 +173,6 @@ export class LSPInteractor {
           );
 
           if (isFalsePositive) {
-            // console.warn("[LSP] Filtering false positive warning:", msg);
             return false; // 除外
           }
           
@@ -187,7 +185,7 @@ export class LSPInteractor {
           endLineNumber: diag.range.end.line + 1,
           endColumn: diag.range.end.character + 1,
           message: diag.message,
-          source: "TypeProf (Filtered)"
+          source: "TypeProf"
         }))
       
       const currentModel = this.editor.getModel();
