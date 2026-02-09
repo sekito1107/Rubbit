@@ -86,7 +86,6 @@ class Server
     @error = nil
 
     # TypeProfコアの初期化
-    # 明示的に stdlib.rbs を読み込むように設定
     rbs_list = File.exist?("/workspace/stdlib.rbs") ? ["/workspace/stdlib.rbs"] : []
     @core = TypeProf::Core::Service.new(rbs_files: rbs_list)
     

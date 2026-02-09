@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Settings } from "persistence/settings"
 
 export default class extends Controller {
   static targets = [
@@ -8,44 +9,28 @@ export default class extends Controller {
   ]
 
   connect() {
+    this.settingsStore = new Settings()
     this.loadSettings()
   }
 
   loadSettings() {
-    const defaultSettings = {
-      fontSize: "14",
-      tabSize: "2",
-      wordWrap: "off",
-      autoClosingBrackets: "always",
-      minimap: { enabled: false },
-      mouseWheelZoom: false,
-      renderWhitespace: "none"
-    }
-
-    try {
-      const json = localStorage.getItem("rubpad_settings")
-      this.settings = json ? { ...defaultSettings, ...JSON.parse(json) } : defaultSettings
-    } catch (e) {
-      console.error("Failed to load settings:", e)
-      this.settings = defaultSettings
-    }
-
+    this.currentSettings = this.settingsStore.getAll()
     this.updateUI()
     this.applySettings()
   }
 
   updateUI() {
-    if (this.hasFontSizeTarget) this.fontSizeTarget.value = this.settings.fontSize
-    if (this.hasTabSizeTarget) this.tabSizeTarget.value = this.settings.tabSize
-    if (this.hasWordWrapTarget) this.wordWrapTarget.checked = this.settings.wordWrap === 'on'
-    if (this.hasAutoClosingBracketsTarget) this.autoClosingBracketsTarget.checked = this.settings.autoClosingBrackets === 'always'
-    if (this.hasMinimapTarget) this.minimapTarget.checked = this.settings.minimap.enabled
-    if (this.hasMouseWheelZoomTarget) this.mouseWheelZoomTarget.checked = this.settings.mouseWheelZoom
-    if (this.hasRenderWhitespaceTarget) this.renderWhitespaceTarget.checked = this.settings.renderWhitespace === 'all'
+    if (this.hasFontSizeTarget) this.fontSizeTarget.value = this.currentSettings.fontSize || 14
+    if (this.hasTabSizeTarget) this.tabSizeTarget.value = this.currentSettings.tabSize || 2
+    if (this.hasWordWrapTarget) this.wordWrapTarget.checked = this.currentSettings.wordWrap === 'on'
+    if (this.hasAutoClosingBracketsTarget) this.autoClosingBracketsTarget.checked = this.currentSettings.autoClosingBrackets === 'always'
+    if (this.hasMinimapTarget) this.minimapTarget.checked = this.currentSettings.minimap?.enabled
+    if (this.hasMouseWheelZoomTarget) this.mouseWheelZoomTarget.checked = this.currentSettings.mouseWheelZoom
+    if (this.hasRenderWhitespaceTarget) this.renderWhitespaceTarget.checked = this.currentSettings.renderWhitespace === 'all'
   }
 
   save() {
-    this.settings = {
+    const s = {
       fontSize: this.fontSizeTarget.value,
       tabSize: this.tabSizeTarget.value,
       wordWrap: this.wordWrapTarget.checked ? 'on' : 'off',
@@ -55,22 +40,17 @@ export default class extends Controller {
       renderWhitespace: this.renderWhitespaceTarget.checked ? 'all' : 'none'
     }
 
-    try {
-      localStorage.setItem("rubpad_settings", JSON.stringify(this.settings))
-    } catch (e) {
-      console.error("Failed to save settings:", e)
+    for (const [k, v] of Object.entries(s)) {
+      this.settingsStore.update(k, v)
     }
-
+    this.currentSettings = s
     this.applySettings()
   }
 
   applySettings() {
-    // 1. CSS変数 (フォントサイズ用)
-    document.documentElement.style.setProperty("--editor-font-size", `${this.settings.fontSize}px`)
-
-    // 2. エディタ設定 (イベント通知)
+    document.documentElement.style.setProperty("--editor-font-size", `${this.currentSettings.fontSize}px`)
     window.dispatchEvent(new CustomEvent("settings:updated", {
-      detail: { settings: this.settings }
+      detail: { settings: this.currentSettings }
     }))
   }
 }

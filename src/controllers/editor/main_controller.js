@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import * as monaco from 'monaco-editor'
+import { Settings } from "persistence/settings"
 
 // Import Monaco workers directly for Vite
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -10,18 +11,10 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 window.MonacoEnvironment = {
   getWorker(_, label) {
-    if (label === 'json') {
-      return new jsonWorker()
-    }
-    if (label === 'css' || label === 'scss' || label === 'less') {
-      return new cssWorker()
-    }
-    if (label === 'html' || label === 'handlebars' || label === 'razor') {
-      return new htmlWorker()
-    }
-    if (label === 'typescript' || label === 'javascript') {
-      return new tsWorker()
-    }
+    if (label === 'json') return new jsonWorker()
+    if (label === 'css' || label === 'scss' || label === 'less') return new cssWorker()
+    if (label === 'html' || label === 'handlebars' || label === 'razor') return new htmlWorker()
+    if (label === 'typescript' || label === 'javascript') return new tsWorker()
     return new editorWorker()
   }
 }
@@ -30,11 +23,11 @@ export default class extends Controller {
   static targets = ["container"]
 
   async connect() {
+    this.settings = new Settings()
     this.boundHandleSettingsUpdate = this.handleSettingsUpdate.bind(this)
     window.addEventListener("settings:updated", this.boundHandleSettingsUpdate)
 
     try {
-      await this.loadEditor()
       this.initEditor()
     } catch (error) {
       this.containerTarget.innerText = "Failed to load editor."
@@ -44,27 +37,17 @@ export default class extends Controller {
 
   disconnect() {
     window.removeEventListener("settings:updated", this.boundHandleSettingsUpdate)
-
-    if (this.editor) {
-      this.editor.dispose()
-    }
-    if (this.observer) {
-      this.observer.disconnect()
-    }
-  }
-
-  async loadEditor() {
-    // Monaco is now imported as a module, so we don't need to load scripts manually.
-    return Promise.resolve()
+    if (this.editor) this.editor.dispose()
+    if (this.observer) this.observer.disconnect()
   }
 
   initEditor() {
-    const savedSettings = JSON.parse(localStorage.getItem("rubpad_settings") || "{}")
+    const saved = this.settings.getAll()
 
     this.editor = monaco.editor.create(this.containerTarget, {
       value: [
         "# Welcome to RubPad!",
-        "# Type code here and see Rurema links appear on the right.",
+        "# Type code here and see Rurima links appear on the right.",
         "",
         "names = ['Ruby', 'Python', 'JavaScript']",
         "",
@@ -80,30 +63,23 @@ export default class extends Controller {
       language: "ruby",
       theme: this.currentTheme,
       automaticLayout: true,
-      minimap: savedSettings.minimap || { enabled: false },
-      fontSize: parseInt(savedSettings.fontSize || 14),
-      tabSize: parseInt(savedSettings.tabSize || 2),
-      wordWrap: savedSettings.wordWrap || 'off',
-      autoClosingBrackets: savedSettings.autoClosingBrackets || 'always',
-      mouseWheelZoom: savedSettings.mouseWheelZoom || false,
-      renderWhitespace: savedSettings.renderWhitespace || 'none',
+      minimap: saved.minimap || { enabled: false },
+      fontSize: parseInt(saved.fontSize || 14),
+      tabSize: parseInt(saved.tabSize || 2),
+      wordWrap: saved.wordWrap || 'off',
+      autoClosingBrackets: saved.autoClosingBrackets || 'always',
+      mouseWheelZoom: saved.mouseWheelZoom || false,
+      renderWhitespace: saved.renderWhitespace || 'none',
       scrollBeyondLastLine: false,
       renderLineHighlight: "all",
       fontFamily: "'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace"
     })
 
-    // Expose for other controllers that might connect after initialization
     window.monacoEditor = this.editor
 
-    this.observer = new MutationObserver(() => {
-      this.updateTheme()
-    })
-    this.observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"]
-    })
+    this.observer = new MutationObserver(() => this.updateTheme())
+    this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
 
-    // Dispatch initialized event for other controllers
     this.element.dispatchEvent(new CustomEvent("editor--main:initialized", {
       detail: { editor: this.editor },
       bubbles: true 
@@ -111,14 +87,11 @@ export default class extends Controller {
   }
 
   updateTheme() {
-    if (this.editor) {
-      monaco.editor.setTheme(this.currentTheme)
-    }
+    if (this.editor) monaco.editor.setTheme(this.currentTheme)
   }
 
   get currentTheme() {
-    const isDark = document.documentElement.classList.contains("dark")
-    return isDark ? "vs-dark" : "vs"
+    return document.documentElement.classList.contains("dark") ? "vs-dark" : "vs"
   }
 
   handleSettingsUpdate(event) {

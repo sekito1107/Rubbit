@@ -67,7 +67,9 @@ export class LSPResponseParser {
     // 文字列リテラルや特殊な型表現の変換
     if (normalized.startsWith('"') || normalized.startsWith("'")) return "String"
     if (normalized.startsWith(":")) return "Symbol"
-    if (normalized === "true" || normalized === "false") return "Boolean"
+    if (normalized === "true" || normalized === "TrueClass") return "TrueClass"
+    if (normalized === "false" || normalized === "FalseClass") return "FalseClass"
+    if (normalized === "Boolean" || normalized === "bool") return "Object" // RurimaにBooleanは存在しないためObjectで代用
     
     // 名前空間 (::) の除去 (最後のパーツを取得)
     const parts = normalized.split("::")

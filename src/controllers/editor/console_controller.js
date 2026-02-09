@@ -1,17 +1,18 @@
 import { Controller } from "@hotwired/stimulus"
+import { Executor } from "runtime/executor"
 
 export default class extends Controller {
   static targets = ["output"]
   
   connect() {
     this.editor = null
+    this.runner = null
     
     // エディタの初期化を監視する
     this.boundHandleEditorInit = this.handleEditorInit.bind(this)
     document.addEventListener("editor--main:initialized", this.boundHandleEditorInit)
     
-    // Ruby VMイベントを監視する（同じ要素、または同じコンテナ上にあるため）
-    // または、要素自体にイベントリスナーを追加することも可能
+    // Ruby VMイベントを監視する
     this.element.addEventListener("ruby-vm:output", this.handleRubyOutput.bind(this))
     this.element.addEventListener("ruby-vm:ready", this.handleRubyReady.bind(this))
   }
@@ -27,18 +28,20 @@ export default class extends Controller {
   handleRubyOutput(event) {
     this.appendOutput(event.detail.text)
   }
-  
+
   handleRubyReady(event) {
-    // ヘッダーのバージョン表示を更新するためにグローバルにブロードキャストする
-    window.dispatchEvent(new CustomEvent("ruby-vm:version-loaded", { 
-      detail: { version: event.detail.version } 
-    }))
+    this.appendOutput(`// Ruby WASM ready! (Version: ${event.detail.version})`)
   }
 
   run() {
-    const vmController = this.application.getControllerForElementAndIdentifier(this.element, "ruby-vm")
-    
-    if (!vmController) {
+    if (!this.runner) {
+      const vmController = this.application.getControllerForElementAndIdentifier(this.element, "ruby-vm")
+      if (vmController) {
+        this.runner = new Executor(vmController)
+      }
+    }
+
+    if (!this.runner) {
       this.appendOutput("// Error: Ruby VM Controller not found.")
       return
     }
@@ -48,8 +51,11 @@ export default class extends Controller {
       return
     }
 
-    const code = this.editor.getValue()
-    vmController.run(code)
+    try {
+      this.runner.execute(this.editor.getValue())
+    } catch (e) {
+      this.appendOutput(`// Error: ${e.message}`)
+    }
   }
 
   clear() {
@@ -59,11 +65,7 @@ export default class extends Controller {
   }
 
   appendOutput(text) {
-    if (!this.hasOutputTarget) return
-    
-    if (text.trim() === "") {
-        text = "// (no output)"
-    }
+    if (!this.hasOutputTarget || !text) return
 
     // 初期化中メッセージが出ている場合は上書きする
     const lastLine = this.outputTarget.lastElementChild
@@ -78,7 +80,6 @@ export default class extends Controller {
       `<div>${this.escapeHtml(line)}</div>`
     ).join("")
     
-    // 自動で最下部へスクロールする
     this.outputTarget.lastElementChild?.scrollIntoView({ behavior: "smooth" })
   }
 

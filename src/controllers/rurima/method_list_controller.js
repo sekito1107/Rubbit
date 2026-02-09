@@ -2,10 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 /**
  * コード内のメソッド一覧を表示するコントローラー
- * AnalysisCoordinator からの通知を受け取り、DOM を差分更新しつつ順序を同期する
+ * 解析エンジンからの通知を受け取り、DOM を差分更新しつつ順序を同期する
  */
 export default class extends Controller {
-  static targets = [ "globalList", "cardTemplate", "linkTemplate", "searchTemplate" ]
+  static targets = [ "globalList", "globalLoader", "cardTemplate", "linkTemplate", "searchTemplate" ]
 
   connect() {
     this.cardMap = new Map() // { methodName: DOMElement }
@@ -43,9 +43,14 @@ export default class extends Controller {
     if (!firstScanDone && methods.length === 0) return
 
     // プレースホルダー（"No methods", "Initializing..."）があれば全面クリア
+    if (this.hasGlobalLoaderTarget && firstScanDone) {
+      this.globalLoaderTarget.classList.add("hidden")
+    }
+
     if (this.globalListTarget.children.length === 1 && 
         (this.globalListTarget.querySelector('.animate-pulse') || 
-         this.globalListTarget.innerText.includes('No methods'))) {
+         this.globalListTarget.innerText.includes('No methods') ||
+         this.globalListTarget.querySelector('.loading-bar'))) {
       this.globalListTarget.innerHTML = ""
     }
 

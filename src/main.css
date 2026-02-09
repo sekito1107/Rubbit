@@ -5,3 +5,18 @@
 }
 
 @variant dark (&:is(.dark, .dark *));
+
+/* モダンなローディングバーのスタイル */
+.loading-bar-container {
+  @apply w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden relative;
+}
+
+.loading-bar {
+  @apply h-full bg-blue-500 rounded-full absolute top-0 left-0 w-1/3;
+  animation: loading-bar-move 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-bar-move {
+  0% { left: -33%; }
+  100% { left: 100%; }
+}
