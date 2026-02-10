@@ -7,7 +7,7 @@ export class Share {
   /**
    * コードを圧縮して共有可能な URL を生成する
    */
-  compress(code) {
+  compress(code: string): string {
     const compressed = pako.deflate(code)
     const base64 = btoa(String.fromCharCode(...compressed))
       .replace(/\+/g, "-")
@@ -22,7 +22,7 @@ export class Share {
   /**
    * URL ハッシュからコードを復元する
    */
-  decompress(hash) {
+  decompress(hash: string | null): string | null {
     if (!hash) return null
     try {
       // Remove 'code=' prefix if exists

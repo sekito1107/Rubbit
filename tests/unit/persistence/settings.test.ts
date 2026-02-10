@@ -2,8 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Settings } from '../../../src/persistence/settings'
 
 describe('Settings', () => {
-  let settings
-  let localStorageMock
+  let settings: Settings
+  let localStorageMock: {
+    getItem: any
+    setItem: any
+    removeItem: any
+    clear: any
+  }
 
   beforeEach(() => {
     // Mock localStorage before instantiation because constructor calls _load()

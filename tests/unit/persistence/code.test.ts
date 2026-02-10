@@ -2,8 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { CodePersistence } from '../../../src/persistence/code'
 
 describe('CodePersistence', () => {
-  let persistence
-  let localStorageMock
+  let persistence: CodePersistence
+  let localStorageMock: {
+    getItem: any
+    setItem: any
+    removeItem: any
+    clear: any
+  }
 
   beforeEach(() => {
     persistence = new CodePersistence()
