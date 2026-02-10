@@ -1,13 +1,28 @@
-import { Scanner } from "./analysis/scanner"
+import { Scanner, ScannedMethod } from "./analysis/scanner"
 import { Tracker } from "./analysis/tracker"
 import { Resolver } from "./analysis/resolver"
-import { AnalysisStore } from "./analysis/store"
+import { AnalysisStore, MethodItem } from "./analysis/store"
 
 /**
  * コード解析ドメインを統括する Coordinator
  */
 export class AnalysisCoordinator {
-  constructor(editor, lspManager, rurima) {
+  private editor: any
+  private lspManager: any
+  public store: AnalysisStore
+  private scanner: Scanner
+  public tracker: Tracker
+  public resolver: Resolver
+
+  private lineMethods: Array<ScannedMethod[] | null>
+  public isAnalyzing: boolean
+  public needsReanalysis: boolean
+  private debounceTimer: any
+  private WAIT_MS: number
+
+  private boundHandleLSPFinished: () => void
+
+  constructor(editor: any, lspManager: any, rurima: any) {
     this.editor = editor
     this.lspManager = lspManager
     
@@ -17,25 +32,21 @@ export class AnalysisCoordinator {
     this.tracker = new Tracker()
     this.resolver = new Resolver(lspManager, rurima)
     
-    // 後位互換性のためのエイリアス (Resolution へのアクセス用)
-    this.resolution = this.resolver.resolution
-    
-    // Rurima ドメインへの参照を保持
-    this.rurima = rurima
-
-    this.lineMethods = [] // キャッシュ: インデックス=行番号, 値=Array of {name, line, col}
+    this.lineMethods = [] // キャッシュ: インデックス=行番号, 値=メソッド情報（name, line, col）の配列
     this.isAnalyzing = false
     this.needsReanalysis = false
     this.debounceTimer = null
     this.WAIT_MS = 800
+
+    this.boundHandleLSPFinished = () => this.scheduleAnalysis()
   }
 
   /**
    * 解析エンジンの稼働開始
    */
-  start() {
+  start(): void {
     // 1. エディタの変更を監視
-    this.editor.onDidChangeModelContent((e) => {
+    this.editor.onDidChangeModelContent((e: any) => {
       this.tracker.processChangeEvent(e, this.lineMethods)
       this.scheduleAnalysis()
     })
@@ -44,15 +55,14 @@ export class AnalysisCoordinator {
     this.scheduleAnalysis(0)
 
     // 3. LSP の解析完了イベントを購読
-    this.boundHandleLSPFinished = () => this.scheduleAnalysis()
     window.addEventListener("rubpad:lsp-analysis-finished", this.boundHandleLSPFinished)
   }
 
-  stop() {
+  stop(): void {
     window.removeEventListener("rubpad:lsp-analysis-finished", this.boundHandleLSPFinished)
   }
 
-  scheduleAnalysis(delay = this.WAIT_MS) {
+  scheduleAnalysis(delay: number = this.WAIT_MS): void {
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this.debounceTimer = setTimeout(() => this.performAnalysis(), delay)
   }
@@ -60,7 +70,7 @@ export class AnalysisCoordinator {
   /**
    * 解析の実行コア
    */
-  async performAnalysis() {
+  async performAnalysis(): Promise<void> {
     if (this.isAnalyzing) {
       this.needsReanalysis = true
       return
@@ -93,7 +103,7 @@ export class AnalysisCoordinator {
       }
 
       // 2. 現在の全出現箇所をフラット化
-      const allOccurrences = this.lineMethods.flat().filter(Boolean)
+      const allOccurrences = this.lineMethods.flat().filter((m): m is ScannedMethod => m !== null)
       const currentNames = new Set(allOccurrences.map(m => m.name))
 
       // 3. 不要になったメソッドの除去
@@ -139,7 +149,7 @@ export class AnalysisCoordinator {
   /**
    * 単一メソッドの型解決依頼
    */
-  async resolveSingleMethod(name) {
+  async resolveSingleMethod(name: string): Promise<void> {
     const data = this.store.get(name)
     if (!data || data.status === 'resolved' || data.isResolving) return
 
@@ -158,7 +168,7 @@ export class AnalysisCoordinator {
   }
 
   // 外部インターフェース (エイリアス)
-  getAnalysis() {
+  getAnalysis(): { methods: MethodItem[], firstScanDone: boolean } {
     return {
       methods: this.store.getAll(),
       firstScanDone: this.store.firstScanDone

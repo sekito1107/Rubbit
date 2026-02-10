@@ -2,14 +2,16 @@
  * LSP クライアントを直接使用し、シンボルや位置に基づいた型解決を行う
  */
 export class Resolution {
-  constructor(lspManager) {
+  private lsp: any
+
+  constructor(lspManager: any) {
     this.lsp = lspManager
   }
 
   /**
    * 指定された位置の型を特定し、クラス名を返す
    */
-  async resolveAtPosition(line, col, options = {}) {
+  async resolveAtPosition(line: number, col: number, options: any = {}): Promise<string | null> {
     try {
       // 0. コメント内チェック
       const model = this.lsp.model
@@ -23,7 +25,7 @@ export class Resolution {
       }
 
       // 1. 現在位置を試行
-      let type = await this.lsp.getTypeAtPosition(line, col)
+      let type: string | null = await this.lsp.getTypeAtPosition(line, col)
       
       // 2. フォールバック: 1文字戻って試行 (単語の末尾にカーソルがある場合への対応: names|)
       if (!type && col > 1) {
@@ -56,14 +58,14 @@ export class Resolution {
    * メソッド名に対応する定義位置での解決を試みる
    * Scanner から渡される col は既に識別子の開始位置であるため、そのまま使用する
    */
-  async resolveMethodAt(line, col, options = {}) {
+  async resolveMethodAt(line: number, col: number, options: any = {}): Promise<string | null> {
     return this.resolveAtPosition(line, col, options)
   }
 
   /**
    * ドット (".") の直後にカーソルがある場合に備え、ドットを除去した状態でプローブを行う
    */
-  async _probeReceiverType(model, line, col) {
+  private async _probeReceiverType(model: { getLineContent(l: number): string, getLinesContent(): string[] }, line: number, col: number): Promise<string | null> {
     const lineContent = model.getLineContent(line)
     
     // カーソル位置(col)の直前または現在位置が "." かを確認
@@ -92,7 +94,7 @@ export class Resolution {
   /**
    * 一時的なコンテンツで型解決を試みる
    */
-  async probe(content, line, col, syncManager) {
+  async probe(content: string, line: number, col: number): Promise<string | null> {
     try {
       return await this.lsp.probeTypeWithTemporaryContent(content, line, col)
     } catch (e) {

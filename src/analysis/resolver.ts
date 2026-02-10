@@ -4,7 +4,10 @@ import { Resolution } from "./resolution"
  * 特定のメソッドシンボルに対して、LSP での型解決と Rurima 情報を紐づける
  */
 export class Resolver {
-  constructor(lspManager, rurima) {
+  private rurima: any
+  public resolution: Resolution
+
+  constructor(lspManager: any, rurima: any) {
     this.rurima = rurima
     this.resolution = new Resolution(lspManager)
   }
@@ -12,7 +15,12 @@ export class Resolver {
   /**
    * 指定されたメソッドの型を解決し、Rurima 情報を取得して返す
    */
-  async resolve(methodName, line, col) {
+  async resolve(methodName: string, line: number, col: number): Promise<{
+    status: 'resolved' | 'unknown'
+    className?: string
+    url?: string
+    separator?: string
+  }> {
     try {
       // 1. LSP を使用してクラス名を特定
       let className = await this.resolution.resolveMethodAt(line, col, { 
@@ -39,7 +47,7 @@ export class Resolver {
       }
       return { status: 'unknown' }
     } catch (e) {
-      console.error(`[Resolver] Failed to resolve ${methodName}:`, e)
+      console.error(`[Resolver] ${methodName} の解決に失敗しました:`, e)
       return { status: 'unknown' }
     }
   }
