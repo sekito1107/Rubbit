@@ -39,6 +39,11 @@ export class Resolution {
       if (!type) {
         type = await this.lsp.getTypeAtPosition(line, col + 1)
       }
+
+      // 5. 最終手段: ドット直後の解決失敗時、ドットを除去したコードでプローブ試行
+      if (!type && model) {
+        type = await this._probeReceiverType(model, line, col)
+      }
       
       return type
     } catch (e) {
@@ -53,6 +58,35 @@ export class Resolution {
    */
   async resolveMethodAt(line, col, options = {}) {
     return this.resolveAtPosition(line, col, options)
+  }
+
+  /**
+   * ドット (".") の直後にカーソルがある場合に備え、ドットを除去した状態でプローブを行う
+   */
+  async _probeReceiverType(model, line, col) {
+    const lineContent = model.getLineContent(line)
+    
+    // カーソル位置(col)の直前または現在位置が "." かを確認
+    // 1-indexedなので col-1 が現在文字の 0-indexed 位置
+    const prevChar = lineContent[col - 2]
+    const currChar = lineContent[col - 1]
+    
+    if (prevChar !== '.' && currChar !== '.') return null
+
+    // ドットを一つ除去した一時的な全行コンテンツを作成
+    // (TypeProf の解析精度を保つため、当該行のドットだけを消す)
+    const lines = model.getLinesContent()
+    const targetIdx = line - 1
+    const dotPos = (prevChar === '.') ? col - 2 : col - 1
+    
+    const newLine = lineContent.substring(0, dotPos) + lineContent.substring(dotPos + 1)
+    lines[targetIdx] = newLine
+    const tempContent = lines.join("\n")
+
+    // ドットを除去した位置（またはその直前）でプローブ
+    // ドットを消したので、新しい位置は line, dotPos (0-indexed to 1-indexed is dotPos+1, 
+    // しかしその一点前を見たいので dotPos)
+    return this.probe(tempContent, line, Math.max(1, dotPos))
   }
 
   /**
