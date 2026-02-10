@@ -2,11 +2,7 @@
   "name": "rubpad",
   "version": "1.0.0",
   "description": "This README would normally document whatever steps are necessary to get the application up and running.",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -21,7 +17,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/sekito1107/RubPad/issues"
   },
