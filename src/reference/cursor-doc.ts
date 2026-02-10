@@ -1,53 +1,56 @@
 /**
  * カーソルドキュメントコンポーネント
- * reference/cursor-doc.js
  */
 export class CursorDocComponent {
-  /**
-   * @param {HTMLElement} listElement - コンテキストリスト表示要素
-   * @param {HTMLElement} loaderElement - ローダー表示要素
-   * @param {HTMLTemplateElement} cardTemplate - カードテンプレート
-   * @param {HTMLTemplateElement} linkTemplate - リンクテンプレート
-   */
-  constructor(listElement, loaderElement, cardTemplate, linkTemplate) {
+  private listElement: HTMLElement | null
+  private loaderElement: HTMLElement | null
+  private cardTemplate: HTMLTemplateElement
+  private linkTemplate: HTMLTemplateElement
+  private editor: any | null = null
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null
+  private readonly CONTEXT_DEBOUNCE_MS = 300
+  private lastType: string | null = null
+
+  private boundHandleAnalysisFinished: () => void
+  private boundHandleLSPReady: () => void
+  private boundHandleEditorInit: (e: any) => void
+
+  constructor(
+    listElement: HTMLElement | null,
+    loaderElement: HTMLElement | null,
+    cardTemplate: HTMLTemplateElement,
+    linkTemplate: HTMLTemplateElement
+  ) {
     this.listElement = listElement
     this.loaderElement = loaderElement
     this.cardTemplate = cardTemplate
     this.linkTemplate = linkTemplate
     
-    this.editor = null
-    this.debounceTimer = null
-    this.CONTEXT_DEBOUNCE_MS = 300
-    this.lastType = null
-    
-    // メソッドのバインド
-    this.boundUpdateContextualList = this.updateContextualList.bind(this)
     this.boundHandleAnalysisFinished = () => this.updateContextualList()
     this.boundHandleLSPReady = () => this.updateContextualList()
-    this.boundHandleEditorInit = (e) => {
+    this.boundHandleEditorInit = (e: any) => {
       this.editor = e.detail.editor
       this.setupListeners()
     }
 
-    // Listeners
-    document.addEventListener("editor:initialized", this.boundHandleEditorInit)
+    document.addEventListener("editor:initialized", this.boundHandleEditorInit as any)
     window.addEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
     window.addEventListener("rubpad:lsp-ready", this.boundHandleLSPReady)
 
-    // Check if editor is already available
-    if (window.monacoEditor) {
-      this.editor = window.monacoEditor
+    const g = window as any
+    if (g.monacoEditor) {
+      this.editor = g.monacoEditor
       this.setupListeners()
       this.updateContextualList()
     }
   }
 
-  setupListeners() {
+  private setupListeners(): void {
     if (!this.editor) return
     this.editor.onDidChangeCursorPosition(() => this.updateContextualList())
   }
 
-  updateContextualList() {
+  private updateContextualList(): void {
     if (!this.editor) return
 
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
@@ -63,10 +66,11 @@ export class CursorDocComponent {
     }, this.CONTEXT_DEBOUNCE_MS)
   }
 
-  async performContextualUpdate() {
+  private async performContextualUpdate(): void {
     if (!this.listElement || !this.editor) return
 
-    const analysis = window.rubpadAnalysisCoordinator
+    const g = window as any
+    const analysis = g.rubpadAnalysisCoordinator
     if (!analysis) {
         if (!this.listElement.innerHTML.includes('loading-bar')) {
           this.listElement.innerHTML = `
@@ -84,10 +88,8 @@ export class CursorDocComponent {
     const position = this.editor.getPosition()
     if (!position) return
 
-    // 1. LSP で型を解決
     const type = await analysis.resolution.resolveAtPosition(position.lineNumber, position.column)
 
-    // type が前回と同じでも、現在ローディングが表示されている場合は強制的に更新する
     const isInitializing = this.listElement.innerHTML.includes('loading-bar')
     if (type === this.lastType && !isInitializing) return
     this.lastType = type
@@ -101,7 +103,6 @@ export class CursorDocComponent {
       return
     }
 
-    // 2. Reference ドメインから情報を取得
     const methods = analysis.reference.fetchMethods(type)
 
     if (methods.length === 0) {
@@ -114,11 +115,10 @@ export class CursorDocComponent {
     this.renderContextualUI(type, methods)
   }
 
-  renderContextualUI(type, methods) {
+  private renderContextualUI(type: string, methods: any[]): void {
+    if (!this.listElement) return
     const container = document.createElement("details")
     container.className = "group"
-    
-    // Default open
     container.open = true
     
     const summary = document.createElement("summary")
@@ -138,28 +138,29 @@ export class CursorDocComponent {
     this.listElement.appendChild(container)
   }
 
-  toggleContextLoader(show) {
+  private toggleContextLoader(show: boolean): void {
     if (!this.loaderElement) return
     this.loaderElement.style.opacity = show ? "1" : "0"
   }
 
-  createContextualMethodCard(item) {
-    const cardNode = this.cardTemplate.content.cloneNode(true)
-    const container = cardNode.querySelector("div")
-    cardNode.querySelector('[data-role="methodName"]').textContent = `.${item.methodName}`
-    const detailsContainer = cardNode.querySelector('[data-role="linksDetails"]')
-    item.links.forEach(linkInfo => {
-        const linkNode = this.linkTemplate.content.cloneNode(true)
-        linkNode.querySelector("a").href = linkInfo.url
-        linkNode.querySelector('[data-role="className"]').textContent = linkInfo.className
-        linkNode.querySelector('[data-role="separatorMethod"]').textContent = linkInfo.separator + linkInfo.methodName
+  private createContextualMethodCard(item: any): HTMLElement {
+    const cardNode = this.cardTemplate.content.cloneNode(true) as DocumentFragment
+    const container = cardNode.querySelector("div") as HTMLElement
+    cardNode.querySelector('[data-role="methodName"]')!.textContent = `.${item.methodName}`
+    const detailsContainer = cardNode.querySelector('[data-role="linksDetails"]') as HTMLElement
+    item.links.forEach((linkInfo: any) => {
+        const linkNode = this.linkTemplate.content.cloneNode(true) as DocumentFragment
+        const anchor = linkNode.querySelector("a") as HTMLAnchorElement
+        anchor.href = linkInfo.url
+        linkNode.querySelector('[data-role="className"]')!.textContent = linkInfo.className
+        linkNode.querySelector('[data-role="separatorMethod"]')!.textContent = linkInfo.separator + linkInfo.methodName
         detailsContainer.appendChild(linkNode)
     })
     return container
   }
 
-  dispose() {
-    document.removeEventListener("editor:initialized", this.boundHandleEditorInit)
+  public dispose(): void {
+    document.removeEventListener("editor:initialized", this.boundHandleEditorInit as any)
     window.removeEventListener("rubpad:lsp-analysis-finished", this.boundHandleAnalysisFinished)
     window.removeEventListener("rubpad:lsp-ready", this.boundHandleLSPReady)
   }
