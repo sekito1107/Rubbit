@@ -58,7 +58,9 @@ describe('Share', () => {
     })
 
     it('不正なデータに対して null を返すこと', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       expect(share.decompress('invalid-base64-!!!')).toBeNull()
+      consoleSpy.mockRestore()
     })
 
     it('空のハッシュに対して null を返すこと', () => {

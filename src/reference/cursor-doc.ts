@@ -66,7 +66,7 @@ export class CursorDocComponent {
     }, this.CONTEXT_DEBOUNCE_MS)
   }
 
-  private async performContextualUpdate(): void {
+  private async performContextualUpdate(): Promise<void> {
     if (!this.listElement || !this.editor) return
 
     const g = window as any
