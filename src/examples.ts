@@ -10,7 +10,7 @@ interface EditorLike extends RuntimeEditorLike {
 
 const EXAMPLES: Record<string, string> = {
   hello: `# Hello World
-puts "Hello, RubPad!"
+puts "Hello, Rubbit!"
 puts "Ruby Version: #{RUBY_VERSION}"
 `,
   fizzbuzz: `# FizzBuzz
