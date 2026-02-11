@@ -1,6 +1,6 @@
-# RubPad (Static Site version)
+# Rubbit (Static Site version)
 
-RubPad is a client-side Ruby playground using Ruby WASM, Stimulus, and Vite.
+Rubbit is a client-side Ruby playground using Ruby WASM, Stimulus, and Vite.
 
 ## Features
 

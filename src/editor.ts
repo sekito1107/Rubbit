@@ -65,7 +65,7 @@ export class EditorComponent {
 
     this.editor = monaco.editor.create(this.container, {
       value: savedCode || [
-        "# Welcome to RubPad!",
+        "# Welcome to Rubbit!",
         "# Type code here and see Reference links appear on the right.",
         "",
         "names = ['Ruby', 'Python', 'JavaScript']",
