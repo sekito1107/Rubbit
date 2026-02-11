@@ -130,23 +130,28 @@ async function initializeVM(wasmUrl) {
 
 function runCode(code) {
     try {
-        // 標準出力をキャプチャするためにコードをラップする
-        // $server.run_code を使用して、Measure Value と同じBindingで実行する
+        // ユーザーコードをJS側のグローバル変数に一時保存し、
+        // Ruby側から JS.global[:_tmpCode] 経由で安全に取得する。
+        // これにより、Rubyの文字列補間（#{...}）がユーザーコード内で
+        // 誤って評価されるのを防ぐ。
+        self._tmpCode = code
         const wrappedCode = `
           require 'stringio'
           $stdout = StringIO.new
           begin
-            $server.run_code(${JSON.stringify(code)})
+            $server.run_code(JS.global[:_tmpCode].to_s)
           rescue => e
-            puts "Error: #{e.class}: #{e.message}"
-            puts e.backtrace.join("\n")
+            puts "Error: \#{e.class}: \#{e.message}"
+            puts e.backtrace.join("\\n")
           end
           $stdout.string
         `
         
         const result = vm.eval(wrappedCode)
+        self._tmpCode = null
         postMessage({ type: "output", payload: { text: result.toString() } })
       } catch (error) {
+        self._tmpCode = null
         postMessage({ type: "output", payload: { text: `Error: ${error.toString()}` } })
       }
 }
