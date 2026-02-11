@@ -3,20 +3,20 @@ import "./main.css"
 
 
 // Features
-import { ThemeComponent } from "./theme.js"
-import { ShareComponent } from "./share.js"
-import { EditorComponent } from "./editor.js"
-import { RubyVM } from "./ruby-vm.js"
-import { ConsoleComponent } from "./console.js"
-import { SettingsComponent } from "./settings.js"
-import { DownloadComponent } from "./download.js"
-import { HeaderComponent } from "./header.js"
-import { ExamplesComponent } from "./examples.js"
-import { ToastComponent } from "./toast.js"
-import { MethodListComponent, CursorDocComponent } from "./reference.js"
+import { ThemeComponent } from "./theme"
+import { ShareComponent } from "./share"
+import { EditorComponent } from "./editor"
+
+import { ConsoleComponent } from "./console"
+import { SettingsComponent } from "./settings"
+import { DownloadComponent } from "./download"
+import { HeaderComponent } from "./header"
+import { ExamplesComponent } from "./examples"
+import { ToastComponent } from "./toast"
+import { MethodListComponent, CursorDocComponent } from "./reference"
 
 // Persistence
-import { Persistence } from "./persistence.js"
+import { Persistence } from "./persistence"
 
 document.addEventListener("DOMContentLoaded", () => {
   const persistence = new Persistence()
