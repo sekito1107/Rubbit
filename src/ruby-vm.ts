@@ -19,6 +19,7 @@ export class RubyVM {
   private lspManager: LSP | null = null;
   private reference: Reference | null = null;
   private analysis: AnalysisCoordinator | null = null;
+  private rubyVersion: string = "";
 
   // 出力用イベントリスナー
   public onOutput: ((text: string) => void) | null = null;
@@ -72,10 +73,17 @@ export class RubyVM {
       case "output":
         this.dispatchOutput(payload.text);
         break;
+      case "progress":
+        // Workerからの進捗イベントを中継
+        window.dispatchEvent(new CustomEvent("rubpad:loading-progress", {
+          detail: { percent: payload.percent, message: payload.message }
+        }));
+        break;
       case "ready":
         window.__rubyVMReady = true;
         delete window.__rubyVMInitializing;
-        if (this.onReady) this.onReady(payload.version);
+        // onReady はローディング統合のため版数を保存するのみ
+        this.rubyVersion = payload.version;
 
         // 下位互換性のためにイベントを発火
         window.dispatchEvent(new CustomEvent("ruby-vm:ready", { detail: { version: payload.version } }));
@@ -122,6 +130,9 @@ export class RubyVM {
    */
   private async tryActivateDomains(): Promise<void> {
     if (this.lspClient && this.editor && !this.lspManager && window.__rubyVMReady) {
+      window.dispatchEvent(new CustomEvent("rubpad:loading-progress", {
+        detail: { percent: 70, message: "Starting Language Server..." }
+      }));
       this.lspManager = new LSP(this.lspClient, this.editor);
 
       try {
@@ -130,15 +141,23 @@ export class RubyVM {
         window.rubpadLSPManager = this.lspManager;
 
         // Reference ドメインの初期化
+        window.dispatchEvent(new CustomEvent("rubpad:loading-progress", {
+          detail: { percent: 85, message: "Loading Reference Index..." }
+        }));
         this.reference = new Reference();
         await this.reference.loadIndex();
 
         // 解析コーディネーターの初期化
+        window.dispatchEvent(new CustomEvent("rubpad:loading-progress", {
+          detail: { percent: 100, message: "Ready!" }
+        }));
         this.analysis = new AnalysisCoordinator(this.editor, this.lspManager, this.reference);
         window.rubpadAnalysisCoordinator = this.analysis;
         this.analysis.start();
 
-        window.dispatchEvent(new CustomEvent("rubpad:lsp-ready"));
+        window.dispatchEvent(new CustomEvent("rubpad:lsp-ready", {
+          detail: { version: this.rubyVersion }
+        }));
       } catch (e) {
         console.error("[RubyVM] Failed to initialize domains:", e);
       }

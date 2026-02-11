@@ -13,6 +13,7 @@ export class AnalysisCoordinator {
   private scanner: Scanner
   public tracker: Tracker
   public resolver: Resolver
+  public reference: any
 
   private lineMethods: Array<ScannedMethod[] | null>
   public isAnalyzing: boolean
@@ -31,6 +32,7 @@ export class AnalysisCoordinator {
     this.scanner = new Scanner()
     this.tracker = new Tracker()
     this.resolver = new Resolver(lspManager, rurima)
+    this.reference = rurima
     
     this.lineMethods = [] // キャッシュ: インデックス=行番号, 値=メソッド情報（name, line, col）の配列
     this.isAnalyzing = false

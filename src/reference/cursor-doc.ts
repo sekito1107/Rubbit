@@ -69,6 +69,13 @@ export class CursorDocComponent {
   private async performContextualUpdate(): Promise<void> {
     if (!this.listElement || !this.editor) return
 
+    // 新しい位置への移動時に、一旦高さをリセットする
+    const parent = this.listElement.parentElement
+    if (parent) {
+      parent.classList.remove("h-1/2")
+      parent.classList.add("h-auto")
+    }
+
     const g = window as any
     const analysis = g.rubpadAnalysisCoordinator
     if (!analysis) {
@@ -88,7 +95,7 @@ export class CursorDocComponent {
     const position = this.editor.getPosition()
     if (!position) return
 
-    const type = await analysis.resolution.resolveAtPosition(position.lineNumber, position.column)
+    const type = await analysis.resolver.resolution.resolveAtPosition(position.lineNumber, position.column)
 
     const isInitializing = this.listElement.innerHTML.includes('loading-bar')
     if (type === this.lastType && !isInitializing) return
@@ -119,8 +126,22 @@ export class CursorDocComponent {
     if (!this.listElement) return
     const container = document.createElement("details")
     container.className = "group"
-    container.open = true
+    container.open = false // 初期状態は閉じる
     
+    // 展開時の高さ制御用のイベント
+    container.addEventListener("toggle", () => {
+      const parent = this.listElement?.parentElement
+      if (parent) {
+        if (container.open) {
+          parent.classList.add("h-1/2")
+          parent.classList.remove("h-auto")
+        } else {
+          parent.classList.remove("h-1/2")
+          parent.classList.add("h-auto")
+        }
+      }
+    })
+
     const summary = document.createElement("summary")
     summary.className = "flex items-center cursor-pointer p-2 list-none text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/5 rounded"
     summary.innerHTML = `<span>${type}</span><span class="ml-auto text-[10px] text-slate-400 font-normal">${methods.length} methods</span>`

@@ -22,16 +22,17 @@ import { RubyVM } from "./ruby-vm"
 import { Persistence } from "./persistence"
 
 document.addEventListener("DOMContentLoaded", () => {
-  const persistence = new Persistence()
-
-
   // 機能の初期化
   new ThemeComponent()
-  const editorComponent = new EditorComponent(document.getElementById("editor-container")!, persistence)
-  console.log("[Main] Created EditorComponent:", editorComponent)
-  
+
+  // RubyVM を早期に初期化 (イベントリスナー登録のため)
   const rubyVM = new RubyVM()
   console.log("[Main] Created RubyVM:", rubyVM)
+
+  const persistence = new Persistence()
+
+  const editorComponent = new EditorComponent(document.getElementById("editor-container")!, persistence)
+  console.log("[Main] Created EditorComponent:", editorComponent)
   
   new ConsoleComponent(
     document.getElementById("terminal-output")!,

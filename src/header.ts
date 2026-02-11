@@ -22,7 +22,7 @@ export class HeaderComponent {
 
   public updateVersion(version: string): void {
     if (this.versionElement) {
-      this.versionElement.textContent = version;
+      this.versionElement.textContent = `Ruby ${version}`;
     }
   }
 }

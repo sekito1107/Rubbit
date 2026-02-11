@@ -34,6 +34,7 @@ self.onmessage = async (event) => {
 
 async function initializeVM(wasmUrl) {
     try {
+      postMessage({ type: "progress", payload: { percent: 10, message: "Starting Ruby Worker..." } })
       const fullUrl = new URL(wasmUrl, self.location.origin);
       const response = await fetch(fullUrl);
     
@@ -46,6 +47,7 @@ async function initializeVM(wasmUrl) {
     const buffer = await response.arrayBuffer();
     
     try {
+      postMessage({ type: "progress", payload: { percent: 30, message: "Compiling Ruby WASM..." } })
       const module = await WebAssembly.compile(buffer);
       // DefaultRubyVM がスコープ内にあることを確認
       const ruby = { DefaultRubyVM }; 
@@ -82,6 +84,7 @@ async function initializeVM(wasmUrl) {
     }
 
     // bootstrap.rb (Polyfills & LSP Server) をロードする
+    postMessage({ type: "progress", payload: { percent: 50, message: "Loading Bootstrap..." } })
     const bootstrapUrl = new URL("./bootstrap.rb", import.meta.url);
     const bootstrapResponse = await fetch(bootstrapUrl)
     const bootstrapCode = await bootstrapResponse.text()
@@ -120,7 +123,6 @@ async function initializeVM(wasmUrl) {
       end
     `)
     
-    postMessage({ type: "output", payload: { text: "// Ruby WASM ready!" } })
     postMessage({ type: "ready", payload: { version: vm.eval("RUBY_VERSION").toString() } })
   } catch (error) {
     postMessage({ type: "error", payload: { message: error.message } })
