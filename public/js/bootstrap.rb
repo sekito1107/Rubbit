@@ -138,19 +138,20 @@ class Server
     if (json[:method] == "textDocument/didChange")
       changes = json[:params][:contentChanges]
       if changes
-        # ファイル内容の読み込み（変更が複数ある場合も最初に1回だけ読む）
         current_text = File.read("/workspace/main.rb") rescue ""
         lines = current_text.split("\n", -1)
 
         changes.each do |change|
           if change[:range]
-            # インクリメンタル同期
             start_pos = change[:range][:start]
             end_pos = change[:range][:end]
-            new_text_lines = TypeProf::LSP::Text.split(change[:text])
+            new_text_lines = (change[:text] || "").split("\n", -1)
 
-            prefix = lines[start_pos[:line]][0...start_pos[:character]] rescue ""
-            suffix = lines[end_pos[:line]][end_pos[:character]...] rescue ""
+            start_line = lines[start_pos[:line]] || ""
+            end_line = lines[end_pos[:line]] || ""
+
+            prefix = start_line[0...start_pos[:character]] || ""
+            suffix = end_line[end_pos[:character]...] || ""
             
             if new_text_lines.size == 1
               new_text_lines[0] = prefix + (new_text_lines[0] || "") + suffix
@@ -161,11 +162,9 @@ class Server
             
             lines[start_pos[:line]..end_pos[:line]] = new_text_lines
           else
-            # フルテキスト同期
-            lines = TypeProf::LSP::Text.split(change[:text])
+            lines = (change[:text] || "").split("\n", -1)
           end
         end
-        # 最後にまとめて書き出し
         File.write("/workspace/main.rb", lines.join("\n"))
       end
     end
