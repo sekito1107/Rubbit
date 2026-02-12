@@ -11,6 +11,7 @@ require "rubygems"
 
 # File.readable? は bjorn3/browser_wasi_shim では動作しないため代用
 def File.readable?(...) = File.file?(...)
+class RubPadStopExecution < StandardError; end
 
 # ワークスペースのセットアップ
 # TypeProfは /workspace などのディレクトリ構造を期待している可能性があるため
@@ -244,25 +245,44 @@ class Server
         if File.exist?("/workspace/main.rb")
           code_str = File.read("/workspace/main.rb")
           
-          # TracePoint を使用して、指定行に到達した時点の Binding を取得し、
-          # その行の実行が終わったタイミング（次のイベント）で値をキャプチャして即座に終了する。
-          tp = TracePoint.new(:line, :return, :b_return, :c_return, :end) do |tp|
-            if CapturedValue.target_triggered
-              # ターゲット行の開始後に最初に発生したイベント。
-              # ここで eval すれば、ターゲット行での代入などは終わっているはず。
+          # TracePoint を使用して、指定行に到達した（または物理的に超えた）時点の Binding を取得する。
+          # これにより、「後で呼び出されるメソッドの中身」などの未来の値を拾わないように制限する。
+          tp = TracePoint.new(:line, :call, :return, :class, :end, :b_call, :b_return) do |tp|
+            next unless tp.path == "(eval)"
+
+            if tp.lineno == target_line
               begin
-                CapturedValue.set(tp.binding.eval(expression))
+                val = tp.binding.eval(expression)
+                CapturedValue.set(val)
                 CapturedValue.found = true
-                raise "RubPad::StopExecution"
+                raise RubPadStopExecution
+              rescue RubPadStopExecution
+                raise
               rescue => e
-                if e.message == "RubPad::StopExecution"
-                  raise e
-                end
-                # eval に失敗した場合は次のイベントを待つ（稀なケース）
+                # まだ評価できない（例: each の呼び出し直後でブロック変数がない）場合は
+                # フラグだけ立てて次のイベント（b_call 等）に期待する
+                CapturedValue.target_triggered = true
+                CapturedValue.set(e) # 予備としてエラーを保持
               end
-            elsif tp.event == :line && tp.lineno == target_line && tp.path == "(eval)"
-              # ターゲット行に到達。次のイベントで値をキャプチャフラグを立てる。
-              CapturedValue.target_triggered = true
+            elsif CapturedValue.target_triggered
+              # ターゲット行は踏んだが成功していない場合。物理行を超えたら停止。
+              if tp.lineno > target_line
+                raise RubPadStopExecution
+              end
+
+              begin
+                val = tp.binding.eval(expression)
+                CapturedValue.set(val)
+                CapturedValue.found = true
+                raise RubPadStopExecution
+              rescue RubPadStopExecution
+                raise
+              rescue => e
+                CapturedValue.set(e) # 最新のエラーを保持
+              end
+            elsif tp.lineno > target_line
+              # ターゲット行を一度も踏まずに通り過ぎた場合
+              raise RubPadStopExecution
             end
           end
 
@@ -270,25 +290,27 @@ class Server
           measure_binding.eval("require 'stringio'; $stdout = StringIO.new")
           
           begin
-            tp.enable
-            measure_binding.eval(code_str, "(eval)")
+            tp.enable do
+              measure_binding.eval(code_str, "(eval)")
+            end
+          rescue RubPadStopExecution
+            # 正常停止
           rescue => e
-            # 想定通りの停止であれば無視
-            raise e if e.message != "RubPad::StopExecution"
-          ensure
-            tp.disable
+            # 実行時エラーがあればそれも記録（ただしfoundではない可能性あり）
+            CapturedValue.set(e) unless CapturedValue.found
           end
         end
 
         if CapturedValue.found
-          result_str = CapturedValue.get.inspect
+          val = CapturedValue.get
+          result_str = val.is_a?(Exception) ? "(#{val.class}: #{val.message})" : val.inspect
         else
-          # 行に到達しなかった場合(条件分岐等)、全体実行後の状態で評価を試みる
-          begin
-             val = measure_binding.eval(expression)
-             result_str = val.inspect
-          rescue
-             result_str = "" 
+          # 行に到達しなかった場合、または最終的なエラー
+          if CapturedValue.get.is_a?(Exception)
+            e = CapturedValue.get
+            result_str = "(#{e.class}: #{e.message})"
+          else
+            result_str = ""
           end
         end
       rescue => e
