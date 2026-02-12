@@ -2,11 +2,11 @@ import { LSPClient } from "./lsp/client";
 import { LSP } from "./lsp";
 import { Reference } from "./reference";
 import { AnalysisCoordinator } from "./analysis";
+import RubyWorker from "./ruby-worker?worker";
 
 // グローバル定義は src/types.d.ts に移動
 
 const RUBY_WASM_URL = "/js/rubbit.wasm";
-const WORKER_URL = "/js/ruby_worker.js";
 
 /**
  * Ruby VM & 実行時マネージャ
@@ -47,7 +47,7 @@ export class RubyVM {
    */
   private initializeWorker(): void {
     try {
-      this.worker = new Worker(WORKER_URL, { type: "module" });
+      this.worker = new RubyWorker();
       this.lspClient = new LSPClient(this.worker);
       window.rubyLSP = this.lspClient;
 
@@ -139,6 +139,8 @@ export class RubyVM {
         await this.lspManager.initialize();
         this.lspManager.activate();
         window.rubbitLSPManager = this.lspManager;
+        window.rubbitLSPReady = true;
+        window.dispatchEvent(new CustomEvent("rubbit:lsp-analysis-finished"));
 
         // Reference ドメインの初期化
         window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
