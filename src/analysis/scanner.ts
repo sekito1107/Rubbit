@@ -24,8 +24,8 @@ export class Scanner {
     // 2. 括弧形式: method( or method {
     // 3. ブロック形式: method do
     // 4. シンボル形式: &:method
-    // 5. 単独形式 (ホワイトリスト用): method
-    const methodPattern = /(?:\.)([a-z_][a-zA-Z0-9_]*[!?]?)|([a-z_][a-zA-Z0-9_]*[!?]?)\s*[({]|([a-z_][a-zA-Z0-9_]*[!?]?)\s+do\b|&:([a-z_][a-zA-Z0-9_]*[!?]?)|([a-z_][a-zA-Z0-9_]*[!?]?)/g
+    // 5. 単独形式 (ホワイトリスト用): method (行頭または空白の後)
+    const methodPattern = /(?:\.)([a-z_][a-zA-Z0-9_]*[!?]?)|([a-z_][a-zA-Z0-9_]*[!?]?)\s*[({]|([a-z_][a-zA-Z0-9_]*[!?]?)\s+do\b|&:([a-z_][a-zA-Z0-9_]*[!?]?)|(?:^|\s+)([a-z_][a-zA-Z0-9_]*[!?]?)(?=\s|$)/g
 
     lineIndices.forEach(idx => {
       // コメントを除去しつつインデックスを維持するため、空白で置換する

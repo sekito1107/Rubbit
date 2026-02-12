@@ -135,41 +135,38 @@ class Server
       text = json[:params][:textDocument][:text]
       File.write("/workspace/main.rb", text)
     end
-    if json[:method] == "textDocument/didChange"
+    if (json[:method] == "textDocument/didChange")
       changes = json[:params][:contentChanges]
       if changes
+        # ファイル内容の読み込み（変更が複数ある場合も最初に1回だけ読む）
         current_text = File.read("/workspace/main.rb") rescue ""
+        lines = current_text.split("\n", -1)
+
         changes.each do |change|
           if change[:range]
             # インクリメンタル同期
             start_pos = change[:range][:start]
             end_pos = change[:range][:end]
-            new_text = change[:text]
+            new_text_lines = TypeProf::LSP::Text.split(change[:text])
 
-            lines = current_text.split("\n", -1)
+            prefix = lines[start_pos[:line]][0...start_pos[:character]] rescue ""
+            suffix = lines[end_pos[:line]][end_pos[:character]...] rescue ""
             
-            # 開始・終了行のテキストを取得
-            start_line = lines[start_pos[:line]] || ""
-            end_line = lines[end_pos[:line]] || ""
+            if new_text_lines.size == 1
+              new_text_lines[0] = prefix + (new_text_lines[0] || "") + suffix
+            else
+              new_text_lines[0] = prefix + (new_text_lines[0] || "")
+              new_text_lines[-1] = (new_text_lines[-1] || "") + suffix
+            end
             
-            # 置換対象の前の部分
-            prefix = start_line[0...start_pos[:character]] || ""
-            # 置換対象の後の部分
-            suffix = end_line[end_pos[:character]..-1] || ""
-            
-            # 行の置換
-            # start_pos[:line] から end_pos[:line] までの行を削除し、
-            # prefix + new_text + suffix を挿入する
-            mid = prefix + (new_text || "") + suffix
-            lines[start_pos[:line]..end_pos[:line]] = mid.split("\n", -1)
-            
-            current_text = lines.join("\n")
+            lines[start_pos[:line]..end_pos[:line]] = new_text_lines
           else
-            # フル同期
-            current_text = change[:text]
+            # フルテキスト同期
+            lines = TypeProf::LSP::Text.split(change[:text])
           end
         end
-        File.write("/workspace/main.rb", current_text)
+        # 最後にまとめて書き出し
+        File.write("/workspace/main.rb", lines.join("\n"))
       end
     end
 
