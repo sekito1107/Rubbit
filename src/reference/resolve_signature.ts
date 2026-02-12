@@ -58,12 +58,11 @@ export class ResolveSignature {
       if (matchS) {
         const info = URLGenerator.generateUrlInfo(matchS)
         
-        // 特例: Kernelモジュールの特異メソッドとして検出された場合でも、
+        // 特例: Kernelモジュールのメソッドとして検出された場合、
         // 実態がモジュール関数（かつ暗黙的メソッド）の場合はモジュール関数のURL (/m/) に誘導する
-        if (ancestor === "Kernel" && info.url.includes("/s/")) {
-           // check if it's a likely module function (using strict check or just applying to all kernel singletons that are common)
-           // simplify: replace /s/ with /m/ for Kernel methods
-           info.url = info.url.replace(/\/s\//, "/m/")
+        if (ancestor === "Kernel" && (info.url.includes("/s/") || info.url.includes("/i/"))) {
+           // Kernelメソッドは /i/ や /s/ ではなく /m/ で記録されていることが多いためリライト
+           info.url = info.url.replace(/\/[si]\//, "/m/")
         }
         
         return {

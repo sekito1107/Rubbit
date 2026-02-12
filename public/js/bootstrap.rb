@@ -249,11 +249,9 @@ class Server
           code_str = File.read("/workspace/main.rb")
           
           # TracePoint を使用して、指定行に到達した時点の Binding を取得し、
-          # その行の実行が終わったタイミング（次のイベント）で値をキャプチャする。
+          # その行の実行が終わったタイミング（次のイベント）で値をキャプチャして即座に終了する。
           tp = TracePoint.new(:line, :return, :b_return, :c_return, :end) do |tp|
-            if CapturedValue.found
-              # すでに取得済み
-            elsif CapturedValue.target_triggered
+            if CapturedValue.target_triggered
               # ターゲット行の開始後に最初に発生したイベント。
               # ここで eval すれば、ターゲット行での代入などは終わっているはず。
               begin
@@ -264,10 +262,10 @@ class Server
                 if e.message == "RubPad::StopExecution"
                   raise e
                 end
-                # eval に失敗した場合は次のイベントを待つ
+                # eval に失敗した場合は次のイベントを待つ（稀なケース）
               end
             elsif tp.event == :line && tp.lineno == target_line && tp.path == "(eval)"
-              # ターゲット行に到達
+              # ターゲット行に到達。次のイベントで値をキャプチャフラグを立てる。
               CapturedValue.target_triggered = true
             end
           end
@@ -289,7 +287,7 @@ class Server
         if CapturedValue.found
           result_str = CapturedValue.get.inspect
         else
-          # 行に到達しなかった場合や、最後の一行で終了イベントが取れなかった場合
+          # 行に到達しなかった場合(条件分岐等)、全体実行後の状態で評価を試みる
           begin
              val = measure_binding.eval(expression)
              result_str = val.inspect

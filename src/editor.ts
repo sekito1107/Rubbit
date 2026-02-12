@@ -84,7 +84,8 @@ export class EditorComponent {
         "  messages << \"#{i + 1}: Hello, #{lang.capitalize}!\"",
         "end",
         "",
-        "# ↑ 上の `messages` 変数にマウスを乗せて「値を確認」してみてください",
+        "# ↑ 直接上のコード内の変数、または下の `puts messages` の `messages` に",
+        "#   マウスを乗せて「値を確認」してみてください",
         "puts messages"
       ].join("\n"),
       language: "ruby",
