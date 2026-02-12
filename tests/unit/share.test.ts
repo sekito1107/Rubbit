@@ -3,16 +3,30 @@ import { ShareComponent } from '../../src/share';
 
 describe('ShareComponent', () => {
   let button: HTMLElement;
+  let modal: HTMLDialogElement; // Modal Mock
   let mockEditor: any;
   let mockShare: any;
 
   const originalLocation = window.location;
   const originalHistory = window.history;
 
-
   beforeEach(() => {
-    document.body.innerHTML = '<button id="share"></button>';
+    document.body.innerHTML = `
+      <button id="share"></button>
+      <dialog id="share-modal">
+        <button id="share-tab-url"></button>
+        <button id="share-tab-embed"></button>
+        <button id="share-tab-block"></button>
+        <textarea id="share-preview"></textarea>
+        <button id="share-copy-btn"></button>
+      </dialog>
+    `;
     button = document.getElementById('share') as HTMLElement;
+    modal = document.getElementById('share-modal') as HTMLDialogElement;
+    
+    // Mock Dialog methods
+    modal.showModal = vi.fn();
+    modal.close = vi.fn();
 
     mockEditor = {
       getValue: vi.fn(),
@@ -22,6 +36,8 @@ describe('ShareComponent', () => {
     mockShare = {
       compress: vi.fn(),
       decompress: vi.fn(),
+      generateEmbedTag: vi.fn(),
+      generateCodeBlock: vi.fn(),
     };
 
     // Location Mock
@@ -38,6 +54,7 @@ describe('ShareComponent', () => {
         writeText: vi.fn(),
       },
       writable: true,
+      configurable: true // Allow re-definition
     });
   });
 
@@ -46,8 +63,8 @@ describe('ShareComponent', () => {
     window.history = originalHistory;
   });
 
-  it('シェアボタンクリック時にURLをクリップボードにコピーすること', () => {
-    new ShareComponent(button, mockEditor, mockShare);
+  it('シェアボタンクリック時にモーダルを開くこと', () => {
+    new ShareComponent(button, modal, mockEditor, mockShare);
     
     const code = 'puts "test"';
     const compressedUrl = 'http://localhost/#compressed';
@@ -57,42 +74,61 @@ describe('ShareComponent', () => {
     
     button.click();
     
+    expect(modal.showModal).toHaveBeenCalled();
+    // デフォルトでURLプレビューが表示されること
     expect(mockShare.compress).toHaveBeenCalledWith(code);
-    expect(window.location.hash).toBe('#compressed');
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(compressedUrl);
+    expect((modal.querySelector('#share-preview') as HTMLTextAreaElement).value).toBe(compressedUrl);
   });
 
   it('初期化時にURLハッシュからコードを復元すること', () => {
     window.location.hash = '#compressed_code';
     mockShare.decompress.mockReturnValue('restored code');
     
-    new ShareComponent(button, mockEditor, mockShare);
+    new ShareComponent(button, modal, mockEditor, mockShare);
     
     expect(mockShare.decompress).toHaveBeenCalledWith('compressed_code');
     expect(mockEditor.setValue).toHaveBeenCalledWith('restored code');
     expect(window.history.replaceState).toHaveBeenCalledWith(null, "", "/");
   });
 
-  it('ハッシュがない場合は何もしないこと', () => {
-    window.location.hash = '';
-    new ShareComponent(button, mockEditor, mockShare);
-    expect(mockShare.decompress).not.toHaveBeenCalled();
-    expect(mockEditor.setValue).not.toHaveBeenCalled();
+  it('タブ切り替えでプレビューが更新されること', () => {
+    new ShareComponent(button, modal, mockEditor, mockShare);
+    mockEditor.getValue.mockReturnValue('code');
+    mockShare.compress.mockReturnValue('url');
+    mockShare.generateEmbedTag.mockReturnValue('<iframe>');
+    mockShare.generateCodeBlock.mockReturnValue('```');
+
+    // Default (URL)
+    button.click();
+    expect(mockShare.compress).toHaveBeenCalled();
+
+    // Switch to Embed
+    (modal.querySelector('#share-tab-embed') as HTMLElement).click();
+    expect(mockShare.generateEmbedTag).toHaveBeenCalledWith('code');
+    expect((modal.querySelector('#share-preview') as HTMLTextAreaElement).value).toBe('<iframe>');
+
+    // Switch to Code Block
+    (modal.querySelector('#share-tab-block') as HTMLElement).click();
+    expect(mockShare.generateCodeBlock).toHaveBeenCalledWith('code');
+    expect((modal.querySelector('#share-preview') as HTMLTextAreaElement).value).toBe('```');
   });
   
-  it('シェア失敗時にエラーメッセージを表示すること', () => {
-    new ShareComponent(button, mockEditor, mockShare);
+  it('コピーボタンでクリップボードにコピーしてモーダルを閉じること', async () => {
+    const component = new ShareComponent(button, modal, mockEditor, mockShare);
     
     mockEditor.getValue.mockReturnValue('code');
-    mockShare.compress.mockImplementation(() => { throw new Error('Compress error'); });
-    
+    mockShare.compress.mockReturnValue('url');
+    button.click(); // Open modal to setup preview
+
     const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
     
-    button.click();
+    await component.copyToClipboard();
     
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('url');
     expect(dispatchSpy).toHaveBeenCalledWith(expect.objectContaining({
       type: 'show-toast',
-      detail: expect.objectContaining({ type: 'error' })
+      detail: expect.objectContaining({ type: 'success' })
     }));
+    expect(modal.close).toHaveBeenCalled();
   });
 });
