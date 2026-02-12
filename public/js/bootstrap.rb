@@ -248,8 +248,14 @@ class Server
         if File.exist?("/workspace/main.rb")
           code_str = File.read("/workspace/main.rb")
           
-          tp = TracePoint.new(:line) do |tp|
-            if tp.lineno == target_line && tp.path == "(eval)"
+          # TracePoint を使用して、指定行に到達した時点の Binding を取得し、
+          # その行の実行が終わったタイミング（次のイベント）で値をキャプチャする。
+          tp = TracePoint.new(:line, :return, :b_return, :c_return, :end) do |tp|
+            if CapturedValue.found
+              # すでに取得済み
+            elsif CapturedValue.target_triggered
+              # ターゲット行の開始後に最初に発生したイベント。
+              # ここで eval すれば、ターゲット行での代入などは終わっているはず。
               begin
                 CapturedValue.set(tp.binding.eval(expression))
                 CapturedValue.found = true
@@ -258,7 +264,11 @@ class Server
                 if e.message == "RubPad::StopExecution"
                   raise e
                 end
+                # eval に失敗した場合は次のイベントを待つ
               end
+            elsif tp.event == :line && tp.lineno == target_line && tp.path == "(eval)"
+              # ターゲット行に到達
+              CapturedValue.target_triggered = true
             end
           end
 
@@ -279,7 +289,7 @@ class Server
         if CapturedValue.found
           result_str = CapturedValue.get.inspect
         else
-          # 行に到達しなかった場合(条件分岐等)、全体実行後の状態で評価を試みる
+          # 行に到達しなかった場合や、最後の一行で終了イベントが取れなかった場合
           begin
              val = measure_binding.eval(expression)
              result_str = val.inspect
@@ -291,7 +301,6 @@ class Server
         if CapturedValue.found
            result_str = CapturedValue.get.inspect
         else
-           # StopExecutionの場合はここには来ないはずだが念のため
            if e.message == "RubPad::StopExecution"
              result_str = CapturedValue.get.inspect
            else
@@ -313,8 +322,9 @@ class Server
   class CapturedValue
     @val = nil
     @found = false
+    @target_triggered = false
     class << self
-      attr_accessor :found
+      attr_accessor :found, :target_triggered
       def set(v)
         @val = v
       end
@@ -324,6 +334,7 @@ class Server
       def reset
         @val = nil
         @found = false
+        @target_triggered = false
       end
     end
   end
