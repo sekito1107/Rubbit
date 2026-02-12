@@ -121,6 +121,47 @@ describe('Scanner', () => {
       const line1 = results.get(0)!
       expect(line1).toHaveLength(1)
       expect(line1[0].name).toBe('upcase')
+      expect(line1[0].col).toBe(16) // "Hello, #{name.u... (1-indexed)
+    })
+
+    describe('カラム位置の正確性テスト', () => {
+      it('様々な開始位置で正確にカラムを特定できること', () => {
+        const scenarios = [
+          { code: 'puts hello', name: 'puts', col: 1 },
+          { code: '  p 123', name: 'p', col: 3 },
+          { code: 'obj.method', name: 'method', col: 5 },
+          { code: 'obj.method!', name: 'method!', col: 5 },
+          { code: 'obj.query?', name: 'query?', col: 5 },
+          { code: 'calculate(1, 2)', name: 'calculate', col: 1 },
+          { code: '  calculate { }', name: 'calculate', col: 3 },
+          { code: 'items.map(&:upcase)', name: 'upcase', col: 13 },
+          { code: '  &:to_s', name: 'to_s', col: 5 },
+          { code: '"#{p 1}"', name: 'p', col: 4 }
+        ]
+
+        scenarios.forEach(({ code, name, col }) => {
+          const model = createMockModel(code)
+          const results = scanner.scanLines(model, [0])
+          const match = results.get(0)!.find(m => m.name === name)
+          
+          if (!match) {
+            console.log(`Debug results for [${code}]:`, results.get(0))
+          }
+          expect(match, `Failed to find [${name}] in [${code}]`).toBeDefined()
+          expect(match!.col, `Incorrect column for [${name}] in [${code}]`).toBe(col)
+        })
+      })
+
+      it('式展開が複数ある場合も正しく位置を特定できること', () => {
+        const code = '"#{a.first}: #{b.last}"'
+        const model = createMockModel(code)
+        const results = scanner.scanLines(model, [0])
+        const matches = results.get(0)!
+
+        expect(matches).toHaveLength(2)
+        expect(matches[0]).toMatchObject({ name: 'first', col: 6 })
+        expect(matches[1]).toMatchObject({ name: 'last', col: 18 })
+      })
     })
   })
 })

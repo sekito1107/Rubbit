@@ -52,10 +52,23 @@ export class Scanner {
         }
 
         if (name && !this._isBlacklisted(name)) {
+          // マッチしたグループに基づいて正確なカラム位置を計算する
+          let columnOffset = 0
+          if (match[1]) {
+            // .name -> . の次の文字から
+            columnOffset = match[0].indexOf(name)
+          } else if (match[2] || match[3] || match[5]) {
+            // name( or name do or name -> そのまま
+            columnOffset = match[0].indexOf(name)
+          } else if (match[4]) {
+            // &:name -> &: の次の文字から
+            columnOffset = match[0].indexOf(name)
+          }
+
           matches.push({
             name: name,
             line: idx + 1,
-            col: match.index + 2 // 1-indexed
+            col: match.index + columnOffset + 1 // 1-indexed
           })
         }
       }
