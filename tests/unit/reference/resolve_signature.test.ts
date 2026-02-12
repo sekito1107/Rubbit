@@ -37,5 +37,15 @@ describe('ResolveSignature', () => {
       const result = resolver.resolve('File', 'open')
       expect(result!.signature).toBe('File.open')
     })
+    
+    it('Kernelモジュールの特異メソッドの場合、URLをモジュール関数(/m/)に書き換えること', () => {
+      // indexには Kernel.puts しかないとする
+      mockSearcher.findMethod.mockReturnValue(['Kernel.puts'])
+      const result = resolver.resolve('Kernel', 'puts')
+
+      expect(result).not.toBeNull()
+      expect(result!.signature).toBe('Kernel.puts') // シグネチャはそのままでよい
+      expect(result!.url).toContain('/m/puts.html') // URLは /m/ になっていること
+    })
   })
 })
