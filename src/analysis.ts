@@ -49,6 +49,10 @@ export class AnalysisCoordinator {
   start(): void {
     // 1. エディタの変更を監視
     this.editor.onDidChangeModelContent((e: any) => {
+      // コードに変更があったらゴーストテキスト(測定値)を消去する
+      if (this.lspManager && typeof this.lspManager.clearMeasuredValues === 'function') {
+        this.lspManager.clearMeasuredValues()
+      }
       this.tracker.processChangeEvent(e, this.lineMethods)
       this.scheduleAnalysis()
     })

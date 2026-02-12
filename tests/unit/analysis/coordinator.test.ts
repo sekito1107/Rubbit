@@ -18,7 +18,8 @@ describe('AnalysisCoordinator', () => {
       })
     }
     mockLspManager = {
-      flushDocumentSync: vi.fn()
+      flushDocumentSync: vi.fn(),
+      clearMeasuredValues: vi.fn()
     }
     mockRurima = {}
     
@@ -34,6 +35,15 @@ describe('AnalysisCoordinator', () => {
   })
 
   describe('start', () => {
+    it('エディタの変更時に LSP の測定値をクリアすること', () => {
+      coordinator.start()
+      // onDidChangeModelContent のコールバックを取得
+      const callback = vi.mocked(mockEditor.onDidChangeModelContent).mock.calls[0][0]
+      callback({ changes: [] })
+      
+      expect(mockLspManager.clearMeasuredValues).toHaveBeenCalled()
+    })
+
     it('エディタの変更イベントを購読し、初期スキャンをスケジュールすること', () => {
       coordinator.start()
       expect(mockEditor.onDidChangeModelContent).toHaveBeenCalled()
