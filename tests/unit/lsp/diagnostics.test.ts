@@ -87,12 +87,10 @@ describe('HandleDiagnostics', () => {
   it('構文チェック通知を処理できること', () => {
     handler.start();
     const syntaxHandler = mockClient.onNotification.mock.calls.find((c: any) => c[0] === 'rubbit/syntaxCheck')[1];
-    
-    // 有効なケース
+
     syntaxHandler({ valid: true });
     expect(monaco.editor.setModelMarkers).toHaveBeenCalledWith(mockModel, 'ruby-syntax', []);
 
-    // 無効なケース
     syntaxHandler({
       valid: false,
       diagnostics: [{

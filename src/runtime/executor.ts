@@ -16,8 +16,13 @@ export class Executor {
    * コードを実行する
    * @param {string} code 
    */
-  execute(code: string): void {
+  public execute(code: string): void {
     if (!code) return;
-    this.controller.run(code);
+    try {
+      this.controller.run(code);
+    } catch (e: any) {
+      console.error("Execution failed:", e);
+      throw e;
+    }
   }
 }

@@ -95,22 +95,10 @@ describe('EditorComponent', () => {
 
   it('テーマ更新が機能すること', () => {
     component = new EditorComponent(container, persistence);
-    
+
     // Dark mode
     document.documentElement.classList.add('dark');
-    // MutationObserverのコールバックを待つ代わりに、直接 updateTheme を呼ぶか、dom操作をトリガーする
-    // ここでは private method なので、MutationObserver が反応するかを確認するのは難しい (jsdom環境でMutationObserverは動作するが非同期)
-    // 代わりに currentTheme getter のロジックと setTheme の呼び出しを確認
-    
-    // EditorComponentの初期化時にObserverが設定される
-    // classList変更
-    
-    // 内部メソッドにアクセスできないため、publicな振る舞い（DOM変更後の挙動）をテストしたいが、
-    // MutationObserverは非同期なので act() 等が必要かもしれない。
-    // 手っ取り早く確認するため、document.documentElementのクラスを変更して、
-    // 少し待ってから setTheme が呼ばれたか確認するアプローチをとるか、
-    // 単に初期化時のテーマ設定を確認する。
-    
+
     expect(mockMonaco.editor.create).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
       theme: 'vs', // 初期は dark クラスなし
     }));

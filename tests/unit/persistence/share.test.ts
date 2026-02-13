@@ -20,9 +20,8 @@ describe('Share', () => {
     it('Rubyコードを圧縮・エンコードし、正しくURLを生成すること', () => {
       const code = 'puts "hello"'
       const url = share.compress(code)
-      
+
       expect(url).toContain('http://localhost:5173/#code=')
-      // URL-safe Base64 check (no +, /, or = in the payload)
       const hash = new URL(url).hash
       const payload = hash.split('=')[1]
       expect(payload).not.toMatch(/[+/=]/)

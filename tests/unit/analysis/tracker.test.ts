@@ -32,11 +32,9 @@ describe('Tracker', () => {
           text: 'line2\nline3' // 1行が2行になる（1行追加）
         }]
       }
-      
+
       tracker.processChangeEvent(event, lineMethods)
-      
-      // Tracker.js line 26: lineMethods.splice(startLine + 1, 0, ...new Array(diff).fill(null))
-      // startLine = 1, diff = 1 -> splice(2, 0, null)
+
       expect(lineMethods).toEqual(['m1', 'm2', null, 'm3'])
       expect(Array.from(tracker.getDirtyLines())).toContain(1)
       expect(Array.from(tracker.getDirtyLines())).toContain(2)

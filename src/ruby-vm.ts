@@ -1,7 +1,4 @@
 import { LSPClient } from "./lsp/client";
-import { LSP } from "./lsp";
-import { Reference } from "./reference";
-import { AnalysisCoordinator } from "./analysis";
 import RubyWorker from "./ruby-worker?worker";
 
 // グローバル定義は src/types.d.ts に移動
@@ -15,10 +12,8 @@ console.error('[RubyVM] Module loaded');
 export class RubyVM {
   private worker: Worker | null = null;
   public lspClient: LSPClient | null = null;
-  private editor: any = null; // Monaco Editor instance
-  private lspManager: LSP | null = null;
-  private reference: Reference | null = null;
-  private analysis: AnalysisCoordinator | null = null;
+  private editor: any = null;
+  private bootLoader: any = null;
   private rubyVersion: string = "";
 
   // 出力用イベントリスナー
@@ -129,39 +124,19 @@ export class RubyVM {
    * 各ドメイン（LSP, Reference, Analysis）の有効化を試みる
    */
   private async tryActivateDomains(): Promise<void> {
-    if (this.lspClient && this.editor && !this.lspManager && window.__rubyVMReady) {
-      window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
-        detail: { percent: 70, message: "Starting Language Server..." }
-      }));
-      this.lspManager = new LSP(this.lspClient, this.editor);
+    if (this.lspClient && this.editor && !this.bootLoader && window.__rubyVMReady) {
+      // BootLoaderの遅延読み込みと初期化
+      const { BootLoader } = await import("./boot");
+      this.bootLoader = new BootLoader(this, this.editor);
 
       try {
-        await this.lspManager.initialize();
-        this.lspManager.activate();
-        window.rubbitLSPManager = this.lspManager;
-        window.rubbitLSPReady = true;
-        window.dispatchEvent(new CustomEvent("rubbit:lsp-analysis-finished"));
-
-        // Reference ドメインの初期化
-        window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
-          detail: { percent: 85, message: "Loading Reference Index..." }
-        }));
-        this.reference = new Reference();
-        await this.reference.loadIndex();
-
-        // 解析コーディネーターの初期化
-        window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
-          detail: { percent: 100, message: "Ready!" }
-        }));
-        this.analysis = new AnalysisCoordinator(this.editor, this.lspManager, this.reference);
-        window.rubbitAnalysisCoordinator = this.analysis;
-        this.analysis.start();
-
+        await this.bootLoader.boot();
+        
         window.dispatchEvent(new CustomEvent("rubbit:lsp-ready", {
           detail: { version: this.rubyVersion }
         }));
       } catch (e) {
-        console.error("[RubyVM] Failed to initialize domains:", e);
+        console.error("[RubyVM] Failed to initialize domains via BootLoader:", e);
       }
     }
   }
@@ -180,6 +155,8 @@ export class RubyVM {
     window.removeEventListener("editor:initialized", this.boundHandleEditorInitialized);
     if (this.worker) this.worker.terminate();
     if (window.rubyLSP === this.lspClient) delete window.rubyLSP;
-    if (window.rubbitLSPManager === this.lspManager) delete window.rubbitLSPManager;
+    if (this.bootLoader) {
+      this.bootLoader.destroy();
+    }
   }
 }

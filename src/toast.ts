@@ -42,7 +42,7 @@ export class ToastComponent {
     }
   }
 
-  // Event type is Generic Event because CustomEvent type param is harder to enforce strictly in DOM listeners
+
   public show(event: Event): void {
     const customEvent = event as CustomEvent<ToastEventDetail>;
     const { message, type = "success", duration = 3000 } = customEvent.detail;
@@ -65,9 +65,6 @@ export class ToastComponent {
       this.timeout = null;
     }
     if (duration > 0) {
-      // setTimeout returns number in browser env (which is implied by HTMLElement)
-      // but @types/node might make it Timeout. verification needed.
-      // Assuming browser context for UI code.
       this.timeout = window.setTimeout(() => {
         this.hide();
       }, duration);
@@ -84,7 +81,6 @@ export class ToastComponent {
     
     // アイコンの表示/非表示を切り替え
     this.iconContainer.querySelectorAll("svg").forEach((icon: Element) => {
-      // dataset is DOMStringMap
       if ((icon as HTMLElement).dataset.type === type) {
         icon.classList.remove("hidden");
       } else {

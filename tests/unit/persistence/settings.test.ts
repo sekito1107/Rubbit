@@ -11,7 +11,6 @@ describe('Settings', () => {
   }
 
   beforeEach(() => {
-    // Mock localStorage before instantiation because constructor calls _load()
     localStorageMock = {
       getItem: vi.fn(),
       setItem: vi.fn(),

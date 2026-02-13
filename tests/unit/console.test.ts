@@ -42,13 +42,16 @@ describe('ConsoleComponent', () => {
     );
   });
 
-  it('実行ボタンクリック時にコードを実行すること', () => {
+  it('実行ボタンクリック時にコードを実行すること', async () => {
     // コンストラクタでrunButtonがdisabledになっているため解除する
     runButton.removeAttribute('disabled');
     mockEditor.getValue.mockReturnValue('puts "Hello"');
     runButton.click();
+    
     expect(mockEditor.getValue).toHaveBeenCalled();
-    expect(mockRubyVM.run).toHaveBeenCalledWith('puts "Hello"');
+    await vi.waitFor(() => {
+      expect(mockRubyVM.run).toHaveBeenCalledWith('puts "Hello"');
+    });
   });
 
   it('クリアボタンクリック時に出力を消去すること', () => {

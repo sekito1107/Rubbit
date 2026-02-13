@@ -26,7 +26,6 @@ self.onmessage = async (event: MessageEvent) => {
         vm.eval(`$server.add_msg(JS.global[:_tmpLspMsg].to_s)`);
         (self as any)._tmpLspMsg = null;
       } catch (e: any) {
-        // console.error("[RubyWorker] LSP Error:", e.message);
         postMessage({ type: "output", payload: { text: `// LSP Error: ${e.message}` } });
       }
       break;
@@ -39,8 +38,7 @@ self.onmessage = async (event: MessageEvent) => {
 async function initializeVM(wasmUrl: string) {
   try {
     postMessage({ type: "progress", payload: { percent: 10, message: "Starting Ruby Worker..." } });
-    
-    // wasmUrl は通常 /js/rubbit.wasm のようなパス
+
     const fullUrl = new URL(wasmUrl, self.location.origin);
     const response = await fetch(fullUrl);
 
@@ -78,7 +76,6 @@ async function initializeVM(wasmUrl: string) {
           }
         }
       } catch (e) {
-        // failed silently
       }
 
     } catch (e: any) {

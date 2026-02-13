@@ -18,7 +18,6 @@ test.describe('Ghost Text Verification', () => {
   });
 
   test('長い配列の結果が切り詰められずに表示されること', async ({ page }) => {
-    // 1..20 の配列は inspect すると約 60-70 文字になるはず。
     const code = 'x = (1..20).to_a';
     await page.evaluate((c) => {
       window.monacoEditor.setValue(c);
@@ -36,38 +35,7 @@ test.describe('Ghost Text Verification', () => {
             return "ERROR: window.monaco.editor is not defined";
         }
         
-        // すべてのエディタコマンドを取得するには、静的な monaco.editor.getCommands ではなく、
-        // 内部APIにアクセスするか、あるいは特定のアクションIDを直接実行する必要があるかもしれない。
-        // ただし、以前のコードでは window.monaco.editor.getCommands() を呼んでいたが、これは存在しない関数かもしれない。
-        // 正しくは editor インスタンスから getAction を使うか、あるいは trigger を使う。
-        
-        // しかし、TypeProf の measureValue はカスタムコマンドとして登録されているはず。
-        // editor.addCommand で登録されたものは、単純に trigger で呼べるか？
-        // いいえ、addCommand の戻り値は Disposable です。
-        
-        // 登録されたコマンドを探す
-        // Monaco の内部構造（StandaloneCodeEditor）には _commandService があるが、アクセスは難しい。
-        
-        // 実は getCommands は存在しない。
-        // エディタインスタンス経由でアクションを実行する方が確実だが、
-        // typeprof.measureValue は addCommand で登録されているため、Action ではない。
-        
-        // そこで、Action としてではなく、Keybinding 経由か、あるいは
-        // コマンドサービスから直接実行する必要がある。
-        
-        // 回避策: executeCommand を使う
-        // しかし monaco.editor に executeCommand はない。
-        
-        // 調査: src/lsp/execute_command.ts を見ると、LSPの executeCommand リクエストを送っているだけ。
-        // つまり、フロントエンドのコマンドを実行しているわけではない。
-        // いや、inlayHints.ts や hover.ts から呼ばれる。
-        
-        // hover.ts では:
-        // window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", ...)
-        // としている。
-        
-        // なので、テストでも直接 LSP クライアントを呼ぶのが一番早いし確実。
-        
+
         if (!window.rubbitLSPManager) {
             return "ERROR: rubbitLSPManager is not defined";
         }
@@ -76,7 +44,7 @@ test.describe('Ghost Text Verification', () => {
             command: "typeprof.measureValue",
             arguments: [{
                 uri: window.monacoEditor.getModel().uri.toString(),
-                line: 0, // 0-based index (user input line 1 is index 0)
+                line: 0,
                 character: 0,
                 expression: "x"
             }]
@@ -92,11 +60,6 @@ test.describe('Ghost Text Verification', () => {
         return "ERROR: " + e.toString();
       }
     });
-
-
-
-
-    // 以前の 30-40 文字制限なら途中で ... になるはずだが、今は 150 文字まで許容される
 
     expect(result.length).toBeGreaterThan(50);
     expect(result).toContain('20');
@@ -128,7 +91,7 @@ test.describe('Ghost Text Verification', () => {
         command: "typeprof.measureValue",
         arguments: [{
           uri: window.monacoEditor.getModel().uri.toString(),
-          line: 2, // 0-based index. Line 3 is index 2.
+          line: 2,
           character: 2,
           expression: "item"
         }]

@@ -89,7 +89,6 @@ export class ShareComponent {
   }
 
   private updateTabStyles(): void {
-    // Helper to set active/inactive styles
     const setActive = (el: HTMLElement | null, active: boolean) => {
       if (!el) return;
       if (active) {
@@ -112,7 +111,6 @@ export class ShareComponent {
     const code = this.editor.getValue();
     let content = "";
     
-    // Reset Preview state
     if (this.embedPreviewContainer) {
       this.embedPreviewContainer.classList.add('hidden');
     }
@@ -121,17 +119,14 @@ export class ShareComponent {
       switch (this.currentType) {
         case 'url':
           const url = this.service.compress(code);
-          // Update hash for URL sharing
           window.history.replaceState(null, "", url);
           content = url;
           break;
         case 'embed':
           content = this.service.generateEmbedTag(code);
           
-          // Embed Preview
           if (this.embedPreviewContainer && this.embedFrameWrapper) {
             this.embedPreviewContainer.classList.remove('hidden');
-            // Extract src from iframe tag (simple parsing)
             const srcMatch = content.match(/src="([^"]+)"/);
             if (srcMatch && srcMatch[1]) {
               this.embedFrameWrapper.innerHTML = `<iframe src="${srcMatch[1]}" width="100%" height="100%" frameborder="0"></iframe>`;
@@ -167,12 +162,9 @@ export class ShareComponent {
     const hash = window.location.hash.substring(1);
     if (!hash) return;
 
-    // URLデコードは Share クラス側で行われるか確認が必要だが、
-    // ここでは単に渡すだけ。
     const code = this.service.decompress(hash);
     if (code) {
       this.editor.setValue(code);
-      // 一度復元したらハッシュを削除
       history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   }

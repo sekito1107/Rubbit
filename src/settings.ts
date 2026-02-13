@@ -68,7 +68,6 @@ export class SettingsComponent {
   }
 
   private bindEvents(): void {
-    // Listen for changes on all managed inputs
     Object.values(this.elements).forEach(el => {
       if (el) {
         el.addEventListener("change", () => this.save());
@@ -87,8 +86,6 @@ export class SettingsComponent {
       renderWhitespace: this.elements.renderWhitespace?.checked ? 'all' : 'none'
     };
 
-    // Filter undefined values or handle them appropriately in update logic if needed
-    // Here we just update what we have.
     for (const [k, v] of Object.entries(s)) {
       if (v !== undefined) {
         this.settingsStore.update(k, v);
