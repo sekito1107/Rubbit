@@ -1,4 +1,9 @@
 import { DefaultRubyVM } from "@ruby/wasm-wasi/dist/browser";
+import bootstrapCode from "./ruby/bootstrap.rb?raw";
+import envCode from "./ruby/env.rb?raw";
+import workspaceCode from "./ruby/workspace.rb?raw";
+import measureValueCode from "./ruby/measure_value.rb?raw";
+import serverCode from "./ruby/server.rb?raw";
 
 let vm: any = null;
 
@@ -81,18 +86,20 @@ async function initializeVM(wasmUrl: string) {
     // bootstrap.rb (Polyfills & LSP Server) をロードする
     postMessage({ type: "progress", payload: { percent: 50, message: "Loading Bootstrap..." } });
     
-    // Note: bootstrap.rb は public/ruby に置かれている想定
-    const bootstrapUrl = new URL("/ruby/bootstrap.rb", self.location.origin);
-    const bootstrapResponse = await fetch(bootstrapUrl);
-    const bootstrapCode = await bootstrapResponse.text();
-
     // VFSに書き込んで読み込む
     vm.eval(`Dir.mkdir("/src") unless Dir.exist?("/src")`);
     
-    // bootstrap.rb の内容を書き込む (Base64経由)
-    const bootstrapB64 = btoa(unescape(encodeURIComponent(bootstrapCode)));
-    vm.eval(`File.write("/src/bootstrap.rb", "${bootstrapB64}".unpack1("m"))`);
-    
+    const writeRubyFile = (path: string, code: string) => {
+      const b64 = btoa(unescape(encodeURIComponent(code)));
+      vm.eval(`File.write("${path}", "${b64}".unpack1("m"))`);
+    };
+
+    writeRubyFile("/src/bootstrap.rb", bootstrapCode);
+    writeRubyFile("/src/env.rb", envCode);
+    writeRubyFile("/src/workspace.rb", workspaceCode);
+    writeRubyFile("/src/measure_value.rb", measureValueCode);
+    writeRubyFile("/src/server.rb", serverCode);
+
     // LSPからのレスポンスをMain Threadに転送する関数
     (self as any).sendLspResponse = (jsonString: string) => {
       postMessage({ type: "lsp", payload: jsonString });
@@ -102,8 +109,6 @@ async function initializeVM(wasmUrl: string) {
     vm.eval(`
       require "js"
       require_relative "/src/bootstrap"
-      $server = Server.new
-      $server.start(JS.global[:sendLspResponse]) 
     `);
     
     vm.eval(`
