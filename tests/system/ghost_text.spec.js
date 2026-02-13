@@ -7,11 +7,13 @@ test.describe('Ghost Text Verification', () => {
     // 解析終了を待つ
     await page.waitForSelector('.monaco-editor');
     // カスタムイベントを待機して準備完了を確認
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        if (window.rubpadLSPReady) resolve(true);
-        window.addEventListener('rubpad:lsp-analysis-finished', () => resolve(true), { once: true });
-      });
+    await page.evaluate(async () => {
+      for (let i = 0; i < 60; i++) {
+        if (window.rubbitLSPReady) return true;
+        await new Promise(r => setTimeout(r, 500));
+        if (i % 10 === 0) console.log(`Waiting for rubbitLSPReady... i=${i}`);
+      }
+      throw new Error("Timeout waiting for rubbitLSPReady");
     });
   });
 
@@ -20,7 +22,7 @@ test.describe('Ghost Text Verification', () => {
     const code = 'x = (1..20).to_a';
     await page.evaluate((c) => {
       window.monacoEditor.setValue(c);
-      window.rubpadLSPManager.flushDocumentSync();
+      window.rubbitLSPManager.flushDocumentSync();
     }, code);
 
     // 解析を待つ
@@ -61,13 +63,13 @@ test.describe('Ghost Text Verification', () => {
         // いや、inlayHints.ts や hover.ts から呼ばれる。
         
         // hover.ts では:
-        // window.rubpadLSPManager.client.sendRequest("workspace/executeCommand", ...)
+        // window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", ...)
         // としている。
         
         // なので、テストでも直接 LSP クライアントを呼ぶのが一番早いし確実。
         
-        if (!window.rubpadLSPManager) {
-            return "ERROR: rubpadLSPManager is not defined";
+        if (!window.rubbitLSPManager) {
+            return "ERROR: rubbitLSPManager is not defined";
         }
         
         const params = {
@@ -81,7 +83,7 @@ test.describe('Ghost Text Verification', () => {
         };
         
         // LSPクライアントのメソッドを直接呼ぶ
-        const result = await window.rubpadLSPManager.client.sendRequest("workspace/executeCommand", params);
+        const result = await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
         console.log("DEBUG: measureValue result =", result);
         return result;
 
@@ -113,14 +115,14 @@ test.describe('Ghost Text Verification', () => {
     
     await page.evaluate((c) => {
       window.monacoEditor.setValue(c);
-      window.rubpadLSPManager.flushDocumentSync();
+      window.rubbitLSPManager.flushDocumentSync();
     }, code);
 
     // 解析を待つ
     await page.waitForTimeout(1000);
 
     const result = await page.evaluate(async () => {
-      if (!window.rubpadLSPManager) return "ERROR: rulesLSPManager is not defined";
+      if (!window.rubbitLSPManager) return "ERROR: rubbitLSPManager is not defined";
       
       const params = {
         command: "typeprof.measureValue",
@@ -132,7 +134,7 @@ test.describe('Ghost Text Verification', () => {
         }]
       };
       
-      return await window.rubpadLSPManager.client.sendRequest("workspace/executeCommand", params);
+      return await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
     });
 
     console.log("Loop Test Result:", result);

@@ -1,59 +1,71 @@
-# Rubbit (Static Site version)
+# Rubbit
 
-Rubbit is a client-side Ruby playground using Ruby WASM, Stimulus, and Vite.
+Rubbit は、Ruby WASM、TypeScript、および Vite を使用したクライアントサイドで動作する Ruby プレイグラウンドです。
 
-## Features
+## 特徴
 
-- **Ruby WASM**: Run Ruby code directly in your browser without a backend.
-- **Vite + Stimulus**: Modern, fast frontend build system and lightweight JS framework.
-- **Tailwind CSS**: Utility-first CSS for a clean, responsive UI.
-- **Monaco Editor**: Professional editing experience.
-- **Share**: Sync and share your code via URL (compressed with pako).
+- **Ruby WASM**: バックエンドなしで、ブラウザ上で直接 Ruby コードを実行します。
+- **Vite + TypeScript**: 高速なビルドシステムと型安全な開発環境。
+- **Monaco Editor**: プロフェッショナルなコード編集体験。
+- **共有機能**: URL 経由でコードを同期・共有可能（pako による圧縮）。
+- **リファレンス表示**: カーソル位置のメソッドやクラスのドキュメントを即座に表示。
 
-## Getting Started
+## はじめに
 
-### Prerequisites
+### 前提条件
 
-- [Node.js](https://nodejs.org/) (v18+)
+- [Node.js](https://nodejs.org/) (v18 以上)
 
-### Installation
+### インストール
 
 ```bash
 npm install
 ```
 
-### Development
+### 開発環境の起動
 
-Start the development server:
+開発サーバーを起動します：
 
 ```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`.
+アプリは `http://localhost:5173` で利用可能になります。
 
-### Testing
+### テスト
 
-Run E2E tests with Playwright:
+Playwright を使用して E2E テストを実行します：
 
 ```bash
-npx playwright test
+npm run test
 ```
 
-### Build
+ユニットテストを実行します：
 
-Build the production site into `dist/`:
+```bash
+npm run test:unit
+```
+
+### ビルド
+
+プロダクションサイトを `dist/` ディレクトリにビルドします：
 
 ```bash
 npm run build
 ```
 
-The content of `dist/` can be deployed to any static site hosting (GitHub Pages, Vercel, etc.).
+`dist/` の内容は、GitHub Pages、Vercel、Netlify などのあらゆる静的サイトホスティングサービスにデプロイ可能です。
 
-## Architecture
+## アーキテクチャ
 
-- `src/main.js`: Entry point and Stimulus controller registration.
-- `src/controllers/`: Stimulus controllers for UI logic.
-- `src/utils/`: Shared utilities and interactors.
-- `public/`: Static assets including Ruby WASM binaries.
-- `index.html`: Main application layout.
+- `src/main.ts`: エントリポイント。各コンポーネントの初期化を行います。
+- `src/ruby-vm.ts`: Ruby WASM の初期化と実行を管理します。
+- `src/editor.ts`: Monaco Editor のセットアップと操作を管理します。
+- `src/console.ts`: 実行結果の表示とターミナルの操作を管理します。
+- `src/reference/`: Ruby リファレンス表示機能。
+- `public/`: Ruby WASM バイナリやアイコンなどの静的アセット。
+- `index.html`: メインアプリケーションのレイアウト。
+
+## 免責事項
+
+本サービスは現状有姿で提供され、動作を保証するものではありません。入力されたコードはサーバーに送信されず、すべてブラウザ内（WebAssembly）で実行されます。

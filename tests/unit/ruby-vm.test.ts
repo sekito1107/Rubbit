@@ -32,7 +32,7 @@ describe('RubyVM', () => {
     Object.defineProperty(window, '__rubyVMInitializing', { value: false, writable: true, configurable: true });
     Object.defineProperty(window, '__rubyVMReady', { value: false, writable: true, configurable: true });
     Object.defineProperty(window, 'rubyLSP', { value: undefined, writable: true, configurable: true });
-    Object.defineProperty(window, 'rubpadLSPManager', { value: undefined, writable: true, configurable: true });
+    Object.defineProperty(window, 'rubbitLSPManager', { value: undefined, writable: true, configurable: true });
 
     // テスト毎に新しいWorkerモックを作成
     mockWorker = {
@@ -55,10 +55,10 @@ describe('RubyVM', () => {
 
   it('初期化時にWorkerを起動すること', () => {
     vm = new RubyVM();
-    expect(window.Worker).toHaveBeenCalledWith('/js/ruby_worker.js', { type: 'module' });
+    expect(window.Worker).toHaveBeenCalledWith(expect.stringContaining('ruby-worker.ts'), expect.anything());
     expect(mockWorker.postMessage).toHaveBeenCalledWith({
       type: 'initialize',
-      payload: { wasmUrl: '/js/rubpad.wasm' },
+      payload: { wasmUrl: '/ruby/rubbit.wasm' },
     });
   });
 
@@ -113,7 +113,7 @@ describe('RubyVM', () => {
     // Worker初期化を確認
     expect(mockWorker.postMessage).toHaveBeenCalledWith({
        type: 'initialize',
-       payload: { wasmUrl: '/js/rubpad.wasm' },
+       payload: { wasmUrl: '/ruby/rubbit.wasm' },
     });
 
     // run呼び出し

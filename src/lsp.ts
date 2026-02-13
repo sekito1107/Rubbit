@@ -55,6 +55,10 @@ export class LSP {
     
     // Inlay Hints を初期状態で有効化
     this.editor.updateOptions({ inlayHints: { enabled: "on" } });
+
+    // テスト用に公開
+    (window as any).rubbitLSPManager = this;
+    (window as any).rubbitLSPReady = true;
   }
 
   /**
