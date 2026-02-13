@@ -83,12 +83,15 @@ end
 
 class Server
   def initialize
+    JS.global[:console].log("[RubyLSP] Server.initialize started")
     @read_msg = nil
     @error = nil
 
     # TypeProfコアの初期化
     rbs_list = File.exist?("/workspace/stdlib.rbs") ? ["/workspace/stdlib.rbs"] : []
+    JS.global[:console].log("[RubyLSP] RBS list: #{rbs_list}")
     @core = TypeProf::Core::Service.new(rbs_files: rbs_list)
+    JS.global[:console].log("[RubyLSP] TypeProf::Core::Service initialized")
     
     # ユーザーコード実行用のBindingを作成 (ローカル変数を保持するため)
     @user_binding = TOPLEVEL_BINDING.eval("binding")
@@ -185,9 +188,12 @@ class Server
     end
 
     @read_msg = json
+    JS.global[:console].log("[RubyLSP] Resuming fiber...")
     @fiber.resume
+    JS.global[:console].log("[RubyLSP] Fiber resumed.")
     if @error
       error, @error = @error, nil
+      JS.global[:console].log("[RubyLSP] Error in fiber: #{error.message}")
       raise error
     end
   end
