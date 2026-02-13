@@ -25,8 +25,9 @@ self.onmessage = async (event: MessageEvent) => {
         (self as any)._tmpLspMsg = payload.code;
         vm.eval(`$server.add_msg(JS.global[:_tmpLspMsg].to_s)`);
         (self as any)._tmpLspMsg = null;
-      } catch (e) {
-        // failed silently
+      } catch (e: any) {
+        // console.error("[RubyWorker] LSP Error:", e.message);
+        postMessage({ type: "output", payload: { text: `// LSP Error: ${e.message}` } });
       }
       break;
   }
