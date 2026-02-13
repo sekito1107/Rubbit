@@ -34,7 +34,7 @@ export class ResolveType {
       }
 
       return LSPResponseParser.parseClassNameFromHover(markdownContent);
-    } catch (e) {
+    } catch {
       return null;
     }
   }

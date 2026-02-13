@@ -24,14 +24,11 @@ export class Resolver {
   }> {
     try {
       // 1. LSP を使用してクラス名を特定
-      let className = await this.resolution.resolveMethodAt(line, col, { 
-        methodName: methodName,
-        skipSync: true 
-      })
+      let className = await this.resolution.resolveMethodAt(line, col)
       
       // 2. フォールバック: レシーバ（ドットの直前）を解決
       if (!className && col > 1) {
-        className = await this.resolution.resolveAtPosition(line, col - 1, { skipSync: true, maxRetries: 1 })
+        className = await this.resolution.resolveAtPosition(line, col - 1)
       }
 
       if (className) {

@@ -8,7 +8,6 @@ const RUBY_WASM_URL = "/ruby/rubbit.wasm";
 /**
  * Ruby VM & 実行時マネージャ
  */
-console.error('[RubyVM] Module loaded');
 export class RubyVM {
   private worker: Worker | null = null;
   public lspClient: LSPClient | null = null;
@@ -125,6 +124,7 @@ export class RubyVM {
    */
   private async tryActivateDomains(): Promise<void> {
     if (this.lspClient && this.editor && !this.bootLoader && window.__rubyVMReady) {
+      console.log("[RubyVM] Starting BootLoader...");
       // BootLoaderの遅延読み込みと初期化
       const { BootLoader } = await import("./boot");
       this.bootLoader = new BootLoader(this, this.editor);

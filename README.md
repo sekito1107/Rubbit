@@ -16,10 +16,12 @@ Rubbit は、Ruby WASM、TypeScript、および Vite を使用したクライア
 
 - [Node.js](https://nodejs.org/) (v18 以上)
 
-### インストール
+### インストール & セットアップ
+
+依存関係のインストールと、必要なリソース（RBS）の生成を一度に行います：
 
 ```bash
-npm install
+npm run setup
 ```
 
 ### 開発環境の起動
@@ -34,16 +36,23 @@ npm run dev
 
 ### テスト
 
-Playwright を使用して E2E テストを実行します：
+ユニットテストと E2E テストの両方を実行します：
 
 ```bash
-npm run test
+npm test
 ```
 
-ユニットテストを実行します：
+個別に実行する場合：
+- ユニットテスト: `npm run test:unit`
+- E2E テスト: `npx playwright test`
+
+### リント
+
+ESLint による静的解析と Prettier による整形を行います：
 
 ```bash
-npm run test:unit
+npm run lint    # チェックのみ
+npm run format  # 自動整形
 ```
 
 ### ビルド
@@ -64,6 +73,10 @@ npm run build
 - `src/console.ts`: 実行結果の表示とターミナルの操作を管理します。
 - `src/reference/`: Ruby リファレンス表示機能。
 - `public/`: Ruby WASM バイナリやアイコンなどの静的アセット。
+  - `public/ruby/rubbit.wasm`: Ruby WASM 本体。
+  - `public/ruby/bootstrap.rb`: 初期化スクリプト。
+  - `public/rbs/ruby-stdlib.rbs`: マージされた RBS ファイル（`npm run setup` で生成）。
+- `scripts/`: メンテナンス用のスクリプト（RBS のマージなど）。
 - `index.html`: メインアプリケーションのレイアウト。
 
 ## 免責事項

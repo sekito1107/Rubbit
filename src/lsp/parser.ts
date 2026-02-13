@@ -62,7 +62,7 @@ export class LSPResponseParser {
     if (!typeName) return null;
     
     // ジェネリクス除去: Array[Integer] -> Array
-    let normalized = typeName.replace(/\[.*\]$/, "");
+    const normalized = typeName.replace(/\[.*\]$/, "");
     
     // 文字列リテラルや特殊な型表現の変換
     if (normalized.startsWith('"') || normalized.startsWith("'")) return "String";

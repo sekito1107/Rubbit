@@ -3,17 +3,25 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Ghost Text Verification', () => {
   test.beforeEach(async ({ page }) => {
+    page.on('console', msg => console.log(`[Browser Console] ${msg.text()}`));
     await page.goto('/');
     // 解析終了を待つ
     await page.waitForSelector('.monaco-editor');
     // カスタムイベントを待機して準備完了を確認
     await page.evaluate(async () => {
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 120; i++) { // 60秒
         if (window.rubbitLSPReady) return true;
+        if (i % 20 === 0) console.log(`Waiting for rubbitLSPReady... i=${i}`);
         await new Promise(r => setTimeout(r, 500));
-        if (i % 10 === 0) console.log(`Waiting for rubbitLSPReady... i=${i}`);
       }
-      throw new Error("Timeout waiting for rubbitLSPReady");
+      const debug = {
+        lspReady: window.rubbitLSPReady,
+        monaco: !!window.monaco,
+        editor: !!window.monacoEditor,
+        initializing: window.__rubyVMInitializing,
+        ready: window.__rubyVMReady
+      };
+      throw new Error(`LSP initialization HANG detected. State: ${JSON.stringify(debug)}`);
     });
   });
 

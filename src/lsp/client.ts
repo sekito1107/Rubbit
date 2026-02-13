@@ -139,7 +139,7 @@ export class LSPClient {
           }
         }
       }
-    } catch (e) {
+    } catch {
       // failed silently
     }
   }

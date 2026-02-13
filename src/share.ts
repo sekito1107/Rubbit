@@ -117,12 +117,13 @@ export class ShareComponent {
     
     try {
       switch (this.currentType) {
-        case 'url':
+        case 'url': {
           const url = this.service.compress(code);
           window.history.replaceState(null, "", url);
           content = url;
           break;
-        case 'embed':
+        }
+        case 'embed': {
           content = this.service.generateEmbedTag(code);
           
           if (this.embedPreviewContainer && this.embedFrameWrapper) {
@@ -133,9 +134,11 @@ export class ShareComponent {
             }
           }
           break;
-        case 'block':
+        }
+        case 'block': {
           content = this.service.generateCodeBlock(code);
           break;
+        }
       }
       this.previewArea.value = content;
     } catch (e) {

@@ -1,4 +1,9 @@
 import { DefaultRubyVM } from "@ruby/wasm-wasi/dist/browser";
+import bootstrapCode from "./ruby/bootstrap.rb?raw";
+import envCode from "./ruby/env.rb?raw";
+import workspaceCode from "./ruby/workspace.rb?raw";
+import measureValueCode from "./ruby/measure_value.rb?raw";
+import serverCode from "./ruby/server.rb?raw";
 
 let vm: any = null;
 
@@ -13,10 +18,7 @@ self.onmessage = async (event: MessageEvent) => {
       await initializeVM(payload.wasmUrl);
       break;
     case "run":
-      if (!vm) {
-        postMessage({ type: "output", payload: { text: "// Error: Ruby VM is not ready yet." } });
-        return;
-      }
+      if (!vm) return;
       runCode(payload.code);
       break;
     case "lsp":
@@ -48,12 +50,11 @@ async function initializeVM(wasmUrl: string) {
 
     const buffer = await response.arrayBuffer();
 
-    try {
-      postMessage({ type: "progress", payload: { percent: 30, message: "Compiling Ruby WASM..." } });
-      const module = await WebAssembly.compile(buffer);
-      
-      const result = await DefaultRubyVM(module);
-      vm = result.vm;
+    postMessage({ type: "progress", payload: { percent: 30, message: "Compiling Ruby WASM..." } });
+    const module = await WebAssembly.compile(buffer);
+    
+    const result = await DefaultRubyVM(module);
+    vm = result.vm;
 
       // RBS標準ライブラリの取得と配置
       try {
@@ -61,42 +62,44 @@ async function initializeVM(wasmUrl: string) {
         if (rbsResponse.ok) {
           const rbsBuffer = await rbsResponse.arrayBuffer();
           const bytes = new Uint8Array(rbsBuffer);
-          const CHUNK_SIZE = 64 * 1024; // 64KB 単位で分割
+          const CHUNK_SIZE = 256 * 1024; // 256KB 単位で分割
 
           vm.eval(`Dir.mkdir('/workspace') unless Dir.exist?('/workspace')`);
 
           for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
             const chunk = bytes.slice(i, i + CHUNK_SIZE);
-            const hexChunk = Array.from(chunk)
-              .map(b => b.toString(16).padStart(2, '0'))
-              .join('');
+            // Hex変換の高速化
+            let hexChunk = '';
+            for (let j = 0; j < chunk.length; j++) {
+              hexChunk += chunk[j].toString(16).padStart(2, '0');
+            }
 
             const mode = (i === 0) ? 'wb' : 'ab';
             vm.eval(`File.open('/workspace/stdlib.rbs', '${mode}') { |f| f.write(['${hexChunk}'].pack('H*')) }`);
           }
         }
-      } catch (e) {
+      } catch {
+        // Ignore RBS fetch errors
       }
-
-    } catch (e: any) {
-      throw e;
-    }
 
     // bootstrap.rb (Polyfills & LSP Server) をロードする
     postMessage({ type: "progress", payload: { percent: 50, message: "Loading Bootstrap..." } });
     
-    // Note: bootstrap.rb は public/js に置かれている想定
-    const bootstrapUrl = new URL("/ruby/bootstrap.rb", self.location.origin);
-    const bootstrapResponse = await fetch(bootstrapUrl);
-    const bootstrapCode = await bootstrapResponse.text();
-
     // VFSに書き込んで読み込む
     vm.eval(`Dir.mkdir("/src") unless Dir.exist?("/src")`);
     
-    // bootstrap.rb の内容を書き込む (Base64経由)
-    const bootstrapB64 = btoa(unescape(encodeURIComponent(bootstrapCode)));
-    vm.eval(`File.write("/src/bootstrap.rb", "${bootstrapB64}".unpack1("m"))`);
-    
+    const writeRubyFile = (path: string, code: string) => {
+      const b64 = btoa(unescape(encodeURIComponent(code)));
+      vm.eval(`File.write("${path}", "${b64}".unpack1("m"))`);
+    };
+
+    writeRubyFile("/src/bootstrap.rb", bootstrapCode);
+    writeRubyFile("/src/env.rb", envCode);
+    writeRubyFile("/src/workspace.rb", workspaceCode);
+    writeRubyFile("/src/measure_value.rb", measureValueCode);
+    writeRubyFile("/src/server.rb", serverCode);
+
+
     // LSPからのレスポンスをMain Threadに転送する関数
     (self as any).sendLspResponse = (jsonString: string) => {
       postMessage({ type: "lsp", payload: jsonString });
@@ -106,8 +109,6 @@ async function initializeVM(wasmUrl: string) {
     vm.eval(`
       require "js"
       require_relative "/src/bootstrap"
-      $server = Server.new
-      $server.start(JS.global[:sendLspResponse]) 
     `);
     
     vm.eval(`

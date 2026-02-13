@@ -38,7 +38,7 @@ export class ProvideHover {
           const wordInfo = model.getWordAtPosition(position);
           const expression = wordInfo ? wordInfo.word : "";
 
-          let additionalContents: { value: string; isTrusted: boolean }[] = [];
+          const additionalContents: { value: string; isTrusted: boolean }[] = [];
           
           if (this.shouldShowEvaluateLink(model, position, wordInfo, markdownContent)) {
             const params = { expression: expression, line: position.lineNumber - 1, character: position.column };
@@ -53,7 +53,7 @@ export class ProvideHover {
               ...additionalContents
             ]
           };
-        } catch (e) {
+        } catch {
           return null;
         }
       }

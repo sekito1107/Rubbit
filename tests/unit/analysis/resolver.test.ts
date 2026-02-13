@@ -33,7 +33,7 @@ describe('Resolver', () => {
       expect(result.status).toBe('resolved')
       expect(result.className).toBe('Array')
       expect(result.url).toContain('Array.html#I_PUSH')
-      expect(resolution.resolveMethodAt).toHaveBeenCalledWith(10, 5, expect.anything())
+      expect(resolution.resolveMethodAt).toHaveBeenCalledWith(10, 5)
     })
 
     it('直接の解決が失敗した場合、レシーバ（ドットの左）の解決を試みること（フォールバック）', async () => {
@@ -49,7 +49,7 @@ describe('Resolver', () => {
 
       const result = await resolver.resolve('upcase', 10, 10)
 
-      expect(resolution.resolveAtPosition).toHaveBeenCalledWith(10, 9, expect.anything())
+      expect(resolution.resolveAtPosition).toHaveBeenCalledWith(10, 9)
       expect(result.status).toBe('resolved')
       expect(result.className).toBe('String')
     })

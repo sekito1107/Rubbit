@@ -11,7 +11,7 @@ export class Resolution {
   /**
    * 指定された位置の型を特定し、クラス名を返す
    */
-  async resolveAtPosition(line: number, col: number, _options: any = {}): Promise<string | null> {
+  async resolveAtPosition(line: number, col: number): Promise<string | null> {
     try {
       // 0. コメント内チェック
       const model = this.lsp.model
@@ -58,8 +58,8 @@ export class Resolution {
    * メソッド名に対応する定義位置での解決を試みる
    * Scanner から渡される col は既に識別子の開始位置であるため、そのまま使用する
    */
-  async resolveMethodAt(line: number, col: number, _options: any = {}): Promise<string | null> {
-    return this.resolveAtPosition(line, col, _options)
+  async resolveMethodAt(line: number, col: number): Promise<string | null> {
+    return this.resolveAtPosition(line, col)
   }
 
   /**

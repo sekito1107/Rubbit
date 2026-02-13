@@ -10,16 +10,16 @@ export class URLGenerator {
    */
   static encodeMethodName(name: string): string {
     return name
-      .replace(/\=/g, "=3d")
+      .replace(/=/g, "=3d")
       .replace(/\[/g, "=5b").replace(/\]/g, "=5d")
-      .replace(/\+/g, "=2b").replace(/\-/g, "=2d")
+      .replace(/\+/g, "=2b").replace(/-/g, "=2d")
       .replace(/\*/g, "=2a").replace(/\//g, "=2f")
-      .replace(/\%/g, "=25").replace(/\</g, "=3c")
-      .replace(/\>/g, "=3e")
-      .replace(/\!/g, "=21").replace(/\?/g, "=3f")
-      .replace(/\~/g, "=7e").replace(/\^/g, "=5e")
-      .replace(/\&/g, "=26").replace(/\|/g, "=7c")
-      .replace(/\`/g, "=60")
+      .replace(/%/g, "=25").replace(/</g, "=3c")
+      .replace(/>/g, "=3e")
+      .replace(/!/g, "=21").replace(/\?/g, "=3f")
+      .replace(/~/g, "=7e").replace(/\^/g, "=5e")
+      .replace(/&/g, "=26").replace(/\|/g, "=7c")
+      .replace(/`/g, "=60")
   }
 
   /**
