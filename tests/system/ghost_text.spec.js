@@ -117,6 +117,46 @@ test.describe('Ghost Text Verification', () => {
     expect(result.split(',').length).toBe(3);
   });
 
+  test('ループ内で同じオブジェクトが破壊的に変更されても、各ステップの値が正しくキャプチャされること', async ({ page }) => {
+    const code = [
+      'a = "Ruby"',
+      '3.times do',
+      '  a << "!"',
+      'end'
+    ].join('\n');
+    
+    await page.evaluate((c) => {
+      window.monacoEditor.setValue(c);
+      window.rubbitLSPManager.flushDocumentSync();
+    }, code);
+
+    // 解析を待つ
+    await page.waitForTimeout(1000);
+
+    const result = await page.evaluate(async () => {
+      if (!window.rubbitLSPManager) return "ERROR: rubbitLSPManager is not defined";
+      
+      const params = {
+        command: "typeprof.measureValue",
+        arguments: [{
+          uri: window.monacoEditor.getModel().uri.toString(),
+          line: 2,
+          character: 2,
+          expression: "a"
+        }]
+      };
+      
+      return await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
+    });
+
+    console.log("Mutable Loop Test Result:", result);
+    // 期待値: "\"Ruby!\"", "\"Ruby!!\"", "\"Ruby!!!\""
+    expect(result).toContain('"Ruby!"');
+    expect(result).toContain('"Ruby!!"');
+    expect(result).toContain('"Ruby!!!"');
+    expect(result.split(',').length).toBe(3);
+  });
+
   test('メソッド定義行でパラーメタを確認した際、未来の呼び出し時の値が表示されないこと', async ({ page }) => {
     const code = [
       'class DataProcessor',
