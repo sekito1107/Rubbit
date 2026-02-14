@@ -15,7 +15,6 @@ function parseRbs(filePath) {
   const contextStack = [];
 
   for (let line of lines) {
-    const rawLine = line;
     line = line.trim();
     if (!line || line.startsWith('#')) continue;
 
