@@ -13,6 +13,7 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
+*.tmp
 !/log/.keep
 !/tmp/.keep
 
@@ -54,3 +55,7 @@ playwright-report/
 test-results/
 .playwright/
 .vite-inspect/
+
+# Project Generated Data
+/inheritance_map_v2.json
+/rurima_index_v2.json
