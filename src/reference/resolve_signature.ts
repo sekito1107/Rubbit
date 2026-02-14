@@ -7,17 +7,34 @@ import type { IndexSearcher } from "./index_searcher"
 export class ResolveSignature {
   // 主要なクラスの継承/ミックスイン関係
   static readonly INHERITANCE_MAP: Record<string, string[]> = {
-    "Array": ["Array", "Enumerable", "Object", "Kernel", "BasicObject"],
-    "String": ["String", "Comparable", "Object", "Kernel", "BasicObject"],
-    "Hash": ["Hash", "Enumerable", "Object", "Kernel", "BasicObject"],
-    "Integer": ["Integer", "Numeric", "Comparable", "Object", "Kernel", "BasicObject"],
-    "Float": ["Float", "Numeric", "Comparable", "Object", "Kernel", "BasicObject"],
-    "Symbol": ["Symbol", "Comparable", "Object", "Kernel", "BasicObject"],
-    "Range": ["Range", "Enumerable", "Object", "Kernel", "BasicObject"],
-    "Enumerator": ["Enumerator", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "BasicObject": ["BasicObject", "Object", "Kernel"],
     "Module": ["Module", "Object", "Kernel", "BasicObject"],
-    "Class": ["Class", "Module", "Object", "Kernel", "BasicObject"]
+    "String": ["String", "Comparable", "Object", "Kernel", "BasicObject"],
+    "Integer": ["Integer", "Object", "Kernel", "BasicObject"],
+    "Float": ["Float", "Object", "Kernel", "BasicObject"],
+    "Symbol": ["Symbol", "Comparable", "Object", "Kernel", "BasicObject"],
+    "Array": ["Array", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "Hash": ["Hash", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "Regexp": ["Regexp", "Object", "Kernel", "BasicObject"],
+    "Range": ["Range", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "Object": ["Object", "Kernel", "BasicObject"],
+    "Numeric": ["Numeric", "Comparable", "Object", "Kernel", "BasicObject"],
+    "Enumerable": ["Enumerable", "Object", "Kernel", "BasicObject"],
+    "Time": ["Time", "Comparable", "Object", "Kernel", "BasicObject"],
+    "Date": ["Date", "Comparable", "Object", "Kernel", "BasicObject"],
+    "DateTime": ["DateTime", "Date", "Comparable", "Object", "Kernel", "BasicObject"],
+    "IO": ["IO", "File::Constants", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "Kernel": ["Kernel", "Object", "BasicObject"],
+    "Dir": ["Dir", "Enumerable", "Object", "Kernel", "BasicObject"],
+    "Thread": ["Thread", "Object", "Kernel", "BasicObject"],
+    "Fiber": ["Fiber", "Object", "Kernel", "BasicObject"],
+    "JSON": ["JSON", "Object", "Kernel", "BasicObject"],
+    "Psych": ["Psych", "Object", "Kernel", "BasicObject"],
+    "Class": ["Class", "Module", "Object", "Kernel", "BasicObject"],
+    "File": ["File", "Generic", "URI", "Object", "Kernel", "BasicObject"],
+    "Math": ["Math", "Object", "Kernel", "BasicObject"]
   }
+
 
   private searcher: IndexSearcher
 
