@@ -101,20 +101,16 @@ function buildAncestorChain(className, relationships, includes) {
 const { relationships, includes } = parseRbs(rbsPath);
 const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
 
-// インデックスに含まれる全クラスを抽出
-const allClasses = new Set();
-for (const [methodName, candidates] of Object.entries(index)) {
-  for (const candidate of candidates) {
-    const classMatch = candidate.match(/^([^#\.]+)/);
-    if (classMatch) {
-      allClasses.add(classMatch[1]);
-    }
-  }
-}
+// RBSに含まれる全クラス・モジュールを対象にする
+const allClasses = new Set([
+  ...Object.keys(relationships),
+  ...Object.keys(includes)
+]);
 
 const inheritanceMap = {};
 for (const className of allClasses) {
   inheritanceMap[className] = buildAncestorChain(className, relationships, includes);
 }
+
 
 console.log(JSON.stringify(inheritanceMap, null, 2));
