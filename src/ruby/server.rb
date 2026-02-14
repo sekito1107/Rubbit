@@ -73,7 +73,12 @@ class Server
     end
 
     @read_msg = json
-    @fiber.resume
+    begin
+      @fiber.resume
+    rescue => e
+      write(method: "window/showMessage", params: { type: 1, message: "LSP Fatal Error: #{e.message}" })
+    end
+
     if @error
       error, @error = @error, nil
       raise error

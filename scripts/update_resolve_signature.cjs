@@ -13,9 +13,9 @@ const map = JSON.parse(fs.readFileSync(mapPath, 'utf-8'));
 const resolveContent = fs.readFileSync(resolvePath, 'utf-8');
 
 const newMapStr = '  static readonly INHERITANCE_MAP: Record<string, string[]> = ' + 
-  JSON.stringify(map, null, 2).split('\n').join('\n  ') + ';';
+  JSON.stringify(map, null, 2).split('\n').join('\n  ');
 
-const regex = /static readonly INHERITANCE_MAP: Record<string, string\[\]> = \{[\s\S]+?\};/;
+const regex = /static readonly INHERITANCE_MAP: Record<string, string\[\]> = \{[\s\S]+?\n\s+\}/;
 const updatedContent = resolveContent.replace(regex, newMapStr);
 
 fs.writeFileSync(resolvePath, updatedContent);

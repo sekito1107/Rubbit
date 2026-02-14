@@ -46,15 +46,33 @@ module MeasureValue
           next unless tp.path == "(eval)"
 
           if tp.lineno == target_line && !CapturedValue.target_triggered && tp.event != :call && tp.event != :return
-            CapturedValue.target_triggered = true
-            next
+            # 呼び出し元が未来にあるかチェック
+            eval_locs = caller_locations.select { |l| l.path == "(eval)" }
+            # ターゲット行以外からの呼び出しを探す
+            immediate_caller = eval_locs.find { |l| l.lineno != target_line }
+            is_future = immediate_caller && immediate_caller.lineno > target_line
+
+            unless is_future
+              CapturedValue.target_triggered = true
+              next
+            end
           end
 
           if CapturedValue.target_triggered
             begin
               val = tp.binding.eval(expression)
-              CapturedValue.add(val)
               
+              # その場でのスナップショット（inspect文字列）を保存する
+              # これにより破壊的変更（<< 等）があってもキャプチャ時点の値が保持される
+              result_str = if val.is_a?(Exception)
+                             "(#{val.class}: #{val.message})"
+                           else
+                             s = val.inspect.to_s
+                             limit = 200
+                             s.length > limit ? s[0...limit] + "..." : s
+                           end
+              
+              CapturedValue.add(result_str)
               CapturedValue.target_triggered = false
               
               if CapturedValue.count >= MAX_CAPTURES
@@ -66,7 +84,7 @@ module MeasureValue
               # まだ評価できない場合(NameError等)かつターゲット行内の場合は続行。
               # 物理行を超えていたら（ターゲット行をスキップした場合など）諦めて記録。
               if tp.lineno > target_line
-                CapturedValue.add(e)
+                CapturedValue.add("(#{e.class}: #{e.message})")
                 CapturedValue.target_triggered = false
               end
             end
@@ -83,31 +101,18 @@ module MeasureValue
         rescue RubbitStopExecution
           # 正常停止
         rescue => e
-          CapturedValue.add(e) unless CapturedValue.found?
+          CapturedValue.add("(#{e.class}: #{e.message})") unless CapturedValue.found?
         end
       end
 
       if CapturedValue.found?
-        results = CapturedValue.get_all.map do |val|
-          if val.is_a?(Exception)
-            "(#{val.class}: #{val.message})"
-          else
-            # 評価結果の inspect 文字列を取得
-            result_str = val.inspect.to_s
-            limit = 200
-            if result_str.length > limit
-              result_str = result_str[0...limit] + "..."
-            end
-            result_str
-          end
-        end
-        results.join(", ")
+        CapturedValue.get_all.join(", ")
       else
         ""
       end
     rescue => e
       if CapturedValue.found?
-        CapturedValue.get_all.map(&:inspect).join(", ")
+        CapturedValue.get_all.join(", ")
       else
         "(Error: #{e.message})"
       end

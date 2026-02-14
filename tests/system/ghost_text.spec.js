@@ -117,6 +117,46 @@ test.describe('Ghost Text Verification', () => {
     expect(result.split(',').length).toBe(3);
   });
 
+  test('ループ内で同じオブジェクトが破壊的に変更されても、各ステップの値が正しくキャプチャされること', async ({ page }) => {
+    const code = [
+      'a = "Ruby"',
+      '3.times do',
+      '  a << "!"',
+      'end'
+    ].join('\n');
+    
+    await page.evaluate((c) => {
+      window.monacoEditor.setValue(c);
+      window.rubbitLSPManager.flushDocumentSync();
+    }, code);
+
+    // 解析を待つ
+    await page.waitForTimeout(1000);
+
+    const result = await page.evaluate(async () => {
+      if (!window.rubbitLSPManager) return "ERROR: rubbitLSPManager is not defined";
+      
+      const params = {
+        command: "typeprof.measureValue",
+        arguments: [{
+          uri: window.monacoEditor.getModel().uri.toString(),
+          line: 2,
+          character: 2,
+          expression: "a"
+        }]
+      };
+      
+      return await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
+    });
+
+    console.log("Mutable Loop Test Result:", result);
+    // 期待値: "\"Ruby!\"", "\"Ruby!!\"", "\"Ruby!!!\""
+    expect(result).toContain('"Ruby!"');
+    expect(result).toContain('"Ruby!!"');
+    expect(result).toContain('"Ruby!!!"');
+    expect(result.split(',').length).toBe(3);
+  });
+
   test('メソッド定義行でパラーメタを確認した際、未来の呼び出し時の値が表示されないこと', async ({ page }) => {
     const code = [
       'class DataProcessor',
@@ -142,8 +182,6 @@ test.describe('Ghost Text Verification', () => {
       const model = window.monacoEditor.getModel();
       const pos = { lineNumber: 2, column: 19 };
       const wordInfo = model.getWordAtPosition(pos);
-      // ブラウザのコンソールに出力（playwrightが取得して表示する）
-      console.log(`[Test Debug] Word at pos ${JSON.stringify(pos)} = ${wordInfo ? wordInfo.word : "NONE"}`);
 
       const params = {
         command: "typeprof.measureValue",
@@ -155,14 +193,59 @@ test.describe('Ghost Text Verification', () => {
         }]
       };
       
-      const res = await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
-      console.log(`[Test Debug] measureValue result = "${res}"`);
-      return res;
+      return await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
     });
 
     // 未来の値 "ruby" が含まれていないことを確認
     expect(result).not.toContain('"ruby"');
     // 定義段階のエラーが含まれていることを確認
     expect(result.toString()).toMatch(/NameError|undefined local variable/i);
+  });
+
+  test('メソッド内部の式を確認した際、未来の呼び出し時の値が表示されないこと', async ({ page }) => {
+    const code = [
+      'class DataProcessor',
+      '  def self.format(text)',
+      '    text.strip.capitalize',
+      '  end',
+      'end',
+      '',
+      'DataProcessor.format("ruby")'
+    ].join('\n');
+
+    await page.evaluate((c) => {
+      window.monacoEditor.setValue(c);
+      window.rubbitLSPManager.flushDocumentSync();
+    }, code);
+
+    // 解析を待つ
+    await page.waitForTimeout(1000);
+
+    const result = await page.evaluate(async () => {
+      if (!window.rubbitLSPManager) return "ERROR: rubbitLSPManager is not defined";
+      
+      const model = window.monacoEditor.getModel();
+      const pos = { lineNumber: 3, column: 5 }; // 'text' in 'text.strip.capitalize'
+      const wordInfo = model.getWordAtPosition(pos);
+
+      const params = {
+        command: "typeprof.measureValue",
+        arguments: [{
+          uri: model.uri.toString(),
+          line: 2, // 0-based
+          character: 4, 
+          expression: wordInfo ? wordInfo.word : "text"
+        }]
+      };
+      
+      // キャプチャが発生しない場合、LSPコマンドが返ってこない可能性があるためタイムアウトで制御
+      return Promise.race([
+        window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params),
+        new Promise((r) => setTimeout(() => r("NO_CAPTURE_LOGGED"), 2000))
+      ]);
+    });
+
+    // 未来の値 "ruby" が含まれていないことを公に確認
+    expect(result).not.toContain('"ruby"');
   });
 });

@@ -24,15 +24,15 @@ export class ProvideHover {
               line: position.lineNumber - 1, 
               character: position.column - 1
             }
-          });
-
-          if (!response || !response.contents) return null;
+          }).catch(() => null);
 
           let markdownContent: string = "";
-          if (typeof response.contents === "string") {
-            markdownContent = response.contents;
-          } else if (typeof response.contents === "object" && response.contents.value) {
-            markdownContent = response.contents.value;
+          if (response && response.contents) {
+            if (typeof response.contents === "string") {
+              markdownContent = response.contents;
+            } else if (typeof response.contents === "object" && response.contents.value) {
+              markdownContent = response.contents.value;
+            }
           }
 
           const wordInfo = model.getWordAtPosition(position);
@@ -46,10 +46,14 @@ export class ProvideHover {
             additionalContents.push({ value: `[値を確認: ${expression}](${measureCmd})`, isTrusted: true });
           }
 
+          if (markdownContent === "" && additionalContents.length === 0) return null;
+
           return {
-            range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+            range: wordInfo 
+              ? new monaco.Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn)
+              : new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
             contents: [
-              { value: markdownContent, isTrusted: true },
+              ...(markdownContent ? [{ value: markdownContent, isTrusted: true }] : []),
               ...additionalContents
             ]
           };
@@ -69,7 +73,10 @@ export class ProvideHover {
     if (!wordInfo) return false;
     const expression = wordInfo.word;
     
-    const isMethod = markdownContent.includes('#') || (markdownContent.includes('.') && !markdownContent.includes('..'));
+    // シグネチャのみをチェックするために最初の1行に絞る
+    const firstLine = markdownContent.split('\n')[0] || "";
+    const isMethod = firstLine.includes('#') || (firstLine.includes('.') && !firstLine.includes('..'));
+    
     const isKeyword = [
       "if", "else", "elsif", "end", "def", "class", "module", "do", "begin", "rescue", "ensure",
       "puts", "p", "yield", "require", "require_relative", "include", "extend", "module_function",
