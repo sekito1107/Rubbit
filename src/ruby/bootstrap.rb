@@ -13,20 +13,10 @@ require_relative "workspace"
 require_relative "measure_value"
 require_relative "server"
 
-# TypeProf 0.30.1 を WASM 環境で動作させるための初期化調整パッチ
-module TypeProf::Core
-  class Service
-    alias_method :_orig_update_rbs_file, :update_rbs_file
-    def update_rbs_file(path, content)
-      @rbs_env ||= RBS::Environment.new
-      _orig_update_rbs_file(path, content)
-    end
-  end
-end
-
-# パッチ適用後に初期化
+# TypeProfコアの初期化
 rbs_path = "/rbs/ruby-stdlib.rbs"
-core = TypeProf::Core::Service.new(rbs_files: [rbs_path])
+rbs_list = File.exist?(rbs_path) ? [rbs_path] : []
+core = TypeProf::Core::Service.new(rbs_files: rbs_list)
 
 # ウォームアップ
 begin
