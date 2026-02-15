@@ -25,32 +25,25 @@ export class IndexSearcher {
     }
 
     this.loadingPromise = (async () => {
-      try {
-        const [indexRes, inheritanceRes] = await Promise.all([
-          fetch("/data/rurima_index.json"),
-          fetch("/data/inheritance_map.json")
-        ])
+      const [indexRes, inheritanceRes] = await Promise.all([
+        fetch("/data/rurima_index.json"),
+        fetch("/data/inheritance_map.json")
+      ])
 
-        if (!indexRes.ok) {
-          throw new Error(`Server returned ${indexRes.status} for rurima_index.json`)
-        }
-        if (!inheritanceRes.ok) {
-          throw new Error(`Server returned ${inheritanceRes.status} for inheritance_map.json`)
-        }
-
-        const [index, inheritanceMap] = await Promise.all([
-          indexRes.json(),
-          inheritanceRes.json()
-        ])
-
-        this.index = index
-        this.inheritanceMap = inheritanceMap
-        this.index = index
-        this.inheritanceMap = inheritanceMap
-      } catch (error) {
-        this.index = this.index || {}
-        this.inheritanceMap = this.inheritanceMap || {}
+      if (!indexRes.ok) {
+        throw new Error(`Server returned ${indexRes.status} for rurima_index.json`)
       }
+      if (!inheritanceRes.ok) {
+        throw new Error(`Server returned ${inheritanceRes.status} for inheritance_map.json`)
+      }
+
+      const [index, inheritanceMap] = await Promise.all([
+        indexRes.json(),
+        inheritanceRes.json()
+      ])
+
+      this.index = index
+      this.inheritanceMap = inheritanceMap
     })()
 
     await this.loadingPromise
