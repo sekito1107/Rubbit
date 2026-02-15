@@ -13,7 +13,7 @@ require_relative "workspace"
 require_relative "measure_value"
 require_relative "server"
 
-# TypeProf 0.30.1 の初期化バグ（@rbs_env が nil になる）を修正するパッチ
+# TypeProf 0.30.1 を WASM 環境で動作させるための初期化調整パッチ
 module TypeProf::Core
   class Service
     alias_method :_orig_update_rbs_file, :update_rbs_file
