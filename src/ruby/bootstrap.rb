@@ -25,13 +25,13 @@ begin
   rbs_path = "/workspace/stdlib.rbs" unless File.exist?(rbs_path)
   
   if File.exist?(rbs_path)
-    puts "Loading bundled RBS from #{rbs_path}..."
+    # puts "Loading bundled RBS from #{rbs_path}..."
     loader = RBS::EnvironmentLoader.new(core_root: nil)
     loader.add(path: Pathname.new(rbs_path))
     $raw_rbs_env = RBS::Environment.from_loader(loader)
-    puts "RBS Environment created. Decls: #{$raw_rbs_env.declarations.size}"
+    # puts "RBS Environment created. Decls: #{$raw_rbs_env.declarations.size}"
   else
-    puts "Warning: RBS NOT found at #{rbs_path}. Analysis will be limited."
+    # puts "Warning: RBS NOT found at #{rbs_path}. Analysis will be limited."
     $raw_rbs_env = RBS::Environment.new
   end
   
@@ -67,7 +67,7 @@ begin
     end
   end
 
-  puts "TypeProf Service initialized (sync mode)"
+  # puts "TypeProf Service initialized (sync mode)"
   
   $server = Server.new(core)
   $server.start
