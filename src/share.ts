@@ -152,11 +152,11 @@ export class ShareComponent {
     
     try {
       await navigator.clipboard.writeText(this.previewArea.value);
-      this.dispatchToast("クリップボードにコピーしました！", "success");
+      this.dispatchToast("Copied to clipboard!", "success");
       
       this.modal?.close();
     } catch {
-      this.dispatchToast("コピーに失敗しました", "error");
+      this.dispatchToast("Failed to copy", "error");
     }
   }
 

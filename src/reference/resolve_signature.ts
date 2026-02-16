@@ -45,7 +45,8 @@ export class ResolveSignature {
         signature: result.signature,
         ...info
       }
-    } catch {
+    } catch (e) {
+      console.error(e)
       return null
     }
   }

@@ -112,6 +112,7 @@ export class ConsoleComponent {
   private startRabbitAnimation(): void {
     let step = 0;
     this.loadingAnimationId = window.setInterval(() => {
+      if (typeof document === 'undefined') return;
       const rabbit = document.getElementById("rabbit-emoji");
       if (rabbit) {
         step = (step + 1) % 10;
@@ -125,6 +126,7 @@ export class ConsoleComponent {
    * 進捗を更新する
    */
   private updateLoadingProgress(percent: number, message: string): void {
+    if (typeof document === 'undefined') return;
     const percentEl = document.getElementById("loading-percent");
     const messageEl = document.getElementById("loading-message");
     const rabbit = document.getElementById("rabbit-emoji");
@@ -168,7 +170,7 @@ export class ConsoleComponent {
         if (this.outputElement) {
           this.outputElement.innerHTML = "";
           if (version) {
-            this.appendOutput(`// Ruby WASM 準備完了! (Version: ${version})`);
+            this.appendOutput(`// Ruby WASM ready! (Version: ${version})`);
           }
         }
 
@@ -190,7 +192,7 @@ export class ConsoleComponent {
       if (this.outputElement) {
         this.outputElement.innerHTML = "";
         if (version) {
-          this.appendOutput(`// Ruby WASM 準備完了! (Version: ${version})`);
+          this.appendOutput(`// Ruby WASM ready! (Version: ${version})`);
         }
       }
       if (this.runButton) {
