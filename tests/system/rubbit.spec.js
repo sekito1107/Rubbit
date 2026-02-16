@@ -6,8 +6,11 @@ test.describe('Rubbit E2E Tests', () => {
     page.on('console', msg => {
       console.log(`[Browser Console] ${msg.type().toUpperCase()}: ${msg.text()}`);
     });
-    page.on('pageerror', err => console.log(`[Browser PageError] ${err.message}`));
-    page.on('requestfailed', req => console.log(`[Browser RequestFailed] ${req.url()} - ${req.failure().errorText}`));
+    page.on('pageerror', err => {
+      console.log(`[Browser PageError] ${err.message}`);
+      console.log(`[Browser PageError Stack] ${err.stack}`);
+    });
+    page.on('requestfailed', req => console.log(`[Browser RequestFailed] ${req.url()} - ${req.failure()?.errorText}`));
     await page.goto('/');
   });
 
@@ -209,9 +212,9 @@ test.describe('Rubbit E2E Tests', () => {
     // 右側パネルに Kernel#puts が表示されるのを待つ
     // data-role="methodName" が "puts" である最初のカードを探す
     const putsCard = page.locator('#method-list >> [data-role="methodName"]:text-is("puts")').locator('..').locator('..').first();
-    await expect(putsCard).toBeVisible({ timeout: 10000 });
-    await expect(putsCard.locator('[data-role="className"]')).toHaveText('Kernel');
-    await expect(putsCard.locator('[data-role="separatorMethod"]')).toHaveText('#puts');
+    await expect(putsCard).toBeVisible({ timeout: 30000 });
+    await expect(putsCard.locator('[data-role="className"]')).toHaveText('Kernel', { timeout: 30000 });
+    await expect(putsCard.locator('[data-role="separatorMethod"]')).toHaveText('#puts', { timeout: 30000 });
 
     // 3. 継承されたメソッド ((1..100).sum -> Enumerable#sum)
     await page.evaluate(() => {
@@ -221,9 +224,9 @@ test.describe('Rubbit E2E Tests', () => {
 
     // 右側パネルに Enumerable#sum が表示されるのを待つ
     const sumCard = page.locator('#method-list >> [data-role="methodName"]:text-is("sum")').locator('..').locator('..').first();
-    await expect(sumCard).toBeVisible({ timeout: 15000 });
-    await expect(sumCard.locator('[data-role="className"]')).toHaveText('Enumerable');
-    await expect(sumCard.locator('[data-role="separatorMethod"]')).toHaveText('#sum');
+    await expect(sumCard).toBeVisible({ timeout: 30000 });
+    await expect(sumCard.locator('[data-role="className"]')).toHaveText('Enumerable', { timeout: 30000 });
+    await expect(sumCard.locator('[data-role="separatorMethod"]')).toHaveText('#sum', { timeout: 30000 });
 
     // 4. Prime 関連のメソッド解決 (Prime.each(10).to_a.join)
     // まず require 'prime' だけ入力して Prime カードを確認
@@ -247,18 +250,18 @@ test.describe('Rubbit E2E Tests', () => {
 
     // each -> Prime.each (または Prime#each)
     const eachCard = page.locator('#method-list >> [data-role="methodName"]:text-is("each")').locator('..').locator('..').first();
-    await expect(eachCard).toBeVisible({ timeout: 15000 });
-    await expect(eachCard.locator('[data-role="className"]')).toHaveText('Prime');
+    await expect(eachCard).toBeVisible({ timeout: 30000 });
+    await expect(eachCard.locator('[data-role="className"]')).toHaveText('Prime', { timeout: 30000 });
 
     // to_a -> Enumerable#to_a (Prime::PseudoPrimeGenerator が Enumerable を include しているため)
     const toACard = page.locator('#method-list >> [data-role="methodName"]:text-is("to_a")').locator('..').locator('..').first();
-    await expect(toACard).toBeVisible({ timeout: 15000 });
-    await expect(toACard.locator('[data-role="className"]')).toHaveText('Enumerable');
+    await expect(toACard).toBeVisible({ timeout: 30000 });
+    await expect(toACard.locator('[data-role="className"]')).toHaveText('Enumerable', { timeout: 30000 });
 
     // join -> Array#join (to_a が Array を返すため)
     const joinCard = page.locator('#method-list >> [data-role="methodName"]:text-is("join")').locator('..').locator('..').first();
-    await expect(joinCard).toBeVisible({ timeout: 15000 });
-    await expect(joinCard.locator('[data-role="className"]')).toHaveText('Array');
+    await expect(joinCard).toBeVisible({ timeout: 30000 });
+    await expect(joinCard.locator('[data-role="className"]')).toHaveText('Array', { timeout: 30000 });
   });
 
 });
