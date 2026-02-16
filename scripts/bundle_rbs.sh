@@ -3,6 +3,17 @@ set -e
 
 # RBS gem のディレクトリを取得
 RBS_DIR=$(ls -d wasm-build/vendor/bundle/ruby/*/gems/rbs-* 2>/dev/null | head -n 1)
+
+# ローカルに見つからない場合はシステム Ruby から探す (CI用)
+if [ -z "$RBS_DIR" ]; then
+  RBS_DIR=$(ruby -e 'spec = Gem::Specification.find_by_name("rbs"); puts spec.gem_dir' 2>/dev/null)
+fi
+
+if [ -z "$RBS_DIR" ]; then
+  echo "Error: RBS directory not found. Please install it with 'bundle install' or 'gem install rbs'."
+  exit 1
+fi
+
 OUTPUT="public/rbs/ruby-stdlib.rbs"
 TEMP_OUTPUT="public/rbs/ruby-stdlib.tmp.rbs"
 
