@@ -1,16 +1,22 @@
 GIT
   remote: https://github.com/ruby/ruby.wasm.git
-  revision: 218332ff4d42d6a66b46c2727411564656a5a1de
+  revision: 24fbf24f0942a17fac4aa8d7d9966411af7d4b13
   specs:
-    ruby_wasm (2.7.0.dev)
+    ruby_wasm (2.8.1.dev)
+      logger
 
 GEM
   remote: https://rubygems.org/
   specs:
+    forwardable (1.4.0)
     js (2.7.0)
     logger (1.6.4)
+    prime (0.1.4)
+      forwardable
+      singleton
     rbs (3.8.0)
       logger
+    singleton (0.3.0)
     typeprof (0.30.1)
       rbs (>= 3.6.0)
 
@@ -20,6 +26,7 @@ PLATFORMS
 
 DEPENDENCIES
   js
+  prime
   rbs
   ruby_wasm!
   typeprof
