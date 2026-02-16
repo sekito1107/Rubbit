@@ -35,8 +35,6 @@ export class Scanner {
       try {
         lineContent = model.getLineContent(lineNum).replace(/#(?!\{).*$/g, m => " ".repeat(m.length))
       } catch (e: any) {
-        console.error(`[Scanner] Error getting content for line ${lineNum}:`, e.message);
-        if (e.stack) console.error(e.stack);
         return;
       }
       const matches: ScannedMethod[] = []

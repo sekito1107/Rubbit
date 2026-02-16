@@ -39,7 +39,7 @@ self.onmessage = async (event: MessageEvent) => {
  */
 async function initializeVM(wasmUrl: string) {
   try {
-    postMessage({ type: "progress", payload: { percent: 10, message: "Starting Ruby Worker..." } });
+    postMessage({ type: "progress", payload: { percent: 10, message: "Ruby Worker を起動中..." } });
 
     const fullUrl = new URL(wasmUrl, self.location.origin);
     const response = await fetch(fullUrl);
@@ -50,23 +50,23 @@ async function initializeVM(wasmUrl: string) {
 
     const buffer = await response.arrayBuffer();
 
-    postMessage({ type: "progress", payload: { percent: 20, message: "Compiling Ruby WASM..." } });
+    postMessage({ type: "progress", payload: { percent: 20, message: "Ruby WASM をコンパイル中..." } });
     const module = await WebAssembly.compile(buffer);
     
     const result = await DefaultRubyVM(module);
     vm = result.vm;
 
 
-    // bootstrap.rb (Polyfills & LSP Server) をロードする
-    postMessage({ type: "progress", payload: { percent: 35, message: "Initializing VM..." } });
+    // bootstrap.rb (ポリフィル & LSP サーバー) をロードする
+    postMessage({ type: "progress", payload: { percent: 35, message: "VM を初期化中..." } });
     
     // 1. VFSのディレクトリ作成
     vm.eval("require 'js'");
     vm.eval("begin; Dir.mkdir('/src'); rescue; end");
     vm.eval("begin; Dir.mkdir('/workspace'); rescue; end");
 
-    // 2. RBS標準ライブラリのロード (bootstrap前に書き込む)
-    postMessage({ type: "progress", payload: { percent: 50, message: "Loading RBS Stdlib..." } });
+    // 2. RBS 標準ライブラリのロード (bootstrap 前に書き込む)
+    postMessage({ type: "progress", payload: { percent: 50, message: "RBS 標準ライブラリをロード中..." } });
     const rbsUrl = new URL("/rbs/ruby-stdlib.rbs", self.location.origin);
     const rbsResponse = await fetch(rbsUrl);
     if (rbsResponse.ok) {
@@ -79,7 +79,6 @@ async function initializeVM(wasmUrl: string) {
                 const b64 = btoa(unescape(encodeURIComponent(chunk)));
                 vm.eval(`File.open("/workspace/stdlib.rbs", "ab") { |f| f.write("${b64}".unpack1("m")) }`);
             }
-            // postMessage({ type: "output", payload: { text: `// RBS loaded: ${rbsText.length} bytes` } });
         } catch (e: any) {
             postMessage({ type: "output", payload: { text: `// RBS load failed: ${e.message}` } });
         }
@@ -103,7 +102,7 @@ async function initializeVM(wasmUrl: string) {
     writeRubyFile("/src/server.rb", serverCode);
 
     // 4. ブートストラップスクリプトを評価する
-    postMessage({ type: "progress", payload: { percent: 65, message: "Starting LSP Server..." } });
+    postMessage({ type: "progress", payload: { percent: 65, message: "LSP サーバーを起動中..." } });
     (self as any).sendLspResponse = (jsonString: string) => {
       postMessage({ type: "lsp", payload: jsonString });
     };

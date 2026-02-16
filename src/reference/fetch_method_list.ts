@@ -45,7 +45,6 @@ export class FetchMethodList {
         }))
       }))
     } catch (e) {
-      console.error("Failed to fetch methods via Ruby VM:", e)
       return []
     }
   }

@@ -80,8 +80,7 @@ export class HandleDiagnostics {
           }));
           monaco.editor.setModelMarkers(currentModel, "lsp", adjustedMarkers);
         } catch (e: any) {
-          console.error("[Diagnostics/publishDiagnostics] Error setting markers:", e.message);
-          if (e.stack) console.error(e.stack);
+          // マーカー設定失敗時は静かに終了
         }
         
         // 解析完了を通知 (負荷軽減のためデバウンス)
@@ -118,8 +117,7 @@ export class HandleDiagnostics {
           }));
           monaco.editor.setModelMarkers(model, "ruby-syntax", adjustedMarkers);
         } catch (e: any) {
-          console.error("[Diagnostics/syntaxCheck] Error setting markers:", e.message);
-          if (e.stack) console.error(e.stack);
+          // 構文チェックマーカー設定失敗時は静かに終了
         }
       }
     });

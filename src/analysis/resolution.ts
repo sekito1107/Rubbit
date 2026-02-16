@@ -74,8 +74,6 @@ export class Resolution {
     try {
       lineContent = model.getLineContent(line)
     } catch (e: any) {
-      console.error(`[Resolution/_probeReceiverType] Error getting content for line ${line}:`, e.message);
-      if (e.stack) console.error(e.stack);
       return null;
     }
     

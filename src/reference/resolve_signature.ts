@@ -46,7 +46,6 @@ export class ResolveSignature {
         ...info
       }
     } catch (e) {
-      console.error("Failed to resolve signature via Ruby VM:", e)
       return null
     }
   }

@@ -49,7 +49,7 @@ class Server
 
   def start
     @fiber = Fiber.new do
-      # TypeProf LSPサーバーを開始
+      # TypeProf LSP サーバーを開始
       TypeProf::LSP::Server.new(@core, self, self, url_schema: "inmemory://", publish_all_diagnostics: true).run
     end
     @fiber.resume
@@ -76,7 +76,7 @@ class Server
     begin
       @fiber.resume
     rescue => e
-      write(method: "window/showMessage", params: { type: 1, message: "LSP Fatal Error: #{e.message}" })
+      write(method: "window/showMessage", params: { type: 1, message: "LSP 致命的エラー: #{e.message}" })
     end
 
     if @error
@@ -99,7 +99,7 @@ class Server
     end
   end
 
-  # LSPサーバが応答を書き込むためのインターフェース
+  # LSP サーバが応答を書き込むためのインターフェース
   def write(json)
     json_obj = json.merge(jsonrpc: "2.0")
     # JS.global.call を使用してグローバル関数として呼び出す

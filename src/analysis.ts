@@ -162,7 +162,7 @@ export class AnalysisCoordinator {
       }
 
     } catch (e) {
-      console.error("[AnalysisCoordinator] Analysis failed:", e)
+      // 解析エラーは外部に伝播させず、静かに失敗する
     } finally {
       this.isAnalyzing = false
       if (this.needsReanalysis) {

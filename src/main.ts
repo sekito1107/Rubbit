@@ -27,9 +27,9 @@ import { Persistence } from "./persistence"
 document.addEventListener("DOMContentLoaded", () => {
   // グローバルエラーハンドラー (スタックトレース取得用)
   window.addEventListener("error", (event) => {
-    console.error("Global Error Captured:", event.message);
+    console.error("グローバルエラーを捕捉:", event.message);
     if (event.error && event.error.stack) {
-      console.error("Stack Trace:", event.error.stack);
+      console.error("スタックトレース:", event.error.stack);
     }
   });
 

@@ -58,8 +58,6 @@ export class ProvideHover {
             ]
           };
         } catch (e: any) {
-          console.error("[Hover] Failed to provide hover:", e.message);
-          if (e.stack) console.error(e.stack);
           return null;
         }
       }

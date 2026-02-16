@@ -35,8 +35,7 @@ export class ProvideInlayHints {
             });
           }
         } catch (e: any) {
-          console.error("[InlayHints] Failed to provide hints:", e.message);
-          if (e.stack) console.error(e.stack);
+          // ヒント提供失敗時は静かに終了
         }
         return { hints: hints, dispose: () => {} };
       }
