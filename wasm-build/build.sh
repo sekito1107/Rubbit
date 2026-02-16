@@ -11,7 +11,7 @@ RB_SYS_STABLE_API_COMPILED_FALLBACK=true bundle install
 
 # gem を含めて WASM モジュールをビルド
 # -o rubbit.wasm で出力ファイル名を指定
-bundle exec rbwasm build -o rubbit.wasm --ruby-version 3.3
+bundle exec rbwasm build -o rubbit.wasm --ruby-version 4.0.1
 
 # 標準ライブラリの RBS バンドルを生成
 echo "Generating RBS bundle..."
