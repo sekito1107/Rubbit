@@ -41,6 +41,7 @@
 *.wasm
 
 # WASM build artifacts
+/wasm-build/
 build/
 build.log
 rubies/
