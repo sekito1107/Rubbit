@@ -38,7 +38,7 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 
-*.wasm
+# *.wasm
 
 # WASM build artifacts
 /wasm-build/.bundle
