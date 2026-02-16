@@ -38,7 +38,6 @@ export class BootLSP {
 
       return result;
     } catch (e) {
-      console.error("[BootLSP] Initialization failed:", e);
       throw e;
     }
   }

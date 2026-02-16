@@ -131,7 +131,7 @@ class Server
       result = fetch_methods(class_name)
       write(id: json[:id], result: result)
     else
-      write(id: json[:id], error: { code: -32601, message: "Method not found" })
+      write(id: json[:id], error: { code: -32601, message: "メソッドが見つかりません" })
     end
   end
 

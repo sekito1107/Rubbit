@@ -5,7 +5,7 @@ import * as monaco from 'monaco-editor'
 // テスト用にグローバル公開
 window.monaco = monaco;
 
-// Features
+// 機能
 import { ThemeComponent } from "./theme"
 import { ShareComponent } from "./share"
 import { EditorComponent } from "./editor"
@@ -17,22 +17,10 @@ import { HeaderComponent } from "./header"
 import { ExamplesComponent } from "./examples"
 import { ToastComponent } from "./toast"
 import { MethodListComponent, CursorDocComponent } from "./reference"
-
-// Ruby VM
 import { RubyVM } from "./ruby-vm"
-
-// Persistence
 import { Persistence } from "./persistence"
 
 document.addEventListener("DOMContentLoaded", () => {
-  // グローバルエラーハンドラー (スタックトレース取得用)
-  window.addEventListener("error", (event) => {
-    console.error("グローバルエラーを捕捉:", event.message);
-    if (event.error && event.error.stack) {
-      console.error("スタックトレース:", event.error.stack);
-    }
-  });
-
   // 機能の初期化
   new ThemeComponent()
 

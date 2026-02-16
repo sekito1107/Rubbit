@@ -76,7 +76,7 @@ export class AnalysisCoordinator {
     if (unknownItems.length > 0) {
       unknownItems.forEach(item => {
         const id = `${item.name}:${item.line}:${item.col}`
-        this.resolveSingleMethod(id, true) // force retry
+        this.resolveSingleMethod(id, true) // 強制再試行
       })
     }
   }

@@ -6,7 +6,7 @@ import * as monaco from 'monaco-editor';
 export class ProvideInlayHints {
   private editor: monaco.editor.ICodeEditor;
   private emitter: monaco.Emitter<void> = new monaco.Emitter<void>();
-  private measuredValues: Map<number, string> = new Map(); // Key: lineNumber(1-based), Value: measured string
+  private measuredValues: Map<number, string> = new Map();
 
   constructor(editor: monaco.editor.ICodeEditor) {
     this.editor = editor;
@@ -25,7 +25,7 @@ export class ProvideInlayHints {
             const lineNum = Number(line);
             if (isNaN(lineNum) || lineNum <= 0 || lineNum > model.getLineCount()) continue;
             if (lineNum < range.startLineNumber || lineNum > range.endLineNumber) continue;
-            
+
             const maxCol = model.getLineMaxColumn(lineNum);
             hints.push({
               kind: monaco.languages.InlayHintKind.Type,

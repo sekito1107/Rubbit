@@ -140,7 +140,7 @@ export class LSPClient {
         }
       }
     } catch {
-      // failed silently
+      // 静かに失敗
     }
   }
 }

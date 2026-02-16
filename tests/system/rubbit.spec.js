@@ -105,7 +105,6 @@ test.describe('Rubbit E2E Tests', () => {
   });
 
   test('ファイルをダウンロードできる', async ({ page }) => {
-    // showSaveFilePicker を削除して、レガシーダウンロードへのフォールバックを強制する
     await page.evaluate(() => {
         // @ts-ignore
         window.showSaveFilePicker = undefined;

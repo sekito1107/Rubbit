@@ -167,7 +167,9 @@ export class ConsoleComponent {
         // ターミナルクリア & Readyメッセージ表示
         if (this.outputElement) {
           this.outputElement.innerHTML = "";
-          this.appendOutput(`// Ruby WASM ready! (Version: ${version})`);
+          if (version) {
+            this.appendOutput(`// Ruby WASM 準備完了! (Version: ${version})`);
+          }
         }
 
         // Runボタンを有効化
@@ -187,7 +189,9 @@ export class ConsoleComponent {
       // フォールバック: container がない場合
       if (this.outputElement) {
         this.outputElement.innerHTML = "";
-        this.appendOutput(`// Ruby WASM ready! (Version: ${version})`);
+        if (version) {
+          this.appendOutput(`// Ruby WASM 準備完了! (Version: ${version})`);
+        }
       }
       if (this.runButton) {
         this.runButton.removeAttribute("disabled");
