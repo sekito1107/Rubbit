@@ -13,17 +13,15 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Debug Trace
-      run: echo "--- STARTING CLEAN CI WORKFLOW (NO RUBY STEPS) ---"
     - name: Install Node dependencies
       run: npm install
     - name: Run lint
       run: npm run lint
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
-    - name: Build JS App
+    - name: Build
       run: npm run build
-    - name: Run E2E Tests
+    - name: Run tests
       run: npm test
     - uses: actions/upload-artifact@v4
       if: always()
