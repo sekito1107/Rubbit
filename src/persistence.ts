@@ -15,6 +15,4 @@ export class Persistence {
     this.settings = new Settings()
     this.share = new Share()
   }
-
-  // 利用側で各インタラクターのメソッドを呼べるようにアクセサを提供
 }
