@@ -18,11 +18,14 @@ Rubbit は、Ruby WASM、TypeScript、および Vite を使用したクライア
 
 ### インストール & セットアップ
 
-依存関係のインストールと、必要なリソース（RBS）の生成を一度に行います：
+依存関係のインストールを行います：
 
 ```bash
 npm run setup
 ```
+
+> [!NOTE]
+> Ruby WASM バイナリや RBS ファイルなどの成果物はすでに `public/` ディレクトリに含まれているため、すぐに開発を開始できます。
 
 ### 開発環境の起動
 
@@ -73,9 +76,6 @@ npm run build
 - `src/console.ts`: 実行結果の表示とターミナルの操作を管理します。
 - `src/reference/`: Ruby リファレンス表示機能。
 - `public/`: Ruby WASM バイナリやアイコンなどの静的アセット。
-  - `public/ruby/rubbit.wasm`: Ruby WASM 本体。
-  - `public/ruby/bootstrap.rb`: 初期化スクリプト。
-  - `public/rbs/ruby-stdlib.rbs`: マージされた RBS ファイル（`npm run setup` で生成）。
 - `index.html`: メインアプリケーションのレイアウト。
 
 ## 免責事項
