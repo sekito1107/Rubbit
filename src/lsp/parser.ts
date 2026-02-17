@@ -7,6 +7,13 @@ export class LSPResponseParser {
     if (!markdownContent) return null;
     const content = markdownContent.trim();
 
+    // 変数定義のホバー (例: "i: Integer") かどうかを判定
+    // メソッドシグネチャ (def ...) や クラス/モジュール定義を含まない、
+    // かつ "名前: 型" の形式である場合は、メソッド解決用のクラス名としては返さない。
+    if (!content.includes("def ") && !content.match(/^(?:class|module)\s/) && content.match(/^[a-z_]\w*:/)) {
+      return null;
+    }
+
     return this._doParse(content);
   }
 

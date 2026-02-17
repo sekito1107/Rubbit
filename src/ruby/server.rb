@@ -210,6 +210,11 @@ class Server
       
       # 継承チェーンに沿ってメソッドを探す
       base_mod = genv.resolve_cpath(cpath)
+      
+      best_me = nil
+      best_mod = nil
+      best_sep = nil
+      
       [false, true].each do |singleton|
         genv.each_superclass(base_mod, singleton) do |mod, _singleton|
           begin
@@ -220,25 +225,41 @@ class Server
             mdef = (me.defs.to_a.first || me.decls.to_a.first) rescue nil
             next unless mdef
             
-            # 実際の定義場所 (Kernel, Enumerable 等) を特定
-            defined_in = mod.show_cpath
-            
+            # 暫定の定義場所を記録
             sep = singleton ? "." : "#"
             
-            # シグネチャの文字列表記
-            # decls の場合は show ではなく method_types などを見る必要がある場合があるが、
-            # もし show が定義されていればそれを使う
-            sig_text = mdef.respond_to?(:show) ? mdef.show : method_name.to_s
-            signature = "#{defined_in}#{sep}#{sig_text}"
+            # もし Numeric, Comparable, Enumerable, Kernel 等の
+            # 基本的なドキュメント集約先で定義されている場合は、そちらを優先する。
+            # (子クラスでの再定義が単なる型指定である場合などの 404 回避)
+            mod_name = mod.show_cpath
+            if ["Numeric", "Comparable", "Enumerable", "Kernel"].include?(mod_name)
+              return {
+                signature: "#{mod_name}#{sep}#{mdef.respond_to?(:show) ? mdef.show : method_name.to_s}",
+                className: mod_name,
+                methodName: method_name,
+                separator: sep
+              }
+            end
 
-            return {
-              signature: signature,
-              className: defined_in,
-              methodName: method_name,
-              separator: sep
-            }
+            # まだ見つかっていなければ、最初に見つかったもの（最も子に近いもの）を候補にする
+            unless best_me
+              best_me = mdef
+              best_mod = mod
+              best_sep = sep
+            end
           rescue
           end
+        end
+        
+        if best_me
+          defined_in = best_mod.show_cpath
+          sig_text = best_me.respond_to?(:show) ? best_me.show : method_name.to_s
+          return {
+            signature: "#{defined_in}#{best_sep}#{sig_text}",
+            className: defined_in,
+            methodName: method_name,
+            separator: best_sep
+          }
         end
       end
     rescue => e
