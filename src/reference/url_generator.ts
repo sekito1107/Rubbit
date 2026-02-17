@@ -1,13 +1,9 @@
-/**
- * Rurima (るりま) 特有の URL エンコードと生成を行うユーティリティ
- */
+// 公式リファレンス特有の URL エンコードと生成を行うユーティリティ
 export class URLGenerator {
   static readonly BASE_URL = "https://docs.ruby-lang.org/ja/latest/method"
   static readonly SEARCH_URL = "https://rurema.clear-code.com/query:"
 
-  /**
-   * メソッド名をるりま形式にエンコードする
-   */
+  // メソッド名を公式リファレンスの形式にエンコードする
   static encodeMethodName(name: string): string {
     return name
       .replace(/=/g, "=3d")
@@ -22,10 +18,8 @@ export class URLGenerator {
       .replace(/`/g, "=60")
   }
 
-  /**
-   * シグネチャからるりまの URL 情報を生成する
-   * @param signature - "Class#method" or "Class.method"
-   */
+  // シグネチャから公式リファレンスのURL情報を生成する
+  // signature: "Class#method" or "Class.method"
   static generateUrlInfo(signature: string): {
     url: string
     className: string
@@ -50,9 +44,7 @@ export class URLGenerator {
     }
   }
 
-  /**
-   * 検索用 URL を生成する
-   */
+  // 検索用URLを生成する
   static generateSearchUrl(query: string): string {
     return `${this.SEARCH_URL}${encodeURIComponent(query)}/`
   }

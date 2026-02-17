@@ -2,9 +2,7 @@ import { LSPResponseParser } from './parser';
 import type { LSPClient } from './client';
 import type { SyncDocument } from './sync';
 
-/**
- * LSP に対して型情報の解決を要求する
- */
+// LSP に対して型情報の解決を要求する
 export class ResolveType {
   private client: LSPClient;
 
@@ -12,9 +10,7 @@ export class ResolveType {
     this.client = client;
   }
 
-  /**
-   * 指定位置の型情報を取得する
-   */
+  // 指定位置の型情報を取得する
   async at(lineNumber: number, column: number): Promise<string | null> {
     if (!this.client) return null;
 
@@ -36,9 +32,7 @@ export class ResolveType {
     return parsed;
   }
 
-  /**
-   * 一時的なコンテンツを使用してプローブ（調査）を行う
-   */
+  // 一時的なコンテンツを使用してプローブ（調査）を行う
   async probe(tempContent: string, lineNumber: number, column: number, synchronizer: SyncDocument): Promise<string | null> {
     if (!this.client || !synchronizer) return null;
     

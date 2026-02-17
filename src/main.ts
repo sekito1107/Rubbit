@@ -81,5 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("cursor-doc-link-template")! as HTMLTemplateElement
   )
 
+  // BootLoader による初期化シーケンス開始
+  import("./boot").then(({ BootLoader }) => {
+    const monacoEditor = (editorComponent as any).editor;
+    const bootLoader = new BootLoader(rubyVM, monacoEditor);
+    bootLoader.boot();
+  });
+
 })
 

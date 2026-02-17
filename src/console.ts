@@ -1,7 +1,5 @@
-/**
- * コンソール・実行制御
- * console/index.ts
- */
+// コンソール・実行制御
+// console/index.ts
 import { RubyVM } from "./ruby-vm";
 import { EditorComponent } from "./editor";
 
@@ -13,13 +11,11 @@ export class ConsoleComponent {
   private editor: EditorComponent;
   private loadingAnimationId: number | null = null;
 
-  /**
-   * @param outputElement - 出力表示エリア
-   * @param runButton - 実行ボタン
-   * @param clearButton - クリアボタン
-   * @param rubyVM - RubyVM インスタンス
-   * @param editor - エディタコンポーネント (コード取得用)
-   */
+  // outputElement: 出力表示エリア
+  // runButton: 実行ボタン
+  // clearButton: クリアボタン
+  // rubyVM: RubyVM インスタンス
+  // editor: エディタコンポーネント (コード取得用)
   constructor(
     outputElement: HTMLElement | null,
     runButton: HTMLElement | null,
@@ -40,7 +36,7 @@ export class ConsoleComponent {
     }
 
     // ローディングUIの初期表示
-    this.showLoadingUI(0, "Preparing...");
+    this.showLoadingUI(0, "準備中...");
     this.startRabbitAnimation();
 
     // イベントの紐付け
@@ -76,9 +72,7 @@ export class ConsoleComponent {
     });
   }
 
-  /**
-   * ローディングUIを表示する
-   */
+  // ローディングUIを表示する
   private showLoadingUI(percent: number, message: string): void {
     if (!this.outputElement) return;
 
@@ -106,9 +100,7 @@ export class ConsoleComponent {
     `;
   }
 
-  /**
-   * うさぎアニメーションを開始する
-   */
+  // うさぎアニメーションを開始する
   private startRabbitAnimation(): void {
     let step = 0;
     this.loadingAnimationId = window.setInterval(() => {
@@ -122,9 +114,7 @@ export class ConsoleComponent {
     }, 100);
   }
 
-  /**
-   * 進捗を更新する
-   */
+  // 進捗を更新する
   private updateLoadingProgress(percent: number, message: string): void {
     if (typeof document === 'undefined') return;
     const percentEl = document.getElementById("loading-percent");
@@ -134,7 +124,9 @@ export class ConsoleComponent {
     if (percentEl && messageEl && rabbit) {
       percentEl.textContent = `${percent}%`;
       messageEl.textContent = message;
-      rabbit.style.left = `calc(${Math.min(percent, 95)}% - 12px)`;
+      
+      const rabbitPercent = Math.min(percent, 95);
+      rabbit.style.left = `calc(${rabbitPercent}% - 12px)`;
 
       const barWidth = 30;
       const filled = Math.round((percent / 100) * barWidth);
@@ -149,9 +141,7 @@ export class ConsoleComponent {
     }
   }
 
-  /**
-   * 全初期化完了時の処理
-   */
+  // 全初期化完了時の処理
   private onFullyReady(version: string): void {
     // アニメーション停止
     if (this.loadingAnimationId) {

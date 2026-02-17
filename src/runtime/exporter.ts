@@ -1,6 +1,4 @@
-/**
- * エディタの内容をファイルとしてダウンロード（エクスポート）する
- */
+// エディタの内容をファイルとしてダウンロード（エクスポート）する
 export interface EditorLike {
   getValue(): string;
 }
@@ -12,10 +10,9 @@ export class Exporter {
     this.editor = editor;
   }
 
-  /**
-   * 現在のコンテンツを .rb ファイルとして保存する
-   * @param {string} filename 
-   */
+  // 現在のコンテンツを .rb ファイルとして保存する
+  // 現在のコンテンツを .rb ファイルとして保存する
+  // filename: 保存するファイル名 (デフォルト: "main.rb")
   async export(filename: string = "main.rb"): Promise<void> {
     const code = this.editor.getValue();
 

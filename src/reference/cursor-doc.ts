@@ -1,6 +1,4 @@
-/**
- * カーソルドキュメントコンポーネント
- */
+// カーソルドキュメントコンポーネント
 export class CursorDocComponent {
   private listElement: HTMLElement | null
   private loaderElement: HTMLElement | null

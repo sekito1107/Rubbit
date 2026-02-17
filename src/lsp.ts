@@ -8,9 +8,7 @@ import { ResolveType } from "./lsp/resolve_type";
 import { BootLSP } from "./lsp/boot_lsp";
 import type { LSPClient } from "./lsp/client";
 
-/**
- * LSP ドメインの機能を統括し、エディタへの接続・同期を管理するクラス
- */
+// LSP ドメインの機能を統括し、エディタへの接続・同期を管理するクラス
 export class LSP {
   public client: LSPClient;
   public editor: monaco.editor.ICodeEditor;
@@ -36,16 +34,12 @@ export class LSP {
     this.resolver = new ResolveType(client);
   }
 
-  /**
-   * LSP サーバ自体の初期化（Handshake）を行う
-   */
+  // LSP サーバ自体の初期化（Handshake）を行う
   async initialize(): Promise<any> {
     return this.boot.execute();
   }
 
-  /**
-   * エディタ連携機能（同期、診断、プロバイダ）を有効化する
-   */
+  // エディタ連携機能（同期、診断、プロバイダ）を有効化する
   activate(): void {
     this.sync.start();
     this.diagnostics.start();
@@ -61,38 +55,28 @@ export class LSP {
     (window as any).rubbitLSPReady = true;
   }
 
-  /**
-   * 外部向けの型解決 Facade API
-   */
+  // 外部向けの型解決 Facade API
   async getTypeAtPosition(line: number, col: number): Promise<string | null> {
     this.flushDocumentSync();
     return this.resolver.at(line, col);
   }
 
-  /**
-   * 一時的なコンテンツで型解決を試みる Facade API
-   */
+  // 一時的なコンテンツで型解決を試みる Facade API
   async probeTypeWithTemporaryContent(content: string, line: number, col: number): Promise<string | null> {
     return this.resolver.probe(content, line, col, this.sync);
   }
 
-  /**
-   * 強制的にドキュメントを同期する
-   */
+  // 強制的にドキュメントを同期する
   flushDocumentSync(): void {
     this.sync.flush();
   }
 
-  /**
-   * 測定値をリセットする
-   */
+  // 測定値をリセットする
   clearMeasuredValues(): void {
     this.inlayHints.clear();
   }
 
-  /**
-   * エディタのモデルを取得 (互換性維持)
-   */
+  // エディタのモデルを取得 (互換性維持)
   get model(): monaco.editor.ITextModel | null {
     return this.editor.getModel();
   }

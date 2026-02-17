@@ -1,9 +1,7 @@
 import { URLGenerator } from "./url_generator"
 import type { LSPClient } from "../lsp/client"
 
-/**
- * 指定されたクラスのメソッド一覧を取得し、URL情報を付与する
- */
+// 指定されたクラスのメソッド一覧を取得し、URL情報を付与する
 export class FetchMethodList {
   private client: LSPClient
 
@@ -11,9 +9,7 @@ export class FetchMethodList {
     this.client = lspClient
   }
 
-  /**
-   * クラス名からメソッド一覧（URL情報付き）を取得する
-   */
+  // クラス名からメソッド一覧（URL情報付き）を取得する
   async fetch(className: string): Promise<{
     methodName: string
     candidates: string[]

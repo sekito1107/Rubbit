@@ -3,9 +3,7 @@ import { Tracker } from "./analysis/tracker"
 import { Resolver } from "./analysis/resolver"
 import { AnalysisStore, MethodItem } from "./analysis/store"
 
-/**
- * コード解析ドメインを統括する Coordinator
- */
+// コード解析ドメインを統括する Coordinator
 export class AnalysisCoordinator {
   private editor: any
   private lspManager: any
@@ -43,9 +41,7 @@ export class AnalysisCoordinator {
     this.boundHandleLSPFinished = () => this.scheduleAnalysis()
   }
 
-  /**
-   * 解析エンジンの稼働開始
-   */
+  // 解析エンジンの稼働開始
   start(): void {
     // 1. エディタの変更を監視
     this.editor.onDidChangeModelContent((e: any) => {
@@ -94,9 +90,7 @@ export class AnalysisCoordinator {
     return `${item.name}:${item.line}:${item.col}`
   }
 
-  /**
-   * 解析の実行コア
-   */
+  // 解析の実行コア
   async performAnalysis(): Promise<void> {
     if (this.isAnalyzing) {
       this.needsReanalysis = true
@@ -182,11 +176,9 @@ export class AnalysisCoordinator {
     }
   }
 
-  /**
-   * 単一メソッドの型解決依頼
-   * @param id メソッドID
-   * @param force すでに 'unknown' や 'resolved' の場合でも強制的に再試行するか
-   */
+  // 単一メソッドの型解決依頼
+  // id: メソッドID
+  // force: すでに 'unknown' や 'resolved' の場合でも強制的に再試行するか
   private async resolveSingleMethod(id: string, force: boolean = false): Promise<void> {
     const item = this.store.get(id)
     if (!item || item.isResolving) return

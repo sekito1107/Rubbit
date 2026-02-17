@@ -1,7 +1,5 @@
-/**
- * サンプルコードコンポーネント
- * examples/index.ts
- */
+// サンプルコードコンポーネント
+// examples/index.ts
 import { EditorLike as RuntimeEditorLike } from "./runtime/exporter";
 
 interface EditorLike extends RuntimeEditorLike {
@@ -79,11 +77,9 @@ export class ExamplesComponent {
   private menu: HTMLElement | null;
   private editor: EditorLike;
 
-  /**
-   * @param buttonElement - 開閉ボタン
-   * @param menuElement - メニュー要素
-   * @param editor - エディタコンポーネント
-   */
+  // buttonElement: 開閉ボタン
+  // menuElement: メニュー要素
+  // editor: エディタコンポーネント
   constructor(buttonElement: HTMLElement | null, menuElement: HTMLElement | null, editor: EditorLike) {
     this.button = buttonElement;
     this.menu = menuElement;

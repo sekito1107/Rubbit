@@ -1,7 +1,5 @@
-/**
- * ダウンロードコンポーネント
- * download/index.ts
- */
+// ダウンロードコンポーネント
+// download/index.ts
 import { Exporter, EditorLike } from "./runtime/exporter";
 
 export class DownloadComponent {
@@ -9,10 +7,8 @@ export class DownloadComponent {
   private editor: EditorLike;
   private exporter: Exporter;
 
-  /**
-   * @param buttonElement - ダウンロードボタン
-   * @param editor - エディタコンポーネント (EditorLike)
-   */
+  // buttonElement: ダウンロードボタン
+  // editor: エディタコンポーネント (EditorLike)
   constructor(buttonElement: HTMLElement | null, editor: EditorLike) {
     this.button = buttonElement;
     this.editor = editor;

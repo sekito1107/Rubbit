@@ -6,9 +6,7 @@ declare global {
   }
 }
 
-/**
- * LSP サーバの起動と初期化シーケンス（Handshake）を管理する
- */
+// LSP サーバの起動と初期化シーケンス（Handshake）を管理する
 export class BootLSP {
   private client: LSPClient;
 
@@ -16,9 +14,7 @@ export class BootLSP {
     this.client = client;
   }
 
-  /**
-   * LSP サーバの初期化プロセスを実行する
-   */
+  // LSP サーバの初期化プロセスを実行する
   async execute(): Promise<any> {
     // 1. Diagnostics 通知の初回受信を監視して「解析完了」を検知する準備
     this.setupInitialAnalysisListener();

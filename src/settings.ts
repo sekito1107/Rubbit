@@ -1,7 +1,5 @@
-/**
- * 設定コンポーネント
- * settings/index.ts
- */
+// 設定コンポーネント
+// settings/index.ts
 import { Persistence } from "./persistence";
 import { Settings } from "./persistence/settings";
 
@@ -21,10 +19,8 @@ export class SettingsComponent {
   private elements: SettingsElements;
   private currentSettings: Record<string, any>;
 
-  /**
-   * @param containerElement - 設定を含むコンテナ (通常はModal)
-   * @param persistence - 永続化ドメイン
-   */
+  // containerElement: 設定を含むコンテナ (通常はModal)
+  // persistence: 永続化ドメイン
   constructor(containerElement: HTMLElement, persistence: Persistence) {
     this.container = containerElement;
     this.settingsStore = persistence.settings;

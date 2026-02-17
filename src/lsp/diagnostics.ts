@@ -23,9 +23,7 @@ interface SyntaxCheckParams {
   }>;
 }
 
-/**
- * LSP からの診断情報を購読し、エディタに表示する
- */
+// LSP からの診断情報を購読し、エディタに表示する
 export class HandleDiagnostics {
   private client: LSPClient;
   private editor: monaco.editor.ICodeEditor;
@@ -36,9 +34,7 @@ export class HandleDiagnostics {
     this.editor = editor;
   }
 
-  /**
-   * 通知の監視を開始する
-   */
+  // 通知の監視を開始する
   start(): void {
     // 1. 標準的な診断通知
     this.client.onNotification("textDocument/publishDiagnostics", (params: DiagnosticsParams) => {

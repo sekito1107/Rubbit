@@ -1,12 +1,8 @@
-/**
- * LSP (TypeProf) のレスポンスをパースして情報を抽出するユーティリティクラス
- */
+// LSP (TypeProf) のレスポンスをパースして情報を抽出するユーティリティクラス
 export class LSPResponseParser {
-  /**
-   * Hover レスポンスから Ruby のクラス名を抽出する
-   * @param {string | null | undefined} markdownContent 
-   * @returns {string | null}
-   */
+  // Hover レスポンスから Ruby のクラス名を抽出する
+  // markdownContent: string | null | undefined
+  // returns: string | null
   static parseClassNameFromHover(markdownContent: string | null | undefined): string | null {
     if (!markdownContent) return null;
     const content = markdownContent.trim();
@@ -60,11 +56,9 @@ export class LSPResponseParser {
     return null;
   }
 
-  /**
-   * 型名を正規化する (ジェネリクス除去、既知の型の変換など)
-   * @param {string | null} typeName 
-   * @returns {string | null}
-   */
+  // 型名を正規化する (ジェネリクス除去、既知の型の変換など)
+  // typeName: string | null
+  // returns: string | null
   static normalizeTypeName(typeName: string | null): string | null {
     if (!typeName) return null;
     
@@ -76,9 +70,8 @@ export class LSPResponseParser {
     if (normalized.startsWith(":")) return "Symbol";
     if (normalized === "true" || normalized === "TrueClass") return "TrueClass";
     if (normalized === "false" || normalized === "FalseClass") return "FalseClass";
-    if (normalized === "Boolean" || normalized === "bool") return "Object"; // RurimaにBooleanは存在しないためObjectで代用
-    
-    // 名前空間 (::) は維持する (Rurimaインデックスと継承マップがフルネームを期待するため)
+    if (normalized === "Boolean" || normalized === "bool") return "Object";
+
     return normalized;
   }
 }

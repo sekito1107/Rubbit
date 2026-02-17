@@ -1,9 +1,7 @@
 import { Executor, type RubyVMController } from "./runtime/executor";
 import { Exporter, type EditorLike } from "./runtime/exporter";
 
-/**
- * Runtime ドメインを統括するクラス (Facade)
- */
+// Runtime ドメインを統括するクラス (Facade)
 export class Runtime {
   private executor: Executor;
   private exporter: Exporter;
@@ -13,16 +11,12 @@ export class Runtime {
     this.exporter = new Exporter(editor);
   }
 
-  /**
-   * コードを実行する
-   */
+  // コードを実行する
   execute(code: string): void {
     this.executor.execute(code);
   }
 
-  /**
-   * コードをファイルとして書き出す
-   */
+  // コードをファイルとして書き出す
   export(filename?: string): void {
     this.exporter.export(filename);
   }

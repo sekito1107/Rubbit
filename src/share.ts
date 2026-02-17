@@ -1,7 +1,5 @@
-/**
- * コード共有機能
- * share/index.ts
- */
+// コード共有機能
+// share/index.ts
 import { EditorComponent } from "./editor";
 import { Share } from "./persistence/share";
 
@@ -24,12 +22,10 @@ export class ShareComponent {
 
   private currentType: 'url' | 'embed' | 'block' = 'url';
 
-  /**
-   * @param buttonElement - Shareボタン
-   * @param modalElement - Shareモーダル
-   * @param editorComponent - エディタコンポーネント (getValue/setValue用)
-   * @param shareService - 共有ロジック (Persistence.share)
-   */
+  // buttonElement: Shareボタン
+  // modalElement: Shareモーダル
+  // editorComponent: エディタコンポーネント (getValue/setValue用)
+  // shareService: 共有ロジック (Persistence.share)
   constructor(
     buttonElement: HTMLElement | null,
     modalElement: HTMLElement | null,

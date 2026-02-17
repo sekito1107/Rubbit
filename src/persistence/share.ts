@@ -1,12 +1,8 @@
 import pako from "pako"
 
-/**
- * URL を介したコードの共有（圧縮・エンコード・同期）を担当する
- */
+// URL を介したコードの共有（圧縮・エンコード・同期）を担当する
 export class Share {
-  /**
-   * コードを圧縮して共有可能な URL を生成する
-   */
+  // コードを圧縮して共有可能な URL を生成する
   compress(code: string): string {
     const compressed = pako.deflate(code)
     const base64 = btoa(String.fromCharCode(...compressed))
@@ -19,13 +15,10 @@ export class Share {
     return url.toString()
   }
 
-  /**
-   * URL ハッシュからコードを復元する
-   */
+  // URL ハッシュからコードを復元する
   decompress(hash: string | null): string | null {
     if (!hash) return null
     try {
-      // Remove 'code=' prefix if exists
       const cleanHash = hash.replace(/^#?code=/, "")
       const base64 = cleanHash.replace(/-/g, "+").replace(/_/g, "/")
       const binary = atob(base64)
@@ -39,9 +32,7 @@ export class Share {
       return null
     }
   }
-  /**
-   * 埋め込み用の iframe タグを生成する
-   */
+  // 埋め込み用の iframe タグを生成する
   generateEmbedTag(code: string): string {
     const url = this.compress(code)
     // embed.html へのリンクに変換 (現在の origin + /embed.html + hash)
@@ -58,9 +49,7 @@ export class Share {
 ></iframe>`
   }
 
-  /**
-   * Markdown 用のコードブロックを生成する
-   */
+  // Markdown 用のコードブロックを生成する
   generateCodeBlock(code: string): string {
     return "```ruby\n" + code + "\n```"
   }

@@ -1,6 +1,4 @@
-/**
- * メソッドリストコンポーネント
- */
+// メソッドリストコンポーネント
 export class MethodListComponent {
   private listElement: HTMLElement | null
   private loaderElement: HTMLElement | null
@@ -113,9 +111,7 @@ export class MethodListComponent {
     })
   }
 
-  /**
-   * どちらのアイテムを表示優先すべきかを判定する
-   */
+  // どちらのアイテムを表示優先すべきかを判定する
   private isBetterItem(newItem: any, oldItem: any): boolean {
     // 1. Resolved は最強
     if (newItem.status === 'resolved' && oldItem.status !== 'resolved') return true

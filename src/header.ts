@@ -1,13 +1,9 @@
-/**
- * ヘッダーコンポーネント
- * header/index.ts
- */
+// ヘッダーコンポーネント
+// header/index.ts
 export class HeaderComponent {
   private versionElement: HTMLElement | null;
 
-  /**
-   * @param versionElement - バージョンを表示する要素
-   */
+  // versionElement: バージョンを表示する要素
   constructor(versionElement: HTMLElement | null) {
     this.versionElement = versionElement;
     

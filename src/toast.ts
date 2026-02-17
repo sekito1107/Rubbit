@@ -1,7 +1,5 @@
-/**
- * トーストコンポーネント
- * toast/index.ts
- */
+// トーストコンポーネント
+// toast/index.ts
 interface ToastEventDetail {
   message: string;
   type?: string;
@@ -17,9 +15,7 @@ export class ToastComponent {
   private boundShow: (event: Event) => void;
   private boundHide: () => void;
 
-  /**
-   * @param containerElement - トーストコンテナ
-   */
+  // containerElement: トーストコンテナ
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
     this.timeout = null;

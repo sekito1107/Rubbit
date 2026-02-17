@@ -1,7 +1,5 @@
-/**
- * エディタ機能 (Vanilla TS Component)
- * editor/index.ts
- */
+// エディタ機能 (Vanilla TS Component)
+// editor/index.ts
 import * as monaco from 'monaco-editor'
 import { Persistence } from './persistence'
 import { CodePersistence } from './persistence/code'
@@ -38,10 +36,8 @@ export class EditorComponent {
   private boundHandleSettingsUpdate: (event: Event) => void
   private observer: MutationObserver | null = null
 
-  /**
-   * @param containerElement - エディタを表示するコンテナ
-   * @param persistence - 永続化ドメイン
-   */
+  // containerElement: エディタを表示するコンテナ
+  // persistence: 永続化ドメイン
   constructor(containerElement: HTMLElement | null, persistence: Persistence) {
     this.container = containerElement
     this.settings = persistence.settings

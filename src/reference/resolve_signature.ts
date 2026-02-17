@@ -1,9 +1,7 @@
 import { URLGenerator } from "./url_generator"
 import type { LSPClient } from "../lsp/client"
 
-/**
- * Ruby VM (RBS) を使用して、特定のメソッド名に対応する最適なるりまシグネチャを解決する
- */
+// Ruby VM (RBS) を使用して、特定のメソッド名に対応する最適なシグネチャを解決する
 export class ResolveSignature {
   private client: LSPClient
 
@@ -11,9 +9,7 @@ export class ResolveSignature {
     this.client = lspClient
   }
 
-  /**
-   * クラス名とメソッド名からるりま情報を解決する
-   */
+  // クラス名とメソッド名から情報を解決する
   async resolve(className: string, methodName: string): Promise<{
     signature: string
     url: string

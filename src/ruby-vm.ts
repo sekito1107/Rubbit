@@ -5,30 +5,23 @@ import RubyWorker from "./ruby-worker?worker";
 
 const RUBY_WASM_URL = "/ruby/rubbit.wasm";
 
-/**
- * Ruby VM & 実行時マネージャ
- */
+// Ruby VM & 実行時マネージャ
 export class RubyVM {
   private worker: Worker | null = null;
   public lspClient: LSPClient | null = null;
-  private editor: any = null;
-  private bootLoader: any = null;
-  private rubyVersion: string = "";
+
+
+  public rubyVersion: string = "";
 
   // 出力用イベントリスナー
   public onOutput: ((text: string) => void) | null = null;
-  public onReady: ((version: string) => void) | null = null;
-
-  private boundHandleEditorInitialized: (event: Event) => void;
+  public readyPromise: Promise<void>;
+  private resolveReady: (() => void) | null = null;
 
   constructor() {
-    // エディタの初期化イベントを監視
-    this.boundHandleEditorInitialized = this.handleEditorInitialized.bind(this) as EventListener;
-    window.addEventListener("editor:initialized", this.boundHandleEditorInitialized);
-
-    if (window.monacoEditor) {
-      this.handleEditorInitialized({ detail: { editor: window.monacoEditor } } as any);
-    }
+    this.readyPromise = new Promise((resolve) => {
+      this.resolveReady = resolve;
+    });
 
     if (!window.__rubyVMInitializing && !window.__rubyVMReady) {
       window.__rubyVMInitializing = true;
@@ -36,9 +29,7 @@ export class RubyVM {
     }
   }
 
-  /**
-   * Workerを初期化し、LSPクライアントをセットアップする
-   */
+  // Workerを初期化し、LSPクライアントをセットアップする
   private initializeWorker(): void {
     try {
       this.worker = new RubyWorker();
@@ -59,9 +50,7 @@ export class RubyVM {
     }
   }
 
-  /**
-   * Workerからのメッセージを処理する
-   */
+  // Workerからのメッセージを処理する
   private handleWorkerMessage(type: string, payload: any): void {
     switch (type) {
       case "output":
@@ -79,10 +68,12 @@ export class RubyVM {
         // onReady はローディング統合のため版数を保存するのみ
         this.rubyVersion = payload.version;
 
+        if (this.resolveReady) {
+            this.resolveReady();
+        }
+
         // 下位互換性のためにイベントを発火
         window.dispatchEvent(new CustomEvent("ruby-vm:ready", { detail: { version: payload.version } }));
-
-        this.verifyLSP();
         break;
       case "error":
         this.dispatchOutput(`// VM Error: ${payload.message}`);
@@ -90,9 +81,7 @@ export class RubyVM {
     }
   }
 
-  /**
-   * コードを実行する
-   */
+  // コードを実行する
   public run(code: string): void {
     if (!this.worker) {
       this.dispatchOutput("// Ruby VM Worker が初期化されていません。");
@@ -101,9 +90,7 @@ export class RubyVM {
     this.worker.postMessage({ type: "run", payload: { code } });
   }
 
-  /**
-   * 出力イベントを発火する
-   */
+  // 出力イベントを発火する
   private dispatchOutput(text: string): void {
     if (this.onOutput) this.onOutput(text);
 
@@ -111,47 +98,8 @@ export class RubyVM {
     window.dispatchEvent(new CustomEvent("ruby-vm:output", { detail: { text } }));
   }
 
-  /**
-   * エディタ初期化時のハンドラ
-   */
-  private handleEditorInitialized(event: any): void {
-    this.editor = event.detail.editor;
-    this.tryActivateDomains();
-  }
-
-  /**
-   * 各ドメイン（LSP, Reference, Analysis）の有効化を試みる
-   */
-  private async tryActivateDomains(): Promise<void> {
-    if (this.lspClient && this.editor && !this.bootLoader && window.__rubyVMReady) {
-      // BootLoaderの遅延読み込みと初期化
-      const { BootLoader } = await import("./boot");
-      this.bootLoader = new BootLoader(this, this.editor);
-
-      await this.bootLoader.boot();
-      
-      window.dispatchEvent(new CustomEvent("rubbit:lsp-ready", {
-        detail: { version: this.rubyVersion }
-      }));
-    }
-  }
-
-  /**
-   * LSPの検証と有効化を行う
-   */
-  private async verifyLSP(): Promise<void> {
-    this.tryActivateDomains();
-  }
-
-  /**
-   * リソースを破棄する
-   */
   public destroy(): void {
-    window.removeEventListener("editor:initialized", this.boundHandleEditorInitialized);
     if (this.worker) this.worker.terminate();
     if (window.rubyLSP === this.lspClient) delete window.rubyLSP;
-    if (this.bootLoader) {
-      this.bootLoader.destroy();
-    }
   }
 }

@@ -1,8 +1,6 @@
 import * as monaco from 'monaco-editor';
 
-/**
- * Monaco Editor に Inlay Hints (型情報の行末表示) を提供する
- */
+// Monaco Editor に Inlay Hints (型情報の行末表示) を提供する
 export class ProvideInlayHints {
   private editor: monaco.editor.ICodeEditor;
   private emitter: monaco.Emitter<void> = new monaco.Emitter<void>();
@@ -12,9 +10,7 @@ export class ProvideInlayHints {
     this.editor = editor;
   }
 
-  /**
-   * プロバイダを登録する
-   */
+  // プロバイダを登録する
   start(): void {
     monaco.languages.registerInlayHintsProvider("ruby", {
       onDidChangeInlayHints: this.emitter.event,
@@ -42,9 +38,7 @@ export class ProvideInlayHints {
     });
   }
 
-  /**
-   * 測定結果を更新し、表示をリフレッシュする
-   */
+  // 測定結果を更新し、表示をリフレッシュする
   update(line: number, value: string): void {
     this.measuredValues.set(line, value);
     this.emitter.fire();
@@ -54,9 +48,7 @@ export class ProvideInlayHints {
     setTimeout(() => this.editor.updateOptions({ inlayHints: { enabled: "on", maximumLength: 150 } }), 50);
   }
 
-  /**
-   * 保持しているキャッシュをクリアする
-   */
+  // 保持しているキャッシュをクリアする
   clear(): void {
     this.measuredValues.clear();
     this.emitter.fire();

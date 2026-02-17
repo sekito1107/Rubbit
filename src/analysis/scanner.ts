@@ -1,6 +1,4 @@
-/**
- * 正規表現ベースの高速なコード走査を担当する
- */
+// 正規表現ベースの高速なコード走査を担当する
 export interface ScannedMethod {
   name: string
   line: number
@@ -15,9 +13,7 @@ export class Scanner {
     "if", "def", "class", "module", "end", "do", "yield", "begin", "rescue", "ensure", "elsif", "else", "then", "case", "when", "unless", "until", "while", "for", "return", "next", "break", "redo", "retry", "alias", "undef", "and", "or", "not", "super", "self"
   ]);
 
-  /**
-   * 指定された行範囲をスキャンし、メソッド出現箇所を抽出する
-   */
+  // 指定された行範囲をスキャンし、メソッド出現箇所を抽出する
   scanLines(model: { getLineContent(lineNumber: number): string }, lineIndices: number[]): Map<number, ScannedMethod[]> {
     const results = new Map<number, ScannedMethod[]>()
     
@@ -90,12 +86,11 @@ export class Scanner {
           else if (match[2]) scanType = 'symbol'
           else if (match[3]) scanType = 'dot'
           else if (match[4]) scanType = 'call'
-          // match[5] is bare
 
           matches.push({
             name: name,
             line: idx + 1,
-            col: match.index + offsetInMatch + 1, // 1-indexed
+            col: match.index + offsetInMatch + 1,
             scanType
           })
         }

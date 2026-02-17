@@ -1,6 +1,4 @@
-/**
- * Ruby VM (Worker) へのコード送信と実行結果の購読を担当する
- */
+// Ruby VM (Worker) へのコード送信と実行結果の購読を担当する
 export interface RubyVMController {
   run(code: string): void;
 }
@@ -12,10 +10,9 @@ export class Executor {
     this.controller = controller;
   }
 
-  /**
-   * コードを実行する
-   * @param {string} code 
-   */
+  // コードを実行する
+  // コードを実行する
+  // code: 実行するRubyコード
   public execute(code: string): void {
     if (!code) return;
     try {

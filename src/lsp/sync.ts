@@ -1,9 +1,7 @@
 import type * as monaco from 'monaco-editor';
 import type { LSPClient } from './client';
 
-/**
- * Monaco Editor の内容を LSP サーバと同期する
- */
+// Monaco Editor の内容を LSP サーバと同期する
 export class SyncDocument {
   private client: LSPClient;
   private editor: monaco.editor.ICodeEditor;
@@ -18,9 +16,7 @@ export class SyncDocument {
     this.model = editor.getModel();
   }
 
-  /**
-   * 文書の同期を初期化する (didOpen)
-   */
+  // 文書の同期を初期化する (didOpen)
   start(): void {
     if (!this.model) return;
 
@@ -39,9 +35,7 @@ export class SyncDocument {
     this.subscribeToChanges();
   }
 
-  /**
-   * エディタの変更監視を開始する
-   */
+  // エディタの変更監視を開始する
   subscribeToChanges(): void {
     this.editor.onDidChangeModelContent(() => {
       this.isDirty = true;
@@ -50,9 +44,7 @@ export class SyncDocument {
     });
   }
 
-  /**
-   * Pending 中の変更を即座に同期する (didChange)
-   */
+  // Pending 中の変更を即座に同期する (didChange)
   flush(): void {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -71,9 +63,7 @@ export class SyncDocument {
     });
   }
 
-  /**
-   * 一時的な解析（プローブ）のためにコンテンツを一時的に変更する
-   */
+  // 一時的な解析（プローブ）のためにコンテンツを一時的に変更する
   async sendTemporaryContent(tempContent: string): Promise<void> {
     if (!this.model) return;
     const version = this.model.getVersionId() + 1;
@@ -83,9 +73,7 @@ export class SyncDocument {
     });
   }
 
-  /**
-   * オリジナルのコンテンツを再同期して復元する
-   */
+  // オリジナルのコンテンツを再同期して復元する
   async restoreOriginalContent(): Promise<void> {
     this.flush();
   }

@@ -1,9 +1,7 @@
 import * as monaco from 'monaco-editor';
 import type { LSPClient } from './client';
 
-/**
- * Monaco Editor に Hover 情報を提供する
- */
+// Monaco Editor に Hover 情報を提供する
 export class ProvideHover {
   private client: LSPClient;
 
@@ -11,9 +9,7 @@ export class ProvideHover {
     this.client = client;
   }
 
-  /**
-   * プロバイダを登録する
-   */
+  // プロバイダを登録する
   start(): void {
     monaco.languages.registerHoverProvider("ruby", {
       provideHover: async (model: monaco.editor.ITextModel, position: monaco.Position) => {

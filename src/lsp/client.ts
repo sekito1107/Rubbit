@@ -1,6 +1,4 @@
-/**
- * JSON-RPCを介してRuby Workerと通信するLSPクライアント
- */
+// JSON-RPCを介してRuby Workerと通信するLSPクライアント
 export interface LSPRequest {
   jsonrpc: "2.0";
   id: number;
@@ -36,12 +34,11 @@ export class LSPClient {
     this.worker.addEventListener("message", this.handleMessage.bind(this));
   }
 
-  /**
-   * LSPサーバーにリクエストを送り、レスポンスを待機する
-   * @param {string} method - LSPメソッド名（例: "initialize"）
-   * @param {object} params - リクエストパラメータ
-   * @returns {Promise<any>} レスポンス結果
-   */
+  // LSPサーバーにリクエストを送り、レスポンスを待機する
+  // LSPサーバーにリクエストを送り、レスポンスを待機する
+  // method: LSPメソッド名（例: "initialize"）
+  // params: リクエストパラメータ
+  // returns: レスポンス結果 (Promise)
   sendRequest(method: string, params: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const id = this.requestId++;
@@ -63,11 +60,10 @@ export class LSPClient {
     });
   }
 
-  /**
-   * 通知を送信する（レスポンスを待機しない）
-   * @param {string} method 
-   * @param {object} params 
-   */
+  // 通知を送信する（レスポンスを待機しない）
+  // 通知を送信する（レスポンスを待機しない）
+  // method: メソッド名
+  // params: パラメータ
   sendNotification(method: string, params: any = {}): void {
     this.worker.postMessage({
       type: "lsp",
@@ -81,11 +77,10 @@ export class LSPClient {
     });
   }
 
-  /**
-   * 受信した通知に対するコールバックを登録する
-   * @param {string} method - 通知メソッド名
-   * @param {Function} callback - コールバック関数 (paramsを受け取る)
-   */
+  // 受信した通知に対するコールバックを登録する
+  // 受信した通知に対するコールバックを登録する
+  // method: 通知メソッド名
+  // callback: コールバック関数 (paramsを受け取る)
   onNotification(method: string | ((params: any) => void), callback?: (params: any) => void): void {
     let actualMethod: string;
     let actualCallback: (params: any) => void;

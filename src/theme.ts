@@ -1,7 +1,5 @@
-/**
- * テーマ切り替え機能
- * theme/index.ts
- */
+// テーマ切り替え機能
+// theme/index.ts
 export class ThemeComponent {
   private toggleButton: HTMLElement | null;
 
