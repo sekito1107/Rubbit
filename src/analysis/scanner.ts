@@ -18,12 +18,13 @@ export class Scanner {
     const results = new Map<number, ScannedMethod[]>()
     
     // 定義済みの重要なメソッド名のパターン
-    // 1. 定義: def name or def self.name
-    // 2. シンボル形式: &:method (優先)
-    // 3. ドット形式: .method
+    // 1. 定義: def name or def self.name (演算子含む)
+    // 2. シンボル形式: &:method (演算子含む)
+    // 3. ドット形式: .method (演算子含む)
     // 4. 括弧・ブロック形式: method( or method { or method do
-    // 5. 単独形式: method
-    const methodPattern = /(?:def\s+(?:self\.)?([a-zA-Z_]\w*[!?]?))|&:(?:([a-zA-Z_]\w*[!?]?))|(?:\.)([a-zA-Z_]\w*[!?]?)|(\b[a-zA-Z_]\w*[!?]?)\s*(?=[({]|\s+do\b)|(\b[a-zA-Z_]\w*[!?]?)/g
+    // 5. 中置演算子: space op space (例: n * 2)
+    // 6. 単独形式: method
+    const methodPattern = /(?:def\s+(?:self\.)?([a-zA-Z_]\w*[!?]?|[-+*/%&|^<>~`^[\]=]+))|&:(?:([a-zA-Z_]\w*[!?]?|[-+*/%&|^<>~`^[\]=]+))|(?:\.)([a-zA-Z_]\w*[!?]?|[-+*/%&|^<>~`^[\]=]+)|(\b[a-zA-Z_]\w*[!?]?)\s*(?=[({]|\s+do\b)|(?:\s+([-+*/%&|^<>~`^[\]=]+)\s+)|(\b[a-zA-Z_]\w*[!?]?)/g
 
     lineIndices.forEach(idx => {
       const lineNum = idx + 1
@@ -69,11 +70,16 @@ export class Scanner {
       let match: RegExpExecArray | null
 
       while ((match = methodPattern.exec(lineContent)) !== null) {
-        const name = match[1] || match[2] || match[3] || match[4] || match[5]
+        const name = match[1] || match[2] || match[3] || match[4] || match[5] || match[6]
 
         // 定数（大文字開始）は全形式で除外
         if (name && /^[A-Z]/.test(name)) {
             continue;
+        }
+
+        // 単なる代入 (=) は除外
+        if (name === '=') {
+          continue;
         }
 
         if (name && !Scanner.BLACKLIST.has(name)) {
@@ -86,6 +92,7 @@ export class Scanner {
           else if (match[2]) scanType = 'symbol'
           else if (match[3]) scanType = 'dot'
           else if (match[4]) scanType = 'call'
+          else if (match[5]) scanType = 'dot' // 中置演算子はドット形式と同等に扱う
 
           matches.push({
             name: name,
