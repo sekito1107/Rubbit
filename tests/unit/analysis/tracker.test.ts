@@ -25,7 +25,7 @@ describe('Tracker', () => {
     })
 
     it('行が追加された場合、以降のキャッシュをずらし、新しい行を dirty にすること', () => {
-      const lineMethods = ['m1', 'm2', 'm3']
+      const lineMethods = [['m1'], ['m2'], ['m3']]
       const event = {
         changes: [{
           range: { startLineNumber: 2, endLineNumber: 2 },
@@ -33,15 +33,15 @@ describe('Tracker', () => {
         }]
       }
 
-      tracker.processChangeEvent(event, lineMethods)
+      tracker.processChangeEvent(event as any, lineMethods)
 
-      expect(lineMethods).toEqual(['m1', 'm2', null, 'm3'])
+      expect(lineMethods).toEqual([['m1'], ['m2'], null, ['m3']])
       expect(Array.from(tracker.getDirtyLines())).toContain(1)
       expect(Array.from(tracker.getDirtyLines())).toContain(2)
     })
 
     it('行が削除された場合、キャッシュを詰め、現在の行を dirty にすること', () => {
-      const lineMethods = ['m1', 'm2', 'm3', 'm4']
+      const lineMethods = [['m1'], ['m2'], ['m3'], ['m4']]
       const event = {
         changes: [{
           range: { startLineNumber: 2, endLineNumber: 3 }, // 2行目から3行目までを置換
@@ -49,12 +49,68 @@ describe('Tracker', () => {
         }]
       }
       
-      tracker.processChangeEvent(event, lineMethods)
+      tracker.processChangeEvent(event as any, lineMethods)
       
       // Tracker.js line 29: lineMethods.splice(startLine + 1, Math.abs(diff))
       // startLine = 1, diff = -1 -> splice(2, 1) を実行
-      expect(lineMethods).toEqual(['m1', 'm2', 'm4'])
+      expect(lineMethods).toEqual([['m1'], ['m2'], ['m4']])
       expect(Array.from(tracker.getDirtyLines())).toContain(1)
+    })
+  })
+
+  describe('processChangeEvent with method cache', () => {
+    it('行が挿入された場合、キャッシュされたメソッドの行番号を更新すること', () => {
+      // 初期状態: メソッド 'foo' は3行目 (index 2) にある
+      // lineMethods[2] = [{ name: 'foo', line: 3 }]
+      const lineMethods: any[] = [
+        null, 
+        null, 
+        [{ name: 'foo', line: 3 }]
+      ]
+
+      // 1行目に新しい行を挿入
+      const event = {
+        changes: [{
+          range: { startLineNumber: 1, endLineNumber: 1 },
+          text: 'new line\n' 
+        }]
+      }
+
+      tracker.processChangeEvent(event as any, lineMethods)
+      
+      // 期待値: メソッド 'foo' は4行目 (index 3) に移動し、line プロパティも 4 に更新されるべき
+      expect(lineMethods.length).toBe(4)
+      const methodsOnLine4 = lineMethods[3]
+      expect(methodsOnLine4).toBeDefined()
+      expect(methodsOnLine4[0].name).toBe('foo')
+      expect(methodsOnLine4[0].line).toBe(4)
+    })
+
+    it('行が削除された場合、キャッシュされたメソッドの行番号を更新すること', () => {
+      // 初期状態: メソッド 'bar' は4行目 (index 3) にある
+      const lineMethods: any[] = [
+        null,
+        null,
+        null,
+        [{ name: 'bar', line: 4 }]
+      ]
+
+      // 1行目を削除
+      const event = {
+        changes: [{
+          range: { startLineNumber: 1, endLineNumber: 2 },
+          text: '' 
+        }]
+      }
+
+      tracker.processChangeEvent(event as any, lineMethods)
+
+      // 期待値: メソッド 'bar' は3行目 (index 2) に移動し、line プロパティも 3 に更新されるべき
+      expect(lineMethods.length).toBe(3)
+      const methodsOnLine3 = lineMethods[2]
+      expect(methodsOnLine3).toBeDefined()
+      expect(methodsOnLine3[0].name).toBe('bar')
+      expect(methodsOnLine3[0].line).toBe(3)
     })
   })
 

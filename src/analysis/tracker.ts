@@ -30,6 +30,18 @@ export class Tracker {
           // 行削除: 指定位置から削除
           lineMethods.splice(startLine + 1, Math.abs(diff))
         }
+
+        const updateStart = diff > 0 ? (startLine + 1 + diff) : (startLine + 1)
+        for (let i = updateStart; i < lineMethods.length; i++) {
+          const methods = lineMethods[i]
+          if (methods) {
+            methods.forEach((m: any) => {
+              if (m && typeof m.line === 'number') {
+                m.line += diff
+              }
+            })
+          }
+        }
       }
 
       // 2. 変更された行とその周辺を Dirty マーク

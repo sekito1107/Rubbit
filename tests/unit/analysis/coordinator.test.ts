@@ -107,11 +107,11 @@ describe('AnalysisCoordinator', () => {
       })
 
       const data = { name: 'test', line: 1, col: 1, status: 'pending' as const }
-      coordinator.store.set('test', data)
       const id = `${data.name}:${data.line}:${data.col}`
+      coordinator.store.set(id, data)
       await (coordinator as any).resolveSingleMethod(id, true) // 強制再試行
 
-      const result = coordinator.store.get('test')!
+      const result = coordinator.store.get(id)!
       expect(result.status).toBe('resolved')
       expect(result.className).toBe('TestClass')
     })
