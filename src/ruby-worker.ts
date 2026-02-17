@@ -50,7 +50,7 @@ async function initializeVM(wasmUrl: string) {
 
     const buffer = await response.arrayBuffer();
 
-    postMessage({ type: "progress", payload: { percent: 20, message: "Ruby WASM をコンパイル中..." } });
+    postMessage({ type: "progress", payload: { percent: 15, message: "Ruby WASM をコンパイル中..." } });
     const module = await WebAssembly.compile(buffer);
     
     const result = await DefaultRubyVM(module);
@@ -58,7 +58,7 @@ async function initializeVM(wasmUrl: string) {
 
 
     // bootstrap.rb (ポリフィル & LSP サーバー) をロードする
-    postMessage({ type: "progress", payload: { percent: 35, message: "VM を初期化中..." } });
+    postMessage({ type: "progress", payload: { percent: 20, message: "VM を初期化中..." } });
     
     // 1. VFSのディレクトリ作成
     vm.eval("require 'js'");
@@ -66,7 +66,7 @@ async function initializeVM(wasmUrl: string) {
     vm.eval("begin; Dir.mkdir('/workspace'); rescue; end");
 
     // 2. RBS 標準ライブラリのロード (bootstrap 前に書き込む)
-    postMessage({ type: "progress", payload: { percent: 50, message: "RBS 標準ライブラリをロード中..." } });
+    postMessage({ type: "progress", payload: { percent: 30, message: "RBS 標準ライブラリをロード中..." } });
     const rbsUrl = new URL("/rbs/ruby-stdlib.rbs", self.location.origin);
     const rbsResponse = await fetch(rbsUrl);
     if (rbsResponse.ok) {
@@ -77,8 +77,22 @@ async function initializeVM(wasmUrl: string) {
             for (let i = 0; i < rbsText.length; i += chunkSize) {
                 const chunk = rbsText.substring(i, i + chunkSize);
                 const b64 = btoa(unescape(encodeURIComponent(chunk)));
-                vm.eval(`File.open("/workspace/stdlib.rbs", "ab") { |f| f.write("${b64}".unpack1("m")) }`);
+            vm.eval(`File.open("/workspace/stdlib.rbs", "ab") { |f| f.write("${b64}".unpack1("m")) }`);
+                
+                // 進捗更新: 30% -> 80% (RBSロード: 最も重い処理)
+                const rbsProgressBase = 30;
+                const rbsProgressMax = 80;
+                const progressRange = rbsProgressMax - rbsProgressBase;
+                const currentProcessed = i + chunk.length;
+                const currentPercent = rbsProgressBase + Math.floor((currentProcessed / rbsText.length) * progressRange);
+                
+                if (currentPercent > (self as any)._lastRbsPercent) {
+                    postMessage({ type: "progress", payload: { percent: currentPercent, message: "RBS 標準ライブラリをロード中..." } });
+                    (self as any)._lastRbsPercent = currentPercent;
+                }
             }
+            // 完了時は明示的に範囲最大値へ
+            postMessage({ type: "progress", payload: { percent: 80, message: "RBS ロード完了、LSP起動準備..." } });
         } catch (e: any) {
             postMessage({ type: "output", payload: { text: `// RBS load failed: ${e.message}` } });
         }
@@ -102,9 +116,14 @@ async function initializeVM(wasmUrl: string) {
     writeRubyFile("/src/server.rb", serverCode);
 
     // 4. ブートストラップスクリプトを評価する
-    postMessage({ type: "progress", payload: { percent: 65, message: "LSP サーバーを起動中..." } });
+    postMessage({ type: "progress", payload: { percent: 80, message: "Language Server を起動中..." } });
     (self as any).sendLspResponse = (jsonString: string) => {
       postMessage({ type: "lsp", payload: jsonString });
+    };
+    
+    // Ruby側から進捗を更新するための関数
+    (self as any).updateProgress = (percent: number, message: string) => {
+       postMessage({ type: "progress", payload: { percent, message } });
     };
 
     vm.eval(`

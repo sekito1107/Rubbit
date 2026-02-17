@@ -1,4 +1,5 @@
 require "js"
+JS.global.call(:updateProgress, 82, "RubyGems をロード中...")
 require "rubygems"
 require "pathname"
 
@@ -6,6 +7,7 @@ require "pathname"
 require_relative "env"
 
 # 外部ライブラリ
+JS.global.call(:updateProgress, 84, "TypeProf をロード中...")
 require "typeprof"
 require "typeprof/lsp"
 
@@ -16,6 +18,8 @@ require_relative "server"
 
 # RBSとTypeProfコアの初期化
 begin
+  JS.global.call(:updateProgress, 85, "RBS 環境を初期化中...")
+  
   # bundle_rbs.sh が生成する場所
   rbs_path = "/workspace/rbs/ruby-stdlib.rbs"
   rbs_path = "/workspace/stdlib.rbs" unless File.exist?(rbs_path)
@@ -28,12 +32,16 @@ begin
     $raw_rbs_env = RBS::Environment.new
   end
   
+  JS.global.call(:updateProgress, 86, "TypeProf サービスを初期化中...")
+  
   # TypeProf Service の作成 (RBS環境を明示的に渡す)
   # rbs_collection: nil を渡すことで自動ロードを抑制
   core = TypeProf::Core::Service.new(rbs_env: $raw_rbs_env, rbs_collection: nil)
   
   # インデックス構築の強制（LSP開始前に同期的に完了させる）
-  core.update_file("/workspace/main.rb", "")
+  code = ""
+  JS.global.call(:updateProgress, 88, "インデックスを事前ロード中...")
+  core.update_file("/workspace/main.rb", code)
   
   # LSP Error: undefined method 'define' for nil を防ぐためのモンキーパッチ
   # AST.parse_rbs が nil を返す場合に備えて compact を挟む
@@ -61,6 +69,7 @@ begin
   end
 
   # TypeProf Service の初期化（同期モード）
+  JS.global.call(:updateProgress, 90, "LSP サーバーを起動中...")
   $server = Server.new(core)
   $server.start
 rescue => e

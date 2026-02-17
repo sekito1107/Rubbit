@@ -29,9 +29,13 @@ export class BootLoader {
     }
 
     // 1. LSPの初期化
-    this.dispatchProgress(70, "Language Server を起動中...");
+    this.dispatchProgress(90, "LSP: サーバーを起動中...");
     this.lspManager = new LSP(this.rubyVM.lspClient, this.editor);
+    
+    this.dispatchProgress(92, "LSP: 初期化リクエスト送信...");
     await this.lspManager.initialize();
+    
+    this.dispatchProgress(94, "LSP: 機能を有効化中...");
     this.lspManager.activate();
     
     // 互換性のためのグローバル公開
@@ -40,16 +44,19 @@ export class BootLoader {
     window.dispatchEvent(new CustomEvent("rubbit:lsp-analysis-finished"));
 
     // 2. リファレンスの読み込み
-    this.dispatchProgress(85, "リファレンス索引をロード中...");
+    this.dispatchProgress(95, "リファレンス索引をロード中...");
     this.reference = new Reference(this.rubyVM.lspClient);
+    
+    this.dispatchProgress(96, "リファレンス: 索引構築...");
     await this.reference.loadIndex();
 
     // 3. 解析機能の起動
-    this.dispatchProgress(100, "準備完了！");
+    this.dispatchProgress(98, "解析エンジンを起動中...");
     this.analysis = new AnalysisCoordinator(this.editor, this.lspManager, this.reference);
     window.rubbitAnalysisCoordinator = this.analysis;
     this.analysis.start();
 
+    this.dispatchProgress(100, "準備完了！");
     // 初期化完了 (バージョン情報はVM側から通知されるため、ここでは解析完了のみ)
   }
 
