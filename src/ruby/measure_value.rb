@@ -36,7 +36,10 @@ module MeasureValue
           unless is_future
             begin
               val = tp.binding.eval(expression)
-              CapturedValue.add(val.inspect.to_s)
+              # 初期化前(nil)の場合は無視する (その後代入されるはずなので)
+              if val != nil
+                CapturedValue.add(val.inspect.to_s)
+              end
               CapturedValue.target_triggered = true
             rescue
             end
@@ -53,7 +56,8 @@ module MeasureValue
             end
           rescue
           ensure
-            raise RubbitStopExecution
+            # Loop の場合、ここで止めてしまうと1回しか取れないためコメントアウト
+            # raise RubbitStopExecution
           end
 
         # 3. ターゲット行を一度も踏まずに通り過ぎた場合 (最適化等)
