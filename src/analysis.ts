@@ -57,7 +57,7 @@ export class AnalysisCoordinator {
     this.scheduleAnalysis(0)
 
     // 3. LSP の解析完了イベントを購読
-    window.addEventListener("rubbit:lsp-analysis-finished", () => {
+    window.addEventListener("rubox:lsp-analysis-finished", () => {
       if (this.needsReanalysis) {
         this.scheduleAnalysis()
       } else {
@@ -78,7 +78,7 @@ export class AnalysisCoordinator {
   }
 
   stop(): void {
-    window.removeEventListener("rubbit:lsp-analysis-finished", this.boundHandleLSPFinished)
+    window.removeEventListener("rubox:lsp-analysis-finished", this.boundHandleLSPFinished)
   }
 
   scheduleAnalysis(delay: number = this.WAIT_MS): void {

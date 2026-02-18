@@ -88,7 +88,7 @@ export class HandleDiagnostics {
     });
 
     // 2. カスタムの構文チェック
-    this.client.onNotification("rubbit/syntaxCheck", (params: SyntaxCheckParams) => {
+    this.client.onNotification("rubox/syntaxCheck", (params: SyntaxCheckParams) => {
       const model = this.editor.getModel();
       if (!model) return;
 

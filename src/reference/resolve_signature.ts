@@ -21,7 +21,7 @@ export class ResolveSignature {
     try {
       // Ruby VM (server.rb) の rubbit.resolveSignature コマンドを呼び出す
       const result = await this.client.sendRequest("workspace/executeCommand", {
-        command: "rubbit.resolveSignature",
+        command: "rubox.resolveSignature",
         arguments: [className, methodName]
       })
 

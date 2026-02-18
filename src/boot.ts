@@ -39,9 +39,9 @@ export class BootLoader {
     this.lspManager.activate();
     
     // 互換性のためのグローバル公開
-    window.rubbitLSPManager = this.lspManager;
-    window.rubbitLSPReady = true;
-    window.dispatchEvent(new CustomEvent("rubbit:lsp-analysis-finished"));
+    window.ruboxLSPManager = this.lspManager;
+    window.ruboxLSPReady = true;
+    window.dispatchEvent(new CustomEvent("rubox:lsp-analysis-finished"));
 
     // 2. リファレンスの初期化
     this.reference = new Reference(this.rubyVM.lspClient);
@@ -49,27 +49,27 @@ export class BootLoader {
     // 3. 解析機能の起動
     this.dispatchProgress(98, "解析エンジンを起動中...");
     this.analysis = new AnalysisCoordinator(this.editor, this.lspManager, this.reference);
-    window.rubbitAnalysisCoordinator = this.analysis;
+    window.ruboxAnalysisCoordinator = this.analysis;
     this.analysis.start();
 
     this.dispatchProgress(100, "準備完了！");
 
-    window.dispatchEvent(new CustomEvent("rubbit:lsp-ready", {
+    window.dispatchEvent(new CustomEvent("rubox:lsp-ready", {
         detail: { version: (this.rubyVM as any).rubyVersion }
     }));
   }
 
   private dispatchProgress(percent: number, message: string): void {
-    window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
+    window.dispatchEvent(new CustomEvent("rubox:loading-progress", {
       detail: { percent, message }
     }));
   }
 
   // リソースの破棄とグローバル汚染のクリーンアップ
   public destroy(): void {
-    if (window.rubbitLSPManager === this.lspManager) delete window.rubbitLSPManager;
-    if (window.rubbitAnalysisCoordinator === this.analysis) delete window.rubbitAnalysisCoordinator;
-    delete window.rubbitLSPReady;
+    if (window.ruboxLSPManager === this.lspManager) delete window.ruboxLSPManager;
+    if (window.ruboxAnalysisCoordinator === this.analysis) delete window.ruboxAnalysisCoordinator;
+    delete window.ruboxLSPReady;
     
     this.lspManager = null;
     this.reference = null;

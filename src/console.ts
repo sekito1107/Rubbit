@@ -57,18 +57,18 @@ export class ConsoleComponent {
     };
 
     // 進捗イベントを購読
-    window.addEventListener("rubbit:loading-progress", (event: Event) => {
+    window.addEventListener("rubox:loading-progress", (event: Event) => {
       const { percent, message } = (event as CustomEvent).detail;
       this.updateLoadingProgress(percent, message);
     }); 
 
     // ショートカット実行イベント (Editorから発火)
-    window.addEventListener("rubbit:run-trigger", () => {
+    window.addEventListener("rubox:run-trigger", () => {
       this.run()
     })
 
     // 全初期化完了イベントを購読 (BootLoader完了後にRubyVMから発火)
-    window.addEventListener("rubbit:lsp-ready", (event: Event) => {
+    window.addEventListener("rubox:lsp-ready", (event: Event) => {
       const detail = (event as CustomEvent).detail;
       this.onFullyReady(detail?.version || "");
     });

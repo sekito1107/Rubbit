@@ -122,15 +122,15 @@ class Server
     when "typeprof.measureValue"
       expression = params[:arguments][0][:expression]
       target_line = params[:arguments][0][:line] + 1
-      stdin = JS.global[:_rubbitStdin].to_s
+      stdin = JS.global[:_ruboxStdin].to_s
       result = MeasureValue.run(expression, target_line, @user_binding, stdin)
       write(id: json[:id], result: result)
-    when "rubbit.resolveSignature"
+    when "rubox.resolveSignature"
       class_name = params[:arguments][0]
       method_name = params[:arguments][1]
       result = resolve_signature(class_name, method_name)
       write(id: json[:id], result: result)
-    when "rubbit.fetchMethods"
+    when "rubox.fetchMethods"
       class_name = params[:arguments][0]
       result = fetch_methods(class_name)
       write(id: json[:id], result: result)
@@ -143,7 +143,7 @@ class Server
     code = File.read("/workspace/main.rb")
     begin
       RubyVM::InstructionSequence.compile(code)
-      write(method: "rubbit/syntaxCheck", params: { valid: true })
+      write(method: "rubox/syntaxCheck", params: { valid: true })
     rescue SyntaxError => e
       msg = e.message
       line = 0
@@ -161,7 +161,7 @@ class Server
         message: msg,
         source: "RubyVM"
       }
-      write(method: "rubbit/syntaxCheck", params: { valid: false, diagnostics: [diag] })
+      write(method: "rubox/syntaxCheck", params: { valid: false, diagnostics: [diag] })
     rescue
     end
   end

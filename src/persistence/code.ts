@@ -1,6 +1,6 @@
 // エディタのコード内容を LocalStorage に保存・復元する
 export class CodePersistence {
-  static readonly STORAGE_KEY = "rubbit_code"
+  static readonly STORAGE_KEY = "rubox_code"
 
   // コードを保存する
   save(code: string | null | undefined): void {

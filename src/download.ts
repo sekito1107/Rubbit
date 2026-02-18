@@ -20,6 +20,6 @@ export class DownloadComponent {
   }
 
   public async download(): Promise<void> {
-    await this.exporter.export("rubbit.rb");
+    await this.exporter.export("rubox.rb");
   }
 }

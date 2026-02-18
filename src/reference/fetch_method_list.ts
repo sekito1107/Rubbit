@@ -24,7 +24,7 @@ export class FetchMethodList {
   }[]> {
     try {
       const result = await this.client.sendRequest("workspace/executeCommand", {
-        command: "rubbit.fetchMethods",
+        command: "rubox.fetchMethods",
         arguments: [className]
       })
 

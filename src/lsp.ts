@@ -51,8 +51,8 @@ export class LSP {
     this.editor.updateOptions({ inlayHints: { enabled: "on" } });
 
     // テスト用に公開
-    (window as any).rubbitLSPManager = this;
-    (window as any).rubbitLSPReady = true;
+    (window as any).ruboxLSPManager = this;
+    (window as any).ruboxLSPReady = true;
   }
 
   // 外部向けの型解決 Facade API

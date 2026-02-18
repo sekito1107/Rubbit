@@ -32,8 +32,8 @@ export class CursorDocComponent {
     }
 
     document.addEventListener("editor:initialized", this.boundHandleEditorInit as any)
-    window.addEventListener("rubbit:lsp-analysis-finished", this.boundHandleAnalysisFinished)
-    window.addEventListener("rubbit:lsp-ready", this.boundHandleLSPReady)
+    window.addEventListener("rubox:lsp-analysis-finished", this.boundHandleAnalysisFinished)
+    window.addEventListener("rubox:lsp-ready", this.boundHandleLSPReady)
 
     const g = window as any
     if (g.monacoEditor) {
@@ -75,7 +75,7 @@ export class CursorDocComponent {
     }
 
     const g = window as any
-    const analysis = g.rubbitAnalysisCoordinator
+    const analysis = g.ruboxAnalysisCoordinator
     if (!analysis) {
         if (!this.listElement.innerHTML.includes('loading-bar')) {
           this.listElement.innerHTML = `
@@ -180,7 +180,7 @@ export class CursorDocComponent {
 
   public dispose(): void {
     document.removeEventListener("editor:initialized", this.boundHandleEditorInit as any)
-    window.removeEventListener("rubbit:lsp-analysis-finished", this.boundHandleAnalysisFinished)
-    window.removeEventListener("rubbit:lsp-ready", this.boundHandleLSPReady)
+    window.removeEventListener("rubox:lsp-analysis-finished", this.boundHandleAnalysisFinished)
+    window.removeEventListener("rubox:lsp-ready", this.boundHandleLSPReady)
   }
 }

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Rubbit System Integration Tests', () => {
+test.describe('Rubox System Integration Tests', () => {
     test('完整なシステムフロー検証', async ({ page, context }) => {
         test.setTimeout(180000); // 3 minutes timeout for the whole flow
 
@@ -8,8 +8,8 @@ test.describe('Rubbit System Integration Tests', () => {
         
         // 1. ブラウザログのプロキシ設定
         page.on('console', msg => {
-            // "Waiting for rubbitLSPReady" はノイズになるので除外しても良いが、デバッグ用に残す
-            if (!msg.text().includes('Waiting for rubbitLSPReady')) {
+            // "Waiting for ruboxLSPReady" はノイズになるので除外しても良いが、デバッグ用に残す
+            if (!msg.text().includes('Waiting for ruboxLSPReady')) {
                 console.log(`[Browser Console] ${msg.type().toUpperCase()}: ${msg.text()}`);
             }
         });
@@ -31,11 +31,11 @@ test.describe('Rubbit System Integration Tests', () => {
             await page.waitForSelector('.monaco-editor');
             await page.evaluate(async () => {
                 for (let i = 0; i < 120; i++) { // Max 60sec
-                    if (window.rubbitLSPReady) return true;
+                    if (window.ruboxLSPReady) return true;
                     await new Promise(r => setTimeout(r, 500));
                 }
                 const debug = {
-                    lspReady: window.rubbitLSPReady,
+                    lspReady: window.ruboxLSPReady,
                     monaco: !!window.monaco,
                     editor: !!window.monacoEditor,
                     initializing: window.__rubyVMInitializing,
@@ -80,7 +80,7 @@ test.describe('Rubbit System Integration Tests', () => {
 
         await test.step('Ghost Text: ループ変数のキャプチャ', async () => {
             const code = [
-                'items = [" ruby ", " web-assembly ", " rubbit "]',
+                'items = [" ruby ", " web-assembly ", " rubox "]',
                 'items.each do |item|',
                 '  item',
                 'end'
@@ -90,7 +90,7 @@ test.describe('Rubbit System Integration Tests', () => {
             const result = await measureValue(page, 2, 2, 'item'); // line 2 (3行目)
             expect(result).toContain('" ruby "');
             expect(result).toContain('" web-assembly "');
-            expect(result).toContain('" rubbit "');
+            expect(result).toContain('" rubox "');
         });
 
         await test.step('Ghost Text: ミュータブルオブジェクトの追跡', async () => {
@@ -175,7 +175,7 @@ test.describe('Rubbit System Integration Tests', () => {
             const downloadPromise = page.waitForEvent('download');
             await page.getByTitle('コードを保存').click();
             const download = await downloadPromise;
-            expect(download.suggestedFilename()).toBe('rubbit.rb');
+            expect(download.suggestedFilename()).toBe('rubox.rb');
         });
 
         await test.step('機能: Shareと復元', async () => {
@@ -261,7 +261,7 @@ async function setCode(page, code) {
 async function setCodeAndSync(page, code) {
     await page.evaluate((c) => {
         window.monacoEditor.setValue(c);
-        window.rubbitLSPManager.flushDocumentSync();
+        window.ruboxLSPManager.flushDocumentSync();
     }, code);
     await page.waitForTimeout(1000); // Analysis wait
 }
@@ -269,7 +269,7 @@ async function setCodeAndSync(page, code) {
 async function measureValue(page, line, character, expression) {
     return await page.evaluate(async ({ line, character, expression }) => {
         try {
-            if (!window.rubbitLSPManager) return "ERROR: No LSP Manager";
+            if (!window.ruboxLSPManager) return "ERROR: No LSP Manager";
             const params = {
                 command: "typeprof.measureValue",
                 arguments: [{
@@ -277,7 +277,7 @@ async function measureValue(page, line, character, expression) {
                     line, character, expression
                 }]
             };
-            return await window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params);
+            return await window.ruboxLSPManager.client.sendRequest("workspace/executeCommand", params);
         } catch (e) {
             return "ERROR: " + e.toString();
         }
@@ -295,7 +295,7 @@ async function measureValuePromise(page, line, character, expression) {
             };
         // タイムアウト付きレース
         return Promise.race([
-            window.rubbitLSPManager.client.sendRequest("workspace/executeCommand", params),
+            window.ruboxLSPManager.client.sendRequest("workspace/executeCommand", params),
             new Promise(r => setTimeout(() => r("NO_CAPTURE_LOGGED"), 2000))
         ]);
     }, { line, character, expression });

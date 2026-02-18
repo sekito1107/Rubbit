@@ -58,7 +58,7 @@ export class RubyVM {
         break;
       case "progress":
         // Workerからの進捗イベントを中継
-        window.dispatchEvent(new CustomEvent("rubbit:loading-progress", {
+        window.dispatchEvent(new CustomEvent("rubox:loading-progress", {
           detail: { percent: payload.percent, message: payload.message }
         }));
         break;
