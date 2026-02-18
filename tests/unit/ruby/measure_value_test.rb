@@ -36,20 +36,11 @@ class TestMeasureValue < Minitest::Test
                 end
 
                 unless is_future
-                  begin
-                    # すでにトリガーされている場合（ループ等で同じ行を再度踏んだ場合）、
-                    # 前回の実行結果をここでキャプチャします。
-                    if MeasureValue::CapturedValue.target_triggered
-                      val = tp.binding.eval(expression)
-                      MeasureValue::CapturedValue.add(val.inspect.to_s)
-                    end
-                    MeasureValue::CapturedValue.target_triggered = true
-                  rescue
-                  end
+                  MeasureValue::CapturedValue.target_triggered = true
                 end
 
-              # 2. ターゲット行を抜けた直後、またはブロックの終了時
-              elsif MeasureValue::CapturedValue.target_triggered && (tp.lineno != target_line || tp.event == :b_return)
+              # 2. ターゲット行を抜けた直後 (gets等の最終値キャプチャ用)
+              elsif MeasureValue::CapturedValue.target_triggered && tp.lineno != target_line
                 begin
                   val = tp.binding.eval(expression)
                   inspect_val = val.inspect.to_s
@@ -176,5 +167,24 @@ class TestMeasureValue < Minitest::Test
     # 7行目の "puts string" を検査
     result = MeasureValue.run("string", 7, binding, "", code)
     assert_equal '"Ruby!!!!!"', result, "puts行ではその時点の値のみが表示されるべきであり、後の'reset'は含まれないべきです"
+  end
+
+  def test_ブロックを伴う代入文で中間値nilがキャプチャされないこと
+    code = <<~RUBY
+      _x = gets.chomp
+      targets = readlines(chomp: true)
+      max_length = targets.max_by{|t| t.size}.size
+    RUBY
+    stdin = <<~INPUT
+      4
+      apple
+      blueberry
+      coconut
+      dragonfruit
+    INPUT
+    
+    # 3行目の "max_length" を検査
+    result = MeasureValue.run("max_length", 3, binding, stdin, code)
+    assert_equal '11', result, "ブロックを伴う代入文で、代入前のnilがキャプチャされるべきではありません"
   end
 end

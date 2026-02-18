@@ -34,20 +34,11 @@ module MeasureValue
           end
 
           unless is_future
-            begin
-              # すでにトリガーされている場合（ループ等で同じ行を再度踏んだ場合）、
-              # 前回の実行結果をここでキャプチャします。
-              if CapturedValue.target_triggered
-                val = tp.binding.eval(expression)
-                CapturedValue.add(val.inspect.to_s)
-              end
-              CapturedValue.target_triggered = true
-            rescue
-            end
+            CapturedValue.target_triggered = true
           end
 
-        # 2. ターゲット行を抜けた直後、またはブロックの終了時 (gets等の最終値キャプチャ用)
-        elsif CapturedValue.target_triggered && (tp.lineno != target_line || tp.event == :b_return)
+        # 2. ターゲット行を抜けた直後 (gets等の最終値キャプチャ用)
+        elsif CapturedValue.target_triggered && tp.lineno != target_line
           begin
             val = tp.binding.eval(expression)
             inspect_val = val.inspect.to_s
@@ -57,7 +48,7 @@ module MeasureValue
             end
           rescue
           ensure
-            # ターゲット行を抜けたか、ブロックが終了した場合はトリガーを解除
+            # ターゲット行を抜けた場合はトリガーを解除
             CapturedValue.target_triggered = false
           end
 
