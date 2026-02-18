@@ -68,7 +68,7 @@ module MeasureValue
             CapturedValue.add(val.inspect.to_s)
           rescue
           ensure
-            raise RubbitStopExecution
+            raise RuboxStopExecution
           end
         end
       end
@@ -81,7 +81,7 @@ module MeasureValue
         tp.enable do
           measure_binding.eval(code_str, "(eval)")
         end
-      rescue RubbitStopExecution
+      rescue RuboxStopExecution
       rescue
       ensure
         # 最後まで実行しても、あるいは途中で例外が発生しても何も取れなかった場合のフォールバック

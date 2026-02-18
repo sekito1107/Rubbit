@@ -4,7 +4,7 @@ require 'stringio'
 require_relative '../../../src/ruby/measure_value'
 
 # テスト実行を中断するための例外クラス (src/ruby/measure_value.rb で使用)
-class RubbitStopExecution < StandardError; end
+class RuboxStopExecution < StandardError; end
 
 class TestMeasureValue < Minitest::Test
   def setup
@@ -69,7 +69,7 @@ class TestMeasureValue < Minitest::Test
                   MeasureValue::CapturedValue.add(val.inspect.to_s)
                 rescue
                 ensure
-                  raise RubbitStopExecution
+                  raise RuboxStopExecution
                 end
               end
             end
@@ -82,7 +82,7 @@ class TestMeasureValue < Minitest::Test
               tp.enable do
                 measure_binding.eval(code_str, "(eval)")
               end
-            rescue RubbitStopExecution
+            rescue RuboxStopExecution
             rescue
             ensure
               # フォールバック: キャプチャが空の場合
