@@ -35,7 +35,7 @@ end
 #    RangeがincludeしているEnumerableモジュールのメソッドなども解析されます。
 sum = (1..100).sum
 puts "Sum (1..100): #{sum}"
-`
+`;
 
 const EXAMPLES: Record<string, string> = {
   default: DefaultCode,
@@ -69,7 +69,7 @@ require 'prime'
 
 puts "Primes up to 100:"
 puts Prime.each(100).to_a.join(", ")
-`
+`,
 };
 
 export class ExamplesComponent {
@@ -80,16 +80,20 @@ export class ExamplesComponent {
   // buttonElement: 開閉ボタン
   // menuElement: メニュー要素
   // editor: エディタコンポーネント
-  constructor(buttonElement: HTMLElement | null, menuElement: HTMLElement | null, editor: EditorLike) {
+  constructor(
+    buttonElement: HTMLElement | null,
+    menuElement: HTMLElement | null,
+    editor: EditorLike
+  ) {
     this.button = buttonElement;
     this.menu = menuElement;
     this.editor = editor;
 
     if (this.button && this.menu) {
       this.button.addEventListener("click", (e) => this.toggle(e));
-      
+
       // メニュー内のボタンクリック
-      this.menu.querySelectorAll('button').forEach(btn => {
+      this.menu.querySelectorAll("button").forEach((btn) => {
         btn.addEventListener("click", (e) => this.load(e));
       });
     }
@@ -120,9 +124,9 @@ export class ExamplesComponent {
     if (!this.editor) return;
 
     const target = event.target as HTMLElement;
-    const btn = target.closest('button');
+    const btn = target.closest("button");
     const key = btn ? btn.dataset.key : null;
-    
+
     if (key && EXAMPLES[key]) {
       this.editor.setValue(EXAMPLES[key]);
       if (this.menu) {

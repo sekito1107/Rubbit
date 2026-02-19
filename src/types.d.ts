@@ -1,7 +1,7 @@
 import { LSPClient } from "./lsp/client";
 import { LSP } from "./lsp";
 import { AnalysisCoordinator } from "./analysis";
-import * as monaco from 'monaco-editor'
+import * as monaco from "monaco-editor";
 
 declare global {
   interface Window {

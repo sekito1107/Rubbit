@@ -13,7 +13,7 @@ export class LSPResponseParser {
     if (!content.includes("def ") && !content.match(/^(?:class|module)\s/)) {
       // プレーンテキストまたはコードブロック内の "var: Type" 形式をチェック
       if (content.match(/(?:^|\n|```ruby\n)\s*[a-z_]\w*\s*:\s*[A-Z]/)) {
-         return null;
+        return null;
       }
     }
 
@@ -35,7 +35,12 @@ export class LSPResponseParser {
     }
 
     // 2. 配列/タプル形式 [Integer, String] -> Array とみなす
-    if (content.startsWith("[") || content.includes(": [") || content.includes("-> [") || content.match(/^Array\[/)) {
+    if (
+      content.startsWith("[") ||
+      content.includes(": [") ||
+      content.includes("-> [") ||
+      content.match(/^Array\[/)
+    ) {
       return "Array";
     }
 
@@ -71,10 +76,10 @@ export class LSPResponseParser {
   // returns: string | null
   static normalizeTypeName(typeName: string | null): string | null {
     if (!typeName) return null;
-    
+
     // ジェネリクス除去: Array[Integer] -> Array
     const normalized = typeName.replace(/\[.*\]$/, "");
-    
+
     // 文字列リテラルや特殊な型表現の変換
     if (normalized.startsWith('"') || normalized.startsWith("'")) return "String";
     if (normalized.startsWith(":")) return "Symbol";

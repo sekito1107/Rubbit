@@ -5,7 +5,7 @@ export class ThemeComponent {
 
   constructor() {
     this.toggleButton = document.getElementById("theme-toggle");
-    
+
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", () => this.toggle());
     }

@@ -19,38 +19,37 @@ export class ToastComponent {
   constructor(containerElement: HTMLElement) {
     this.container = containerElement;
     this.timeout = null;
-    
+
     // UI参照
     this.messageElement = this.container.querySelector<HTMLElement>('[data-toast="message"]');
     this.iconContainer = this.container.querySelector<HTMLElement>('[data-toast="icon"]');
     this.closeButton = this.container.querySelector<HTMLElement>('[data-toast="close"]');
-    
+
     // メソッドのバインド
     this.boundShow = this.show.bind(this);
     this.boundHide = this.hide.bind(this);
 
     // グローバルトーストイベントを監視
     window.addEventListener("show-toast", this.boundShow);
-    
+
     // Close button
     if (this.closeButton) {
       this.closeButton.addEventListener("click", this.boundHide);
     }
   }
 
-
   public show(event: Event): void {
     const customEvent = event as CustomEvent<ToastEventDetail>;
     const { message, type = "success", duration = 3000 } = customEvent.detail;
-    
+
     // メッセージ設定
     if (this.messageElement) {
       this.messageElement.textContent = message;
     }
-    
+
     // アイコン切り替え
     this.updateIcon(type);
-    
+
     // 表示アニメーション
     this.container.classList.remove("translate-y-[-100%]", "opacity-0", "pointer-events-none");
     this.container.classList.add("translate-y-0", "opacity-100");
@@ -74,7 +73,7 @@ export class ToastComponent {
 
   private updateIcon(type: string): void {
     if (!this.iconContainer) return;
-    
+
     // アイコンの表示/非表示を切り替え
     this.iconContainer.querySelectorAll("svg").forEach((icon: Element) => {
       if ((icon as HTMLElement).dataset.type === type) {

@@ -1,6 +1,6 @@
-import * as monaco from 'monaco-editor';
-import type { LSPClient } from './client';
-import type { ProvideInlayHints } from './inlay_hints';
+import * as monaco from "monaco-editor";
+import type { LSPClient } from "./client";
+import type { ProvideInlayHints } from "./inlay_hints";
 
 // LSP 固有のコマンド (measureValue 等) をエディタ上で実行する
 export class ExecuteCommand {
@@ -18,9 +18,9 @@ export class ExecuteCommand {
       const params = args[0] as { line: number; expression: string; character: number } | undefined;
       if (!params) return;
 
-      const result = await this.client.sendRequest("workspace/executeCommand", { 
-        command: "typeprof.measureValue", 
-        arguments: [params] 
+      const result = await this.client.sendRequest("workspace/executeCommand", {
+        command: "typeprof.measureValue",
+        arguments: [params],
       });
 
       if (result !== undefined) {

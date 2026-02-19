@@ -1,6 +1,6 @@
-import { LSPResponseParser } from './parser';
-import type { LSPClient } from './client';
-import type { SyncDocument } from './sync';
+import { LSPResponseParser } from "./parser";
+import type { LSPClient } from "./client";
+import type { SyncDocument } from "./sync";
 
 // LSP に対して型情報の解決を要求する
 export class ResolveType {
@@ -16,7 +16,7 @@ export class ResolveType {
 
     const response = await this.client.sendRequest("textDocument/hover", {
       textDocument: { uri: "inmemory:///workspace/main.rb" },
-      position: { line: lineNumber - 1, character: column - 1 }
+      position: { line: lineNumber - 1, character: column - 1 },
     });
 
     if (!response || !response.contents) return null;
@@ -33,18 +33,23 @@ export class ResolveType {
   }
 
   // 一時的なコンテンツを使用してプローブ（調査）を行う
-  async probe(tempContent: string, lineNumber: number, column: number, synchronizer: SyncDocument): Promise<string | null> {
+  async probe(
+    tempContent: string,
+    lineNumber: number,
+    column: number,
+    synchronizer: SyncDocument
+  ): Promise<string | null> {
     if (!this.client || !synchronizer) return null;
-    
+
     // 1. 一時コンテンツを送信
     await synchronizer.sendTemporaryContent(tempContent);
-    
+
     // 2. 型解決
     const type = await this.at(lineNumber, column);
-    
+
     // 3. 元の状態に戻す
     await synchronizer.restoreOriginalContent();
-    
+
     return type;
   }
 }

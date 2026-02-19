@@ -24,20 +24,26 @@ export class SettingsComponent {
   constructor(containerElement: HTMLElement, persistence: Persistence) {
     this.container = containerElement;
     this.settingsStore = persistence.settings;
-    
+
     // UI要素のマップ
     this.elements = {
       fontSize: this.container.querySelector<HTMLInputElement>('[data-setting="fontSize"]'),
       tabSize: this.container.querySelector<HTMLInputElement>('[data-setting="tabSize"]'),
       wordWrap: this.container.querySelector<HTMLInputElement>('[data-setting="wordWrap"]'),
-      autoClosingBrackets: this.container.querySelector<HTMLInputElement>('[data-setting="autoClosingBrackets"]'),
+      autoClosingBrackets: this.container.querySelector<HTMLInputElement>(
+        '[data-setting="autoClosingBrackets"]'
+      ),
       minimap: this.container.querySelector<HTMLInputElement>('[data-setting="minimap"]'),
-      mouseWheelZoom: this.container.querySelector<HTMLInputElement>('[data-setting="mouseWheelZoom"]'),
-      renderWhitespace: this.container.querySelector<HTMLInputElement>('[data-setting="renderWhitespace"]')
+      mouseWheelZoom: this.container.querySelector<HTMLInputElement>(
+        '[data-setting="mouseWheelZoom"]'
+      ),
+      renderWhitespace: this.container.querySelector<HTMLInputElement>(
+        '[data-setting="renderWhitespace"]'
+      ),
     };
 
     this.currentSettings = {};
-    
+
     this.init();
   }
 
@@ -56,15 +62,17 @@ export class SettingsComponent {
     const s = this.currentSettings;
     if (this.elements.fontSize) this.elements.fontSize.value = String(s.fontSize || 14);
     if (this.elements.tabSize) this.elements.tabSize.value = String(s.tabSize || 2);
-    if (this.elements.wordWrap) this.elements.wordWrap.checked = s.wordWrap === 'on';
-    if (this.elements.autoClosingBrackets) this.elements.autoClosingBrackets.checked = s.autoClosingBrackets === 'always';
+    if (this.elements.wordWrap) this.elements.wordWrap.checked = s.wordWrap === "on";
+    if (this.elements.autoClosingBrackets)
+      this.elements.autoClosingBrackets.checked = s.autoClosingBrackets === "always";
     if (this.elements.minimap) this.elements.minimap.checked = !!s.minimap?.enabled;
     if (this.elements.mouseWheelZoom) this.elements.mouseWheelZoom.checked = !!s.mouseWheelZoom;
-    if (this.elements.renderWhitespace) this.elements.renderWhitespace.checked = s.renderWhitespace === 'all';
+    if (this.elements.renderWhitespace)
+      this.elements.renderWhitespace.checked = s.renderWhitespace === "all";
   }
 
   private bindEvents(): void {
-    Object.values(this.elements).forEach(el => {
+    Object.values(this.elements).forEach((el) => {
       if (el) {
         el.addEventListener("change", () => this.save());
       }
@@ -75,11 +83,11 @@ export class SettingsComponent {
     const s = {
       fontSize: this.elements.fontSize ? parseInt(this.elements.fontSize.value, 10) : undefined,
       tabSize: this.elements.tabSize ? parseInt(this.elements.tabSize.value, 10) : undefined,
-      wordWrap: this.elements.wordWrap?.checked ? 'on' : 'off',
-      autoClosingBrackets: this.elements.autoClosingBrackets?.checked ? 'always' : 'never',
+      wordWrap: this.elements.wordWrap?.checked ? "on" : "off",
+      autoClosingBrackets: this.elements.autoClosingBrackets?.checked ? "always" : "never",
       minimap: { enabled: this.elements.minimap?.checked },
       mouseWheelZoom: this.elements.mouseWheelZoom?.checked,
-      renderWhitespace: this.elements.renderWhitespace?.checked ? 'all' : 'none'
+      renderWhitespace: this.elements.renderWhitespace?.checked ? "all" : "none",
     };
 
     for (const [k, v] of Object.entries(s)) {
@@ -93,10 +101,15 @@ export class SettingsComponent {
 
   private applySettings(): void {
     if (this.currentSettings.fontSize) {
-      document.documentElement.style.setProperty("--editor-font-size", `${this.currentSettings.fontSize}px`);
+      document.documentElement.style.setProperty(
+        "--editor-font-size",
+        `${this.currentSettings.fontSize}px`
+      );
     }
-    window.dispatchEvent(new CustomEvent("settings:updated", {
-      detail: { settings: this.currentSettings }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("settings:updated", {
+        detail: { settings: this.currentSettings },
+      })
+    );
   }
 }

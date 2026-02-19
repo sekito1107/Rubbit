@@ -1,4 +1,4 @@
-import type { LSPClient } from './client';
+import type { LSPClient } from "./client";
 
 declare global {
   interface Window {
@@ -25,10 +25,10 @@ export class BootLSP {
       rootUri: "inmemory:///workspace/",
       capabilities: {
         textDocument: {
-          publishDiagnostics: {}
-        }
+          publishDiagnostics: {},
+        },
       },
-      workspaceFolders: [{ uri: "inmemory:///workspace/", name: "workspace" }]
+      workspaceFolders: [{ uri: "inmemory:///workspace/", name: "workspace" }],
     });
 
     return result;

@@ -31,13 +31,13 @@ export class BootLoader {
     // 1. LSPの初期化
     this.dispatchProgress(90, "LSP: サーバーを起動中...");
     this.lspManager = new LSP(this.rubyVM.lspClient, this.editor);
-    
+
     this.dispatchProgress(92, "LSP: 初期化リクエスト送信...");
     await this.lspManager.initialize();
-    
+
     this.dispatchProgress(94, "LSP: 機能を有効化中...");
     this.lspManager.activate();
-    
+
     // 互換性のためのグローバル公開
     window.ruboxLSPManager = this.lspManager;
     window.ruboxLSPReady = true;
@@ -45,7 +45,7 @@ export class BootLoader {
 
     // 2. リファレンスの初期化
     this.reference = new Reference(this.rubyVM.lspClient);
-    
+
     // 3. 解析機能の起動
     this.dispatchProgress(98, "解析エンジンを起動中...");
     this.analysis = new AnalysisCoordinator(this.editor, this.lspManager, this.reference);
@@ -54,15 +54,19 @@ export class BootLoader {
 
     this.dispatchProgress(100, "準備完了！");
 
-    window.dispatchEvent(new CustomEvent("rubox:lsp-ready", {
-        detail: { version: (this.rubyVM as any).rubyVersion }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("rubox:lsp-ready", {
+        detail: { version: (this.rubyVM as any).rubyVersion },
+      })
+    );
   }
 
   private dispatchProgress(percent: number, message: string): void {
-    window.dispatchEvent(new CustomEvent("rubox:loading-progress", {
-      detail: { percent, message }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("rubox:loading-progress", {
+        detail: { percent, message },
+      })
+    );
   }
 
   // リソースの破棄とグローバル汚染のクリーンアップ
@@ -70,7 +74,7 @@ export class BootLoader {
     if (window.ruboxLSPManager === this.lspManager) delete window.ruboxLSPManager;
     if (window.ruboxAnalysisCoordinator === this.analysis) delete window.ruboxAnalysisCoordinator;
     delete window.ruboxLSPReady;
-    
+
     this.lspManager = null;
     this.reference = null;
     this.analysis = null;

@@ -1,4 +1,4 @@
-import type * as monaco from 'monaco-editor';
+import type * as monaco from "monaco-editor";
 import { SyncDocument } from "./lsp/sync";
 import { HandleDiagnostics } from "./lsp/diagnostics";
 import { ProvideHover } from "./lsp/hover";
@@ -23,7 +23,7 @@ export class LSP {
   constructor(client: LSPClient, editor: monaco.editor.ICodeEditor) {
     this.client = client;
     this.editor = editor;
-    
+
     // 内部コンポーネントの初期化
     this.boot = new BootLSP(client);
     this.sync = new SyncDocument(client, editor);
@@ -46,7 +46,7 @@ export class LSP {
     this.hover.start();
     this.inlayHints.start();
     this.commands.start();
-    
+
     // Inlay Hints を初期状態で有効化
     this.editor.updateOptions({ inlayHints: { enabled: "on" } });
 
@@ -62,7 +62,11 @@ export class LSP {
   }
 
   // 一時的なコンテンツで型解決を試みる Facade API
-  async probeTypeWithTemporaryContent(content: string, line: number, col: number): Promise<string | null> {
+  async probeTypeWithTemporaryContent(
+    content: string,
+    line: number,
+    col: number
+  ): Promise<string | null> {
     return this.resolver.probe(content, line, col, this.sync);
   }
 

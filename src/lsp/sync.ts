@@ -1,5 +1,5 @@
-import type * as monaco from 'monaco-editor';
-import type { LSPClient } from './client';
+import type * as monaco from "monaco-editor";
+import type { LSPClient } from "./client";
 
 // Monaco Editor の内容を LSP サーバと同期する
 export class SyncDocument {
@@ -28,8 +28,8 @@ export class SyncDocument {
         uri: "inmemory:///workspace/main.rb",
         languageId: "ruby",
         version: version,
-        text: content
-      }
+        text: content,
+      },
     });
 
     this.subscribeToChanges();
@@ -59,7 +59,7 @@ export class SyncDocument {
 
     this.client.sendNotification("textDocument/didChange", {
       textDocument: { uri: "inmemory:///workspace/main.rb", version: version },
-      contentChanges: [{ text: content }]
+      contentChanges: [{ text: content }],
     });
   }
 
@@ -69,7 +69,7 @@ export class SyncDocument {
     const version = this.model.getVersionId() + 1;
     this.client.sendNotification("textDocument/didChange", {
       textDocument: { uri: "inmemory:///workspace/main.rb", version: version },
-      contentChanges: [{ text: tempContent }]
+      contentChanges: [{ text: tempContent }],
     });
   }
 

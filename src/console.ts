@@ -60,12 +60,12 @@ export class ConsoleComponent {
     window.addEventListener("rubox:loading-progress", (event: Event) => {
       const { percent, message } = (event as CustomEvent).detail;
       this.updateLoadingProgress(percent, message);
-    }); 
+    });
 
     // ショートカット実行イベント (Editorから発火)
     window.addEventListener("rubox:run-trigger", () => {
-      this.run()
-    })
+      this.run();
+    });
 
     // 全初期化完了イベントを購読 (BootLoader完了後にRubyVMから発火)
     window.addEventListener("rubox:lsp-ready", (event: Event) => {
@@ -112,7 +112,8 @@ export class ConsoleComponent {
     if (!container) {
       container = document.createElement("div");
       container.id = "loading-container";
-      container.className = "flex flex-col items-center justify-center select-none py-8 my-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg";
+      container.className =
+        "flex flex-col items-center justify-center select-none py-8 my-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg";
       this.outputElement.appendChild(container);
     }
 
@@ -136,7 +137,7 @@ export class ConsoleComponent {
   private startRabbitAnimation(): void {
     let step = 0;
     this.loadingAnimationId = window.setInterval(() => {
-      if (typeof document === 'undefined') return;
+      if (typeof document === "undefined") return;
       const rabbit = document.getElementById("rabbit-emoji");
       if (rabbit) {
         step = (step + 1) % 10;
@@ -148,7 +149,7 @@ export class ConsoleComponent {
 
   // 進捗を更新する
   private updateLoadingProgress(percent: number, message: string): void {
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
     const percentEl = document.getElementById("loading-percent");
     const messageEl = document.getElementById("loading-message");
     const rabbit = document.getElementById("rabbit-emoji");
@@ -156,7 +157,7 @@ export class ConsoleComponent {
     if (percentEl && messageEl && rabbit) {
       percentEl.textContent = `${percent}%`;
       messageEl.textContent = message;
-      
+
       const rabbitPercent = Math.min(percent, 95);
       rabbit.style.left = `calc(${rabbitPercent}% - 12px)`;
 
@@ -164,7 +165,9 @@ export class ConsoleComponent {
       const filled = Math.round((percent / 100) * barWidth);
       const empty = barWidth - filled;
       const bar = "█".repeat(filled) + "░".repeat(empty);
-      const barEl = rabbit.closest("#loading-container")?.querySelector(".text-slate-600, .dark\\:text-slate-300");
+      const barEl = rabbit
+        .closest("#loading-container")
+        ?.querySelector(".text-slate-600, .dark\\:text-slate-300");
       if (barEl) {
         barEl.textContent = `[${bar}]`;
       }
@@ -257,10 +260,11 @@ export class ConsoleComponent {
   private appendOutput(text: string): void {
     if (!this.outputElement || !text) return;
 
-    this.outputElement.innerHTML += text.split("\n").map(line => 
-      `<div>${this.escapeHtml(line)}</div>`
-    ).join("");
-    
+    this.outputElement.innerHTML += text
+      .split("\n")
+      .map((line) => `<div>${this.escapeHtml(line)}</div>`)
+      .join("");
+
     this.outputElement.lastElementChild?.scrollIntoView({ behavior: "smooth" });
   }
 

@@ -1,5 +1,5 @@
-import * as monaco from 'monaco-editor';
-import type { LSPClient } from './client';
+import * as monaco from "monaco-editor";
+import type { LSPClient } from "./client";
 
 interface DiagnosticsParams {
   diagnostics: Array<{
@@ -39,46 +39,46 @@ export class HandleDiagnostics {
     // 1. 標準的な診断通知
     this.client.onNotification("textDocument/publishDiagnostics", (params: DiagnosticsParams) => {
       const markers: monaco.editor.IMarkerData[] = params.diagnostics
-        .filter(diag => {
+        .filter((diag) => {
           if (!diag || !diag.message) return true;
           const msgLower = String(diag.message).toLowerCase();
-          
+
           // タイププロフの誤報フィルタリング
-          const isFalsePositive = (
+          const isFalsePositive =
             msgLower.includes("failed to resolve overload") ||
             msgLower.includes("object#puts") ||
             msgLower.includes("object#print") ||
             msgLower.includes("kernel#puts") ||
             msgLower.includes("kernel#print") ||
-            msgLower.includes("::_tos")
-          );
+            msgLower.includes("::_tos");
 
           return !isFalsePositive;
         })
-        .map(diag => ({
+        .map((diag) => ({
           severity: this.mapSeverity(diag.severity),
           startLineNumber: Math.max(1, diag.range.start.line + 1),
           startColumn: Math.max(1, diag.range.start.character + 1),
           endLineNumber: Math.max(1, diag.range.end.line + 1),
           endColumn: Math.max(1, diag.range.end.character + 1),
           message: diag.message,
-          source: "TypeProf"
+          source: "TypeProf",
         }));
-      
+
       const currentModel = this.editor.getModel();
       if (currentModel) {
         try {
-          const lineCount = typeof currentModel.getLineCount === 'function' ? currentModel.getLineCount() : 1000000;
-          const adjustedMarkers = markers.map(m => ({
+          const lineCount =
+            typeof currentModel.getLineCount === "function" ? currentModel.getLineCount() : 1000000;
+          const adjustedMarkers = markers.map((m) => ({
             ...m,
             startLineNumber: Math.min(lineCount, m.startLineNumber),
-            endLineNumber: Math.min(lineCount, m.endLineNumber)
+            endLineNumber: Math.min(lineCount, m.endLineNumber),
           }));
           monaco.editor.setModelMarkers(currentModel, "lsp", adjustedMarkers);
         } catch {
           // マーカー設定失敗時は静かに終了
         }
-        
+
         // 解析完了を通知 (負荷軽減のためデバウンス)
         if (this.debounceTimer) clearTimeout(this.debounceTimer);
         this.debounceTimer = setTimeout(() => {
@@ -95,21 +95,22 @@ export class HandleDiagnostics {
       if (params.valid) {
         monaco.editor.setModelMarkers(model, "ruby-syntax", []);
       } else {
-        const markers: monaco.editor.IMarkerData[] = params.diagnostics.map(diag => ({
+        const markers: monaco.editor.IMarkerData[] = params.diagnostics.map((diag) => ({
           severity: monaco.MarkerSeverity.Error,
           startLineNumber: Math.max(1, diag.range.start.line + 1),
           startColumn: Math.max(1, diag.range.start.character + 1),
           endLineNumber: Math.max(1, diag.range.end.line + 1),
           endColumn: Math.max(1, diag.range.end.character + 1),
           message: diag.message,
-          source: "RubySyntax"
+          source: "RubySyntax",
         }));
         try {
-          const lineCount = typeof model.getLineCount === 'function' ? model.getLineCount() : 1000000;
-          const adjustedMarkers = markers.map(m => ({
+          const lineCount =
+            typeof model.getLineCount === "function" ? model.getLineCount() : 1000000;
+          const adjustedMarkers = markers.map((m) => ({
             ...m,
             startLineNumber: Math.min(lineCount, m.startLineNumber),
-            endLineNumber: Math.min(lineCount, m.endLineNumber)
+            endLineNumber: Math.min(lineCount, m.endLineNumber),
           }));
           monaco.editor.setModelMarkers(model, "ruby-syntax", adjustedMarkers);
         } catch {
@@ -121,11 +122,16 @@ export class HandleDiagnostics {
 
   private mapSeverity(lspSeverity: number): monaco.MarkerSeverity {
     switch (lspSeverity) {
-      case 1: return monaco.MarkerSeverity.Error;
-      case 2: return monaco.MarkerSeverity.Warning;
-      case 3: return monaco.MarkerSeverity.Info;
-      case 4: return monaco.MarkerSeverity.Hint;
-      default: return monaco.MarkerSeverity.Info;
+      case 1:
+        return monaco.MarkerSeverity.Error;
+      case 2:
+        return monaco.MarkerSeverity.Warning;
+      case 3:
+        return monaco.MarkerSeverity.Info;
+      case 4:
+        return monaco.MarkerSeverity.Hint;
+      default:
+        return monaco.MarkerSeverity.Info;
     }
   }
 }

@@ -57,39 +57,48 @@ async function initializeVM(wasmUrl: string) {
       return response.text();
     });
 
-    postMessage({ type: "progress", payload: { percent: 15, message: "リソースを並列ダウンロード中..." } });
+    postMessage({
+      type: "progress",
+      payload: { percent: 15, message: "リソースを並列ダウンロード中..." },
+    });
 
     // WASMのコンパイル完了を待機
     const module = await wasmPromise;
 
     postMessage({ type: "progress", payload: { percent: 30, message: "VM を起動中..." } });
-    
+
     // VMの初期化
     const result = await DefaultRubyVM(module);
     vm = result.vm;
 
     // bootstrap.rb (ポリフィル & LSP サーバー) をロードする
-    
+
     // 1. VFSのディレクトリ作成
     vm.eval("require 'js'");
     vm.eval("begin; Dir.mkdir('/src'); rescue; end");
     vm.eval("begin; Dir.mkdir('/workspace'); rescue; end");
 
     // 2. RBS 標準ライブラリのロード (JS Bridge を使用した高速転送)
-    postMessage({ type: "progress", payload: { percent: 50, message: "RBS 標準ライブラリを展開中..." } });
-    
+    postMessage({
+      type: "progress",
+      payload: { percent: 50, message: "RBS 標準ライブラリを展開中..." },
+    });
+
     const rbsText = await rbsPromise;
     if (rbsText) {
-        try {
-            // JSメモリ上のデータを直接Rubyから参照して書き込む (Base64オーバーヘッドの回避)
-            (self as any)._rbsData = rbsText;
-            vm.eval(`File.write("/workspace/stdlib.rbs", JS.global[:_rbsData].to_s)`);
-            (self as any)._rbsData = null; // メモリ解放
+      try {
+        // JSメモリ上のデータを直接Rubyから参照して書き込む (Base64オーバーヘッドの回避)
+        (self as any)._rbsData = rbsText;
+        vm.eval(`File.write("/workspace/stdlib.rbs", JS.global[:_rbsData].to_s)`);
+        (self as any)._rbsData = null; // メモリ解放
 
-            postMessage({ type: "progress", payload: { percent: 65, message: "RBS ロード完了、LSP起動準備..." } });
-        } catch (e: any) {
-            postMessage({ type: "output", payload: { text: `// RBS load failed: ${e.message}` } });
-        }
+        postMessage({
+          type: "progress",
+          payload: { percent: 65, message: "RBS ロード完了、LSP起動準備..." },
+        });
+      } catch (e: any) {
+        postMessage({ type: "output", payload: { text: `// RBS load failed: ${e.message}` } });
+      }
     }
 
     // 3. スクリプトファイルの書き込み
@@ -99,7 +108,10 @@ async function initializeVM(wasmUrl: string) {
         vm.eval(`File.write("${path}", JS.global[:_tmpCode].to_s)`);
         (self as any)._tmpCode = null;
       } catch (e: any) {
-        postMessage({ type: "output", payload: { text: `// writeRubyFile Failed (${path}): ${e.message}` } });
+        postMessage({
+          type: "output",
+          payload: { text: `// writeRubyFile Failed (${path}): ${e.message}` },
+        });
         throw e;
       }
     };
@@ -115,17 +127,17 @@ async function initializeVM(wasmUrl: string) {
     (self as any).sendLspResponse = (jsonString: string) => {
       postMessage({ type: "lsp", payload: jsonString });
     };
-    
+
     // Ruby側から進捗を更新するための関数
     (self as any).updateProgress = (percent: number, message: string) => {
-       postMessage({ type: "progress", payload: { percent, message } });
+      postMessage({ type: "progress", payload: { percent, message } });
     };
 
     vm.eval(`
       require "js"
       require_relative "/src/bootstrap"
     `);
-    
+
     vm.eval(`
       def server
         $server
@@ -133,7 +145,6 @@ async function initializeVM(wasmUrl: string) {
     `);
 
     postMessage({ type: "ready", payload: { version: vm.eval("RUBY_VERSION").toString() } });
-    
   } catch (error: any) {
     postMessage({ type: "error", payload: { message: error.message } });
     postMessage({ type: "output", payload: { text: `// Error: ${error.message}` } });
@@ -157,7 +168,7 @@ function runCode(code: string, stdin?: string) {
       end
       $stdout.string
     `;
-    
+
     const result = vm.eval(wrappedCode);
     (self as any)._tmpCode = null;
     postMessage({ type: "output", payload: { text: result.toString() } });

@@ -10,7 +10,6 @@ export class RubyVM {
   private worker: Worker | null = null;
   public lspClient: LSPClient | null = null;
 
-
   public rubyVersion: string = "";
 
   // 出力用イベントリスナー
@@ -43,7 +42,7 @@ export class RubyVM {
 
       this.worker.postMessage({
         type: "initialize",
-        payload: { wasmUrl: RUBY_WASM_URL }
+        payload: { wasmUrl: RUBY_WASM_URL },
       });
     } catch (error: any) {
       this.dispatchOutput(`// Workerの起動に失敗しました: ${error.message}`);
@@ -58,9 +57,11 @@ export class RubyVM {
         break;
       case "progress":
         // Workerからの進捗イベントを中継
-        window.dispatchEvent(new CustomEvent("rubox:loading-progress", {
-          detail: { percent: payload.percent, message: payload.message }
-        }));
+        window.dispatchEvent(
+          new CustomEvent("rubox:loading-progress", {
+            detail: { percent: payload.percent, message: payload.message },
+          })
+        );
         break;
       case "ready":
         window.__rubyVMReady = true;
@@ -69,11 +70,13 @@ export class RubyVM {
         this.rubyVersion = payload.version;
 
         if (this.resolveReady) {
-            this.resolveReady();
+          this.resolveReady();
         }
 
         // 下位互換性のためにイベントを発火
-        window.dispatchEvent(new CustomEvent("ruby-vm:ready", { detail: { version: payload.version } }));
+        window.dispatchEvent(
+          new CustomEvent("ruby-vm:ready", { detail: { version: payload.version } })
+        );
         break;
       case "error":
         this.dispatchOutput(`// VM Error: ${payload.message}`);

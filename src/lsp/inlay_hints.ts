@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import * as monaco from "monaco-editor";
 
 // Monaco Editor に Inlay Hints (型情報の行末表示) を提供する
 export class ProvideInlayHints {
@@ -27,14 +27,14 @@ export class ProvideInlayHints {
               kind: monaco.languages.InlayHintKind.Type,
               position: { lineNumber: lineNum, column: maxCol },
               label: ` # => ${value}`,
-              paddingLeft: true
+              paddingLeft: true,
             });
           }
         } catch {
           // ヒント提供失敗時は静かに終了
         }
         return { hints: hints, dispose: () => {} };
-      }
+      },
     });
   }
 
@@ -42,10 +42,13 @@ export class ProvideInlayHints {
   update(line: number, value: string): void {
     this.measuredValues.set(line, value);
     this.emitter.fire();
-    
+
     // Inlay Hints を強制的に再描画させる
     this.editor.updateOptions({ inlayHints: { enabled: "off" } });
-    setTimeout(() => this.editor.updateOptions({ inlayHints: { enabled: "on", maximumLength: 150 } }), 50);
+    setTimeout(
+      () => this.editor.updateOptions({ inlayHints: { enabled: "on", maximumLength: 150 } }),
+      50
+    );
   }
 
   // 保持しているキャッシュをクリアする

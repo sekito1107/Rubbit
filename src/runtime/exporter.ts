@@ -20,29 +20,31 @@ export class Exporter {
       try {
         const handle = await window.showSaveFilePicker({
           suggestedName: filename,
-          types: [{
-            description: 'Ruby Source File',
-            accept: { 'text/plain': ['.rb'] },
-          }],
+          types: [
+            {
+              description: "Ruby Source File",
+              accept: { "text/plain": [".rb"] },
+            },
+          ],
         });
         const writable = await handle.createWritable();
         await writable.write(code);
         await writable.close();
         return;
       } catch (e) {
-        if (e instanceof DOMException && e.name === 'AbortError') return;
+        if (e instanceof DOMException && e.name === "AbortError") return;
         console.warn("File System Access API failed, falling back to download link.", e);
       }
     }
 
     const blob = new Blob([code], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
-    
+
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 }

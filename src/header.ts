@@ -6,7 +6,7 @@ export class HeaderComponent {
   // versionElement: バージョンを表示する要素
   constructor(versionElement: HTMLElement | null) {
     this.versionElement = versionElement;
-    
+
     // RubyVMからのイベントを監視
     window.addEventListener("ruby-vm:ready", (event: Event) => {
       const customEvent = event as CustomEvent;

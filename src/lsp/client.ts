@@ -24,12 +24,15 @@ export interface LSPResponse {
 export class LSPClient {
   private worker: Worker;
   private requestId: number = 0;
-  private pendingRequests: Map<number, { resolve: (value: any) => void; reject: (reason?: any) => void }> = new Map();
+  private pendingRequests: Map<
+    number,
+    { resolve: (value: any) => void; reject: (reason?: any) => void }
+  > = new Map();
   private notificationHandlers: { [method: string]: ((params: any) => void)[] } = {};
 
   constructor(worker: Worker) {
     this.worker = worker;
-    
+
     // Workerからのメッセージを監視する
     this.worker.addEventListener("message", this.handleMessage.bind(this));
   }
@@ -42,7 +45,7 @@ export class LSPClient {
   sendRequest(method: string, params: any = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const id = this.requestId++;
-      
+
       // レスポンスが到着したときに呼び出されるPromiseのリゾルバを保存する
       this.pendingRequests.set(id, { resolve, reject });
 
@@ -53,9 +56,9 @@ export class LSPClient {
             jsonrpc: "2.0",
             id: id,
             method: method,
-            params: params
-          } as LSPRequest)
-        }
+            params: params,
+          } as LSPRequest),
+        },
       });
     });
   }
@@ -71,9 +74,9 @@ export class LSPClient {
         code: JSON.stringify({
           jsonrpc: "2.0",
           method: method,
-          params: params
-        } as LSPNotification)
-      }
+          params: params,
+        } as LSPNotification),
+      },
     });
   }
 
@@ -85,14 +88,14 @@ export class LSPClient {
     let actualMethod: string;
     let actualCallback: (params: any) => void;
 
-    if (typeof method === 'function') {
+    if (typeof method === "function") {
       actualCallback = method;
-      actualMethod = '*';
+      actualMethod = "*";
     } else {
       actualMethod = method;
       actualCallback = callback!;
     }
-    
+
     if (!this.notificationHandlers[actualMethod]) {
       this.notificationHandlers[actualMethod] = [];
     }
@@ -105,32 +108,32 @@ export class LSPClient {
 
     try {
       const message = JSON.parse(payload) as LSPResponse; // ペイロードは文字列化されたJSON-RPC
-      
+
       // リクエストへのレスポンス
       if (message.id !== undefined && this.pendingRequests.has(message.id)) {
         const request = this.pendingRequests.get(message.id)!;
         this.pendingRequests.delete(message.id);
-        
+
         if (message.error) {
           request.reject(message.error);
         } else {
           request.resolve(message.result);
         }
-      } 
+      }
       // サーバーからの通知またはリクエスト
       else {
         const method = message.method;
         const params = message.params;
-        
+
         if (method) {
           // 特定のメソッドに対するハンドラを実行
           if (this.notificationHandlers[method]) {
-            this.notificationHandlers[method].forEach(handler => handler(params));
+            this.notificationHandlers[method].forEach((handler) => handler(params));
           }
-          
+
           // 全通知ハンドラを実行 ('*' キー)
-          if (this.notificationHandlers['*']) {
-            this.notificationHandlers['*'].forEach(handler => handler(params));
+          if (this.notificationHandlers["*"]) {
+            this.notificationHandlers["*"].forEach((handler) => handler(params));
           }
         }
       }
