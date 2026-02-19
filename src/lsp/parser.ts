@@ -26,7 +26,7 @@ export class LSPResponseParser {
     // "-> Type" パターンを探す。
     // ブロック引数内の "-> " と混同しないよう、末尾に近いものを優先する。
     // クラス名(大文字)、文字列リテラル(" or ')、シンボル(:)、配列([) に対応し、改行までを型名とする。
-    const returnTypeMatch = content.match(/->\s+([A-Z"':\[][^\r\n]*)/g);
+    const returnTypeMatch = content.match(/->\s+([A-Z"':[][^\r\n]*)/g);
     if (returnTypeMatch) {
       const lastMatch = returnTypeMatch[returnTypeMatch.length - 1];
       const typeName = lastMatch.replace(/^->\s+/, "").trim();
