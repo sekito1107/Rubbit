@@ -93,10 +93,10 @@ export class CursorDocComponent {
     const position = this.editor.getPosition();
     if (!position) return;
 
-    const type = await analysis.resolver.resolution.resolveAtPosition(
-      position.lineNumber,
-      position.column
-    );
+    const lsp = g.ruboxLSPManager;
+    const type = lsp
+      ? await lsp.getReturnTypeAtPosition(position.lineNumber, position.column)
+      : await analysis.resolver.resolution.resolveAtPosition(position.lineNumber, position.column);
 
     const isInitializing = this.listElement.innerHTML.includes("loading-bar");
     if (type === this.lastType && !isInitializing) return;

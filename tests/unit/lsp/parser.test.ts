@@ -47,6 +47,32 @@ describe('LSPResponseParser', () => {
     });
   });
 
+  describe('parseReturnTypeFromHover', () => {
+    it('メソッドシグネチャから戻り値型を抽出できること', () => {
+      const content = 'def each_char: () -> Enumerator[String, String]';
+      expect(LSPResponseParser.parseReturnTypeFromHover(content)).toBe('Enumerator');
+    });
+
+    it('ブロックを伴うシグネチャから戻り値型を抽出できること', () => {
+      const content = 'def each: { (Integer) -> void } -> Array[Integer]';
+      expect(LSPResponseParser.parseReturnTypeFromHover(content)).toBe('Array');
+    });
+
+    it('単純なシグネチャから戻り値型を抽出できること', () => {
+      const content = 'def upcase: () -> String';
+      expect(LSPResponseParser.parseReturnTypeFromHover(content)).toBe('String');
+    });
+
+    it('戻り値型がない場合は null を返すこと', () => {
+      expect(LSPResponseParser.parseReturnTypeFromHover('String#upcase')).toBeNull();
+      expect(LSPResponseParser.parseReturnTypeFromHover('target: String')).toBeNull();
+    });
+
+    it('リテラル戻り値型を正規化すること', () => {
+      expect(LSPResponseParser.parseReturnTypeFromHover('def foo: () -> "hello"')).toBe('String');
+    });
+  });
+
   describe('normalizeTypeName', () => {
     it('ジェネリクスを削除すること', () => {
       expect(LSPResponseParser.normalizeTypeName('Array[String]')).toBe('Array');

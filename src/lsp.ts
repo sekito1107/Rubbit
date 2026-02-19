@@ -61,6 +61,12 @@ export class LSP {
     return this.resolver.at(line, col);
   }
 
+  // 外部向けの型解決 (戻り値型優先) Facade API
+  async getReturnTypeAtPosition(line: number, col: number): Promise<string | null> {
+    this.flushDocumentSync();
+    return this.resolver.returnTypeAt(line, col);
+  }
+
   // 一時的なコンテンツで型解決を試みる Facade API
   async probeTypeWithTemporaryContent(
     content: string,

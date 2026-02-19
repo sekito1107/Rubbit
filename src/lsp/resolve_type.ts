@@ -32,6 +32,32 @@ export class ResolveType {
     return parsed;
   }
 
+  // 指定位置の型情報を取得する (メソッドの戻り値型を優先)
+  async returnTypeAt(lineNumber: number, column: number): Promise<string | null> {
+    if (!this.client) return null;
+
+    const response = await this.client.sendRequest("textDocument/hover", {
+      textDocument: { uri: "inmemory:///workspace/main.rb" },
+      position: { line: lineNumber - 1, character: column - 1 },
+    });
+
+    if (!response || !response.contents) return null;
+
+    let markdownContent: string = "";
+    if (typeof response.contents === "string") {
+      markdownContent = response.contents;
+    } else if (typeof response.contents === "object" && response.contents.value) {
+      markdownContent = response.contents.value;
+    }
+
+    // まず戻り値型の抽出を試みる
+    const returnType = LSPResponseParser.parseReturnTypeFromHover(markdownContent);
+    if (returnType) return returnType;
+
+    // 取得できなければ従来のクラス名抽出にフォールバック
+    return LSPResponseParser.parseClassNameFromHover(markdownContent);
+  }
+
   // 一時的なコンテンツを使用してプローブ（調査）を行う
   async probe(
     tempContent: string,
