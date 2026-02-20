@@ -73,6 +73,31 @@ describe('LSPResponseParser', () => {
     });
   });
 
+  describe('parseTypeFromProbe', () => {
+    it('変数定義形式から型を抽出できること', () => {
+      expect(LSPResponseParser.parseTypeFromProbe('__rubpad_type_probe__: Enumerator[String, String]')).toBe('Enumerator');
+    });
+
+    it('変数定義形式から単純な型を抽出できること', () => {
+      expect(LSPResponseParser.parseTypeFromProbe('__rubpad_type_probe__: String')).toBe('String');
+    });
+
+    it('null/undefined に対して null を返すこと', () => {
+      expect(LSPResponseParser.parseTypeFromProbe(null)).toBeNull();
+      expect(LSPResponseParser.parseTypeFromProbe(undefined)).toBeNull();
+    });
+  });
+
+  describe('parseClassNameFromHover (-> 除外)', () => {
+    it('メソッドシグネチャから戻り値型ではなくパラメータの型を返すこと', () => {
+      expect(LSPResponseParser.parseClassNameFromHover('(String) -> Enumerator[String, String]')).toBe('String');
+    });
+
+    it('-> がない場合は通常通りパースすること', () => {
+      expect(LSPResponseParser.parseClassNameFromHover('String#upcase')).toBe('String');
+    });
+  });
+
   describe('normalizeTypeName', () => {
     it('ジェネリクスを削除すること', () => {
       expect(LSPResponseParser.normalizeTypeName('Array[String]')).toBe('Array');

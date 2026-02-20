@@ -76,6 +76,18 @@ export class LSP {
     return this.resolver.probe(content, line, col, this.sync);
   }
 
+  // 式の戻り値型をプローブする Facade API
+  async probeReturnType(expression: string): Promise<string | null> {
+    if (!this.model) return null;
+    this.flushDocumentSync();
+
+    const content = this.model.getValue();
+    const probeLine = this.model.getLineCount() + 1;
+    const tempContent = content + `\n__rubpad_type_probe__ = ${expression}`;
+
+    return this.resolver.probeForType(tempContent, probeLine, 1, this.sync);
+  }
+
   // 強制的にドキュメントを同期する
   flushDocumentSync(): void {
     this.sync.flush();

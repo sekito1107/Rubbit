@@ -94,9 +94,19 @@ export class CursorDocComponent {
     if (!position) return;
 
     const lsp = g.ruboxLSPManager;
-    const type = lsp
-      ? await lsp.getReturnTypeAtPosition(position.lineNumber, position.column)
-      : await analysis.resolver.resolution.resolveAtPosition(position.lineNumber, position.column);
+    let type: string | null = null;
+
+    if (lsp && this.isMethodCallPosition(position)) {
+      const expression = this.getMethodCallExpression(position);
+      if (expression) {
+        type = await lsp.probeReturnType(expression);
+      }
+    }
+
+    type ??= await analysis.resolver.resolution.resolveAtPosition(
+      position.lineNumber,
+      position.column
+    );
 
     const isInitializing = this.listElement.innerHTML.includes("loading-bar");
     if (type === this.lastType && !isInitializing) return;
@@ -164,6 +174,34 @@ export class CursorDocComponent {
   private toggleContextLoader(show: boolean): void {
     if (!this.loaderElement) return;
     this.loaderElement.style.opacity = show ? "1" : "0";
+  }
+
+  // ヘルパー: カーソルが "." の直後（メソッド呼び出し位置）にあるか判定
+  private isMethodCallPosition(position: any): boolean {
+    const model = this.editor?.getModel();
+    if (!model) return false;
+    const wordInfo = model.getWordAtPosition(position);
+    if (!wordInfo || wordInfo.startColumn <= 1) return false;
+    const charBefore = model.getValueInRange({
+      startLineNumber: position.lineNumber,
+      startColumn: wordInfo.startColumn - 1,
+      endLineNumber: position.lineNumber,
+      endColumn: wordInfo.startColumn,
+    });
+    return charBefore === ".";
+  }
+
+  // ヘルパー: カーソル位置までのメソッドチェーン式を抽出する
+  private getMethodCallExpression(position: any): string | null {
+    const model = this.editor?.getModel();
+    if (!model) return null;
+    const wordInfo = model.getWordAtPosition(position);
+    if (!wordInfo) return null;
+    const lineContent = model.getLineContent(position.lineNumber);
+    const upToMethod = lineContent.substring(0, wordInfo.endColumn - 1).trim();
+    // 代入文の右辺やキーワード後を除外し、メソッドチェーンのみを取得
+    const chainMatch = upToMethod.match(/([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*[!?]?)*)$/);
+    return chainMatch ? chainMatch[0] : null;
   }
 
   private createContextualMethodCard(item: any): HTMLElement {
