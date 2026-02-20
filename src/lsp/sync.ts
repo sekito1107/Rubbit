@@ -75,6 +75,19 @@ export class SyncDocument {
 
   // オリジナルのコンテンツを再同期して復元する
   async restoreOriginalContent(): Promise<void> {
-    this.flush();
+    if (!this.model) return;
+    this.isDirty = false;
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+
+    const content = this.model.getValue();
+    const version = this.model.getVersionId();
+
+    this.client.sendNotification("textDocument/didChange", {
+      textDocument: { uri: "inmemory:///workspace/main.rb", version: version },
+      contentChanges: [{ text: content }],
+    });
   }
 }
