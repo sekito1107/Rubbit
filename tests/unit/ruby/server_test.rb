@@ -126,4 +126,23 @@ class TestServer < Minitest::Test
     assert_includes method_names, "each_slice", "Array#each_slice は存在するべき"
 
   end
+
+  def test_doc_owner_redirection
+    # Enumerator上で reduce が見つかった場合、Enumerable にリダイレクトされるべき
+    # resolve_doc_owner(class_name, typeprof_owner, method_name, singleton)
+    
+    # Enumeratorオブジェクトは実在するので Object.const_get("Enumerator") は成功する
+    owner = @server.send(:resolve_doc_owner, "Enumerator", "Enumerator", "reduce", false)
+    assert_equal "Enumerable", owner
+  end
+
+  def test_runtime_fallback_resolve
+    # TypeProfが定義情報を持っていない (mdefがnil) 場合でも、
+    # ランタイムにメソッドが存在すれば解決できるべき
+    
+    result = @server.send(:runtime_fallback_resolve, "Enumerator", "reduce")
+    assert_equal "Enumerable", result[:className]
+    assert_equal "Enumerable#reduce", result[:signature]
+    assert_equal "#", result[:separator]
+  end
 end
