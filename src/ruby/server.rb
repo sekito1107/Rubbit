@@ -281,9 +281,11 @@ class Server
           }
         end
       end
-    rescue => e
+    rescue
     end
-    nil
+
+    # TypeProfで見つからなかった場合のランタイムフォールバック
+    runtime_fallback_resolve(class_name, method_name)
   end
 
   def fetch_methods(class_name)
@@ -319,7 +321,7 @@ class Server
 
               mdef = (me.defs.to_a.first || me.decls.to_a.first) rescue nil
 
-              owner = m.show_cpath
+              owner = resolve_doc_owner(class_name, m.show_cpath, mid, singleton)
               
               results << {
                 methodName: mid.to_s,
@@ -337,4 +339,70 @@ class Server
     end
     []
   end
+
+  private
+
+  # ランタイムでメソッドの正しいドキュメント所有者を特定する
+  def resolve_doc_owner(class_name, typeprof_owner, method_name, singleton)
+    klass = Object.const_get(class_name) rescue nil
+    return typeprof_owner unless klass
+
+    method_sym = method_name.to_sym
+    begin
+      if !singleton && klass.method_defined?(method_sym)
+        actual_owner = klass.instance_method(method_sym).owner.name
+        return actual_owner if DOCUMENT_AGGREGATE_ROOTS.include?(actual_owner)
+      end
+    rescue
+    end
+    typeprof_owner
+  end
+
+  # TypeProfで解決できなかった場合のランタイムフォールバック
+  def runtime_fallback_resolve(class_name, method_name)
+    klass = Object.const_get(class_name) rescue nil
+    return nil unless klass
+
+    method_sym = method_name.to_sym
+    begin
+      if klass.method_defined?(method_sym)
+        owner_name = klass.instance_method(method_sym).owner.name
+        # どのセパレータを使うかは、インスタンスメソッドかどうかで判断
+        sep = "#" 
+        return {
+          signature: "#{owner_name}#{sep}#{method_name}",
+          className: owner_name,
+          methodName: method_name,
+          separator: sep
+        }
+      end
+
+      # クラスメソッドの解決
+      if klass.respond_to?(method_sym)
+        # クラスメソッドの場合は特異クラスのインスタンスメソッドとして取得
+        begin
+          owner_name = klass.singleton_class.instance_method(method_sym).owner.name
+          # singleton_class の名前は "#<Class:ClassName>" のようになるので補正が必要な場合があるが
+          # 定義場所がクラス自身なら klass.name を使う
+          owner_name = klass.name if owner_name =~ /^#<Class:/
+          return {
+            signature: "#{owner_name}.#{method_name}",
+            className: owner_name,
+            methodName: method_name,
+            separator: "."
+          }
+        rescue
+          return {
+            signature: "#{class_name}.#{method_name}",
+            className: class_name,
+            methodName: method_name,
+            separator: "."
+          }
+        end
+      end
+    rescue
+    end
+    nil
+  end
+
 end
