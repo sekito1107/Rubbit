@@ -8,6 +8,7 @@ export class CursorDocComponent {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly CONTEXT_DEBOUNCE_MS = 300;
   private lastType: string | null = null;
+  private lastProbeKey: string = "";
 
   private boundHandleAnalysisFinished: () => void;
   private boundHandleLSPReady: () => void;
@@ -103,6 +104,9 @@ export class CursorDocComponent {
         const expression = this.isMethodCallPosition(position)
           ? this.getMethodCallExpression(position) || wordInfo.word
           : wordInfo.word;
+        const probeKey = `${position.lineNumber}:${expression}`;
+        if (probeKey === this.lastProbeKey) return;
+        this.lastProbeKey = probeKey;
         type = await lsp.probeReturnType(expression, position.lineNumber);
       }
     }
