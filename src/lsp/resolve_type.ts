@@ -78,4 +78,34 @@ export class ResolveType {
 
     return type;
   }
+
+  // 一時的なコンテンツを使用して特定の式の型をプローブする (var: Type 形式に対応)
+  async probeForType(
+    tempContent: string,
+    lineNumber: number,
+    column: number,
+    synchronizer: SyncDocument
+  ): Promise<string | null> {
+    if (!this.client || !synchronizer) return null;
+
+    await synchronizer.sendTemporaryContent(tempContent);
+
+    const response = await this.client.sendRequest("textDocument/hover", {
+      textDocument: { uri: "inmemory:///workspace/main.rb" },
+      position: { line: lineNumber - 1, character: column - 1 },
+    });
+
+    await synchronizer.restoreOriginalContent();
+
+    if (!response || !response.contents) return null;
+
+    let markdownContent: string = "";
+    if (typeof response.contents === "string") {
+      markdownContent = response.contents;
+    } else if (typeof response.contents === "object" && response.contents.value) {
+      markdownContent = response.contents.value;
+    }
+
+    return LSPResponseParser.parseTypeFromProbe(markdownContent);
+  }
 }

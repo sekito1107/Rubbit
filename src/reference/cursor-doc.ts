@@ -97,7 +97,10 @@ export class CursorDocComponent {
     let type: string | null = null;
 
     if (lsp && this.isMethodCallPosition(position)) {
-      type = await lsp.getReturnTypeAtPosition(position.lineNumber, position.column);
+      const expression = this.getMethodCallExpression(position);
+      if (expression) {
+        type = await lsp.probeReturnType(expression);
+      }
     }
 
     type ??= await analysis.resolver.resolution.resolveAtPosition(
@@ -186,6 +189,19 @@ export class CursorDocComponent {
       endColumn: wordInfo.startColumn,
     });
     return charBefore === ".";
+  }
+
+  // ヘルパー: カーソル位置までのメソッドチェーン式を抽出する
+  private getMethodCallExpression(position: any): string | null {
+    const model = this.editor?.getModel();
+    if (!model) return null;
+    const wordInfo = model.getWordAtPosition(position);
+    if (!wordInfo) return null;
+    const lineContent = model.getLineContent(position.lineNumber);
+    const upToMethod = lineContent.substring(0, wordInfo.endColumn - 1).trim();
+    // 代入文の右辺やキーワード後を除外し、メソッドチェーンのみを取得
+    const chainMatch = upToMethod.match(/([a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*[!?]?)*)$/);
+    return chainMatch ? chainMatch[0] : null;
   }
 
   private createContextualMethodCard(item: any): HTMLElement {
