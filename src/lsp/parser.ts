@@ -60,11 +60,11 @@ export class LSPResponseParser {
     }
 
     // 2. 配列/タプル形式 [Integer, String] -> Array とみなす
+    // ユニオン配列 `([Integer] | [String])` や 変数アノテーション `: ([Integer])` も考慮する
     if (
-      content.startsWith("[") ||
-      content.includes(": [") ||
-      content.includes("-> [") ||
-      content.includes("```ruby\n[") ||
+      content.match(/(?:^|\n|```ruby\n)\s*\(?\[/) || // 直で配列が始まるパターン
+      content.match(/(?:^|\n|```ruby\n)\s*[a-z_]\w*\s*:\s*\(?\[/) || // 変数: 配列 のパターン
+      content.match(/->\s*\(?\[/) || // 戻り値が配列のパターン
       content.match(/^Array\[/)
     ) {
       return "Array";

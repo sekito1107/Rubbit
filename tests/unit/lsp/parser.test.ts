@@ -28,6 +28,10 @@ describe('LSPResponseParser', () => {
       expect(LSPResponseParser.parseClassNameFromHover(content)).toBe('Array');
     });
 
+    it('rubyコードブロックでのユニオン配列から Array を特定できること', () => {
+      const content = '```ruby\n([Integer, Integer] | [Integer])\n```';
+      expect(LSPResponseParser.parseClassNameFromHover(content)).toBe('Array');
+    });
     it('ジェネリクスを含む複雑な型名を処理できること', () => {
       expect(LSPResponseParser.parseClassNameFromHover('Enumerator[Integer]')).toBe('Enumerator');
     });
@@ -85,6 +89,11 @@ describe('LSPResponseParser', () => {
 
     it('変数定義形式から単純な型を抽出できること', () => {
       expect(LSPResponseParser.parseTypeFromProbe('__rubpad_type_probe__: String')).toBe('String');
+    });
+
+    it('変数定義におけるユニオン配列から Array を抽出できること', () => {
+      // TypeProfは要素数が異なる配列をUnionで表現することがあり、括弧で囲まれる
+      expect(LSPResponseParser.parseTypeFromProbe('__rubpad_type_probe__: ([Integer, Integer] | [Integer])')).toBe('Array');
     });
 
     it('null/undefined に対して null を返すこと', () => {
