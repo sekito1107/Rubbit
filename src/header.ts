@@ -1,18 +1,17 @@
 // ヘッダーコンポーネント
 // header/index.ts
+import { RubyVM } from "./ruby-vm";
+
 export class HeaderComponent {
   private versionElement: HTMLElement | null;
 
   // versionElement: バージョンを表示する要素
-  constructor(versionElement: HTMLElement | null) {
+  // vm: RubyVM の準備完了とバージョン取得に使用
+  constructor(versionElement: HTMLElement | null, vm: RubyVM) {
     this.versionElement = versionElement;
 
-    // RubyVMからのイベントを監視
-    window.addEventListener("ruby-vm:ready", (event: Event) => {
-      const customEvent = event as CustomEvent;
-      if (customEvent.detail && customEvent.detail.version) {
-        this.updateVersion(customEvent.detail.version);
-      }
+    vm.readyPromise.then(() => {
+      this.updateVersion(vm.rubyVersion);
     });
   }
 

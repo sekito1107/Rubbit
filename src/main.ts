@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   new DownloadComponent(document.getElementById("download-button")!, editorComponent);
 
-  new HeaderComponent(document.getElementById("ruby-version")!);
+  new HeaderComponent(document.getElementById("ruby-version")!, rubyVM);
 
   new ExamplesComponent(
     document.getElementById("examples-button")!,

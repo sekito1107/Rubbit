@@ -62,7 +62,7 @@ describe('RubyVM', () => {
     });
   });
 
-  it('Workerからのreadyメッセージを処理すること', () => {
+  it('Workerからのreadyメッセージを処理すること', async () => {
     vm = new RubyVM();
     const readyEventHandler = vi.fn();
     window.addEventListener('ruby-vm:ready', readyEventHandler);
@@ -79,11 +79,13 @@ describe('RubyVM', () => {
       },
     });
 
+    await vm.readyPromise;
+
     expect(window.__rubyVMReady).toBe(true);
     expect(window.__rubyVMInitializing).toBeUndefined();
-    expect(readyEventHandler).toHaveBeenCalled();
-    const eventDetail = readyEventHandler.mock.calls[0][0].detail;
-    expect(eventDetail.version).toBe('4.0.0');
+    expect(vm.rubyVersion).toBe('4.0.0');
+    // イベントは発火されないはず
+    expect(readyEventHandler).not.toHaveBeenCalled();
 
     window.removeEventListener('ruby-vm:ready', readyEventHandler);
   });

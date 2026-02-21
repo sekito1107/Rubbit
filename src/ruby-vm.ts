@@ -72,11 +72,6 @@ export class RubyVM {
         if (this.resolveReady) {
           this.resolveReady();
         }
-
-        // 下位互換性のためにイベントを発火
-        window.dispatchEvent(
-          new CustomEvent("ruby-vm:ready", { detail: { version: payload.version } })
-        );
         break;
       case "error":
         this.dispatchOutput(`// VM Error: ${payload.message}`);
@@ -102,9 +97,6 @@ export class RubyVM {
   // 出力イベントを発火する
   private dispatchOutput(text: string): void {
     if (this.onOutput) this.onOutput(text);
-
-    // レガシーサポート
-    window.dispatchEvent(new CustomEvent("ruby-vm:output", { detail: { text } }));
   }
 
   public destroy(): void {
