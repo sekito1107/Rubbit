@@ -11,9 +11,35 @@ module MeasureValue
     end
   end
 
+  def self.sanitize_expression(expr)
+    require 'ripper'
+    sexp = Ripper.sexp(expr)
+    return expr unless sexp && sexp[0] == :program
+    
+    body = sexp[1][0]
+    return expr unless body.is_a?(Array)
+
+    if [:assign, :massign, :opassign].include?(body[0])
+      match = expr.match(/\A(.*?)(?:\+|-|\*|\/|%|\*\*|&|\||\^|<<|>>|&&|\|\|)?=/)
+      if match
+        lhs = match[1].strip
+        if body[0] == :massign
+          return "[#{lhs}]"
+        else
+          return lhs
+        end
+      end
+    end
+    expr
+  rescue
+    expr
+  end
+
   def self.run(expression, target_line, user_binding, stdin_str = "")
+    expression = sanitize_expression(expression)
     CapturedValue.reset
     begin
+      old_verbose, $VERBOSE = $VERBOSE, nil
       measure_binding = TOPLEVEL_BINDING.eval("binding")
       code_str = File.read("/workspace/main.rb") rescue "nil"
       code_str += "\nnil"
@@ -85,6 +111,7 @@ module MeasureValue
       end
     rescue
     ensure
+      $VERBOSE = old_verbose
       CapturedValue.target_triggered = false
     end
     CapturedValue.get_all.uniq.join(", ")

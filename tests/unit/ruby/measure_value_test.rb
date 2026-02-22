@@ -11,8 +11,10 @@ class TestMeasureValue < Minitest::Test
       class << MeasureValue
         alias_method :original_run, :run
         def run(expression, target_line, user_binding, stdin_str = "", code_str = nil)
+          expression = sanitize_expression(expression)
           MeasureValue::CapturedValue.reset
           begin
+            old_verbose, $VERBOSE = $VERBOSE, nil
             measure_binding = TOPLEVEL_BINDING.eval("binding")
             code_str ||= File.read("/workspace/main.rb") rescue "nil"
             code_str += "\nnil"
@@ -80,6 +82,7 @@ class TestMeasureValue < Minitest::Test
             end
           rescue 
           ensure
+            $VERBOSE = old_verbose
             MeasureValue::CapturedValue.target_triggered = false
           end
           MeasureValue::CapturedValue.get_all.uniq.join(", ")
@@ -90,7 +93,7 @@ class TestMeasureValue < Minitest::Test
 
   def test_未来の値のキャプチャが防止されていること
     code = <<~RUBY
-      string = "Ruby"
+      string = "Ruby".dup
       5.times do 
         string << "!"
       end
@@ -119,7 +122,7 @@ class TestMeasureValue < Minitest::Test
 
   def test_再代入時に新しい値のみが表示されること
     code = <<~RUBY
-      string = "Ruby"
+      string = "Ruby".dup
 
       5.times do 
         string << "!"
@@ -137,7 +140,7 @@ class TestMeasureValue < Minitest::Test
 
   def test_putsの箇所で未来の代入値が混入しないこと
     code = <<~RUBY
-      string = "Ruby"
+      string = "Ruby".dup
 
       5.times do 
         string << "!"
@@ -214,5 +217,16 @@ class TestMeasureValue < Minitest::Test
     RUBY
     result = MeasureValue.run("x", 3, binding, "", code)
     assert_equal '10', result, "メソッド内のローカル変数は取得できるべきです"
+  end
+
+  def test_代入式での副作用が二重に実行されないこと_getsの例
+    code = <<~RUBY
+      n, v = gets.chomp.split.map(&:to_i)
+      m, w = gets.chomp.split.map(&:to_i)
+    RUBY
+    stdin = "5 1\n3 5 1 9 2\n"
+    
+    result = MeasureValue.run("n, v = gets.chomp.split.map(&:to_i)", 1, binding, stdin, code)
+    assert_equal '[5, 1]', result, "1行目の代入結果が正しく得られ、2行目の入力に影響されないべきです"
   end
 end
