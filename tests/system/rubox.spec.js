@@ -111,7 +111,12 @@ test.describe('Rubox System Integration Tests', () => {
         await test.step('Ghost Text: 動的配列の多重代入における型推論', async () => {
             const code = [
                 'x, y = gets.split.map(&:to_i)',
+                '',
+                'lines = {}',
+                'heights = {}',
+                '',
                 'x.times do |i|',
+                '  ',
                 'end'
             ].join('\n');
             await setCodeAndSync(page, code);

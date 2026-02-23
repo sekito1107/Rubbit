@@ -32,7 +32,7 @@ begin
   else
     $raw_rbs_env = RBS::Environment.new
   end
-  
+
   JS.global.call(:updateProgress, 87, "TypeProf サービスを初期化中...")
   
   # TypeProf Service の作成 (RBS環境を明示的に渡す)
@@ -42,6 +42,17 @@ begin
   # インデックス構築の強制（LSP開始前に同期的に完了させる）
   code = ""
   JS.global.call(:updateProgress, 89, "インデックスを事前ロード中...")
+  
+  # gets が nil を返す可能性があることによる警告を抑制するための RBS 注入
+  # (競プロ等のユースケースでは入力があることが前提のため、String を返すものとして扱う)
+  rbs_gets = <<~RBS
+    module Kernel
+      def gets: (?String | Integer sep, ?Integer limit) -> String
+             | (Integer limit) -> String
+    end
+  RBS
+  core.update_rbs_file("/workspace/gets.rbs", rbs_gets)
+
   core.update_file("/workspace/main.rb", code)
   
   # LSP Error: undefined method 'define' for nil を防ぐためのモンキーパッチ
@@ -114,14 +125,6 @@ begin
     end
   end
 
-  # gets が nil を返す可能性があることによる警告を抑制するための RBS 注入
-  # (競プロ等のユースケースでは入力があることが前提のため、String を返すものとして扱う)
-  $raw_rbs_env << TypeProf::Core::AST.parse_rbs("rubox-shim.rbs", <<~RBS).first
-    class Object
-      def gets: (?String | Integer sep, ?Integer limit) -> String
-             | (Integer limit) -> String
-    end
-  RBS
 
   # TypeProf Service の初期化（同期モード）
   JS.global.call(:updateProgress, 90, "LSP サーバーを起動中...")
