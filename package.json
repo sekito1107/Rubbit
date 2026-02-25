@@ -10,7 +10,7 @@
     "setup": "npm install",
     "test": "npm run test:unit && npx playwright test tests/system",
     "test:unit": "vitest run && npm run test:ruby",
-    "test:ruby": "ruby tests/unit/ruby/measure_value_test.rb",
+    "test:ruby": "ruby tests/unit/ruby/expression_parser_test.rb && ruby tests/unit/ruby/method_filter_test.rb && ruby tests/unit/ruby/server_test.rb",
     "lint": "eslint src",
     "format": "prettier --write 'src/**/*.ts'"
   },

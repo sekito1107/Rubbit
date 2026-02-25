@@ -30,7 +30,7 @@ export class LSP {
     this.diagnostics = new HandleDiagnostics(client, editor);
     this.hover = new ProvideHover(client);
     this.inlayHints = new ProvideInlayHints(editor);
-    this.commands = new ExecuteCommand(client, this.inlayHints);
+    this.commands = new ExecuteCommand(client, this.inlayHints, editor);
     this.resolver = new ResolveType(client);
   }
 
