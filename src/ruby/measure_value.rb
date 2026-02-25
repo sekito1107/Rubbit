@@ -99,31 +99,32 @@ module MeasureValue
         end
 
         if tp.event == :line && tp.lineno == target_line
-          if target_triggered
-             if method_depth <= target_line_depth
-               # 同一深度または親スコープでの再入（ループ）の場合、前回の実行完了を記録
-               capture_and_report.call(last_line_binding)
-             else
-               # より深い深度でのヒット（1行内での入れ子等）があった場合、深い方を優先して追跡を更新
-               target_line_depth = method_depth
-               last_line_binding = tp.binding
-             end
+          # 再入時に前回分を確定 (同じか浅い深度の場合)
+          if target_triggered && method_depth <= target_line_depth
+            capture_and_report.call(last_line_binding)
+            target_triggered = false
           end
           
-          unless target_triggered
+          # ターゲット捕捉（新規、または1行内でのより深い呼び出しを優先）
+          if !target_triggered || method_depth >= target_line_depth
             target_triggered = true
             target_line_depth = method_depth
             last_line_binding = tp.binding
           end
-        end
-
-        # ターゲット行からの離脱検知（Double-Safety）
-        if target_triggered
-          is_departure = (tp.event == :line && tp.lineno != target_line && method_depth <= target_line_depth) ||
-                         (method_depth < target_line_depth)
-          if is_departure
+        elsif target_triggered
+          # 離脱の検知
+          is_inter_line_departure = (tp.event == :line && tp.lineno != target_line && method_depth <= target_line_depth)
+          is_scope_departure = (method_depth < target_line_depth)
+          
+          if is_inter_line_departure
             capture_and_report.call(last_line_binding)
-            # キャプチャはするが、target_triggeredは維持してループ再入に備える
+            target_triggered = false # 完全に別の行へ移った
+          elsif is_scope_departure
+            # 内部スコープから戻った（例: 1行内ブロックの終了）
+            # ここまでの結果を記録しつつ、ターゲット行自体の続きに備えて triggered は維持し、深度を下げる
+            capture_and_report.call(last_line_binding)
+            target_line_depth = method_depth
+            last_line_binding = tp.binding
           end
         end
       end
