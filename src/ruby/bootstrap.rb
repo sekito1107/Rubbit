@@ -44,39 +44,28 @@ module TypeProf::Core
   # 2. 多重代入の型推論バグの修正
   class MAsgnBox
     def run0(genv, changes)
-      edges = []
       @value.each_type do |ty|
         case ty
         when Type::Array
-          edges.concat(ty.splat_assign(genv, @lefts, @rest_elem, @rights))
+          ty.splat_assign(genv, @lefts, @rest_elem, @rights).each do |src, dst|
+            changes.add_edge(genv, src, dst)
+          end
         when Type::Instance
-          if ty.mod == genv.mod_ary
-            elem_vtx = ty.args[0]
-            if elem_vtx
-              @lefts.each {|lhs| edges << [elem_vtx, lhs] }
-              edges << [Source.new(genv.gen_ary_type(elem_vtx)), @rest_elem] if @rest_elem
-              @rights&.each {|rhs| edges << [elem_vtx, rhs] }
-            end
+          if ty.mod == genv.mod_ary && (elem_vtx = ty.args[0])
+            @lefts.each {|lhs| changes.add_edge(genv, elem_vtx, lhs) }
+            changes.add_edge(genv, Source.new(genv.gen_ary_type(elem_vtx)), @rest_elem) if @rest_elem
+            @rights&.each {|rhs| changes.add_edge(genv, elem_vtx, rhs) }
           else
-            if @lefts.size >= 1
-              edges << [Source.new(ty), @lefts[0]]
-            elsif @rights && @rights.size >= 1
-              edges << [Source.new(ty), @rights[0]]
-            else
-              edges << [Source.new(ty), @rest_elem]
-            end
+            lhs = @lefts[0] || (@rights && @rights[0]) || @rest_elem
+            changes.add_edge(genv, Source.new(ty), lhs) if lhs
           end
         else
-          if @lefts.size >= 1
-            edges << [Source.new(ty), @lefts[0]]
-          elsif @rights && @rights.size >= 1
-            edges << [Source.new(ty), @rights[0]]
-          else
-            edges << [Source.new(ty), @rest_elem]
-          end
+          lhs = @lefts[0] || (@rights && @rights[0]) || @rest_elem
+          changes.add_edge(genv, Source.new(ty), lhs) if lhs
+          # 余る変数には nil を代入 (本来のRuby動作に近づける)
+          (@lefts[1..] || []).each {|dst| changes.add_edge(genv, Source.new(Type.nil), dst) } if @lefts[0]
         end
       end
-      edges.each {|src, dst| changes.add_edge(genv, src, dst) }
     end
   end
 end

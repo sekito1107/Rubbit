@@ -4,9 +4,11 @@ import type { LSPClient } from "./client";
 // Monaco Editor に Hover 情報を提供する
 export class ProvideHover {
   private client: LSPClient;
+  private getStdin: () => string;
 
-  constructor(client: LSPClient) {
+  constructor(client: LSPClient, getStdin: () => string) {
     this.client = client;
+    this.getStdin = getStdin;
   }
 
   // プロバイダを登録する
@@ -36,7 +38,9 @@ export class ProvideHover {
           const wordInfo = model.getWordAtPosition(position);
           const lineContent = model.getLineContent(position.lineNumber);
           const withoutComment = lineContent.replace(/#(?!\{).*$/g, "").trim();
-          const expression = withoutComment || (wordInfo ? wordInfo.word : "");
+          
+          // 代入演算子などの記号付近でない限り、単語を優先する
+          const expression = (wordInfo ? wordInfo.word : "") || withoutComment;
 
           const additionalContents: { value: string; isTrusted: boolean }[] = [];
 
@@ -45,6 +49,7 @@ export class ProvideHover {
               expression: expression,
               line: position.lineNumber - 1,
               character: position.column,
+              stdin: this.getStdin(),
             };
             const measureCmd = `command:typeprof.measureValue?${encodeURIComponent(JSON.stringify(params))}`;
             additionalContents.push({

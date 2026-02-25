@@ -28,10 +28,16 @@ export class LSP {
     this.boot = new BootLSP(client);
     this.sync = new SyncDocument(client, editor);
     this.diagnostics = new HandleDiagnostics(client, editor);
-    this.hover = new ProvideHover(client);
+    this.hover = new ProvideHover(client, () => this.getStdin());
     this.inlayHints = new ProvideInlayHints(editor);
     this.commands = new ExecuteCommand(client, this.inlayHints, editor);
     this.resolver = new ResolveType(client);
+  }
+
+  // Stdin の現在の値を取得
+  public getStdin(): string {
+    const stdinEl = document.getElementById("stdin-input") as HTMLTextAreaElement;
+    return stdinEl ? stdinEl.value : "";
   }
 
   // LSP サーバ自体の初期化（Handshake）を行う

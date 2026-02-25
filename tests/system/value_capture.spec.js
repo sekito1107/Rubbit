@@ -126,11 +126,21 @@ test.describe('値キャプチャ統合テスト (一括検証)', () => {
         const res1 = await measureValue(page, 0, 0, 'x', 'hello\n');
         expect(res1).toBe('"hello\\n"');
 
-        // gets split multi-assign
+        // gets split multi-assign (同一行)
         await setCodeAndSync(page, 'x, y = gets.split.map(&:to_i)');
         const res2 = await measureValue(page, 0, 0, 'x, y = gets.split.map(&:to_i)', '10 20\n');
-        // sanitize により [x, y] が評価される
         expect(res2).toBe('[10, 20]');
+
+        // gets split multi-assign (次行での持続性)
+        const code = [
+            'x, y = gets.split.map(&:to_i)',
+            'x + y'
+        ].join('\n');
+        await setCodeAndSync(page, code);
+        const res3 = await measureValue(page, 1, 0, 'x', '10 20\n');
+        expect(res3).toBe('10');
+        const res4 = await measureValue(page, 1, 0, 'y', '10 20\n');
+        expect(res4).toBe('20');
     });
 });
 
